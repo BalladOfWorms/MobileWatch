@@ -1,9 +1,9 @@
-<img width="592" height="1315" alt="Screenshot_20260731_145240_MobileWatch" src="https://github.com/user-attachments/assets/2a1260fb-47bb-4926-b769-ecf14c19ed3f" />
-<img width="592" height="1315" alt="Screenshot_20260731_145219_MobileWatch" src="https://github.com/user-attachments/assets/eab5114c-1a51-4132-8d4c-5e334e38aca9" />
-<img width="592" height="1315" alt="Screenshot_20260731_145207_MobileWatch" src="https://github.com/user-attachments/assets/80a6213e-6ffc-40b4-ac09-a5fd1017832a" />
-<img width="592" height="1315" alt="Screenshot_20260731_145139_MobileWatch" src="https://github.com/user-attachments/assets/facfa252-4bd3-431a-9aca-b300da3f949b" />
-<img width="592" height="1315" alt="Screenshot_20260731_145123_MobileWatch" src="https://github.com/user-attachments/assets/981ef72b-69c8-49ad-8b30-e54dd48b78f2" />
-<img width="592" height="1315" alt="Screenshot_20260731_145021_MobileWatch" src="https://github.com/user-attachments/assets/f389766b-f038-4551-b35e-8515962b8542" />
+<img width="342" height="759" alt="Screenshot_20260731_145240_MobileWatch" src="https://github.com/user-attachments/assets/2a1260fb-47bb-4926-b769-ecf14c19ed3f" />
+<img width="342" height="759" alt="Screenshot_20260731_145219_MobileWatch" src="https://github.com/user-attachments/assets/eab5114c-1a51-4132-8d4c-5e334e38aca9" />
+<img width="342" height="759" alt="Screenshot_20260731_145207_MobileWatch" src="https://github.com/user-attachments/assets/80a6213e-6ffc-40b4-ac09-a5fd1017832a" />
+<img width="342" height="759" alt="Screenshot_20260731_145139_MobileWatch" src="https://github.com/user-attachments/assets/facfa252-4bd3-431a-9aca-b300da3f949b" />
+<img width="342" height="759" alt="Screenshot_20260731_145123_MobileWatch" src="https://github.com/user-attachments/assets/981ef72b-69c8-49ad-8b30-e54dd48b78f2" />
+<img width="342" height="759" alt="Screenshot_20260731_145021_MobileWatch" src="https://github.com/user-attachments/assets/f389766b-f038-4551-b35e-8515962b8542" />
 ## MobileWatch v1.0.0
 
 A native Android companion for **Final Fantasy XI** — bestiary, zones, items,
