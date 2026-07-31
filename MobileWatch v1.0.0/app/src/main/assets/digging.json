@@ -1,0 +1,6179 @@
+{
+ "zones": [
+  {
+   "n": "West Sarutabaruta",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Lauan Log",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Yagudo Feather",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "VR"
+    },
+    {
+     "n": "Saruta Cotton",
+     "r": "VR"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "VR"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "East Sarutabaruta",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Lauan Log",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Yagudo Feather",
+     "r": "R"
+    },
+    {
+     "n": "Saruta Cotton",
+     "r": "R"
+    },
+    {
+     "n": "Papaka Grass",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "VR"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "VR"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "Green Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "West Ronfaure",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Ash Log",
+     "r": "R"
+    },
+    {
+     "n": "Acorn",
+     "r": "R"
+    },
+    {
+     "n": "Chocobo Fthr.",
+     "r": "R"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Maple Log",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut",
+     "r": "VR"
+    },
+    {
+     "n": "Vegetable Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mistletoe",
+     "r": "VR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "East Ronfaure",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Ash Log",
+     "r": "R"
+    },
+    {
+     "n": "Acorn",
+     "r": "R"
+    },
+    {
+     "n": "Chocobo Fthr.",
+     "r": "R"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Maple Log",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut",
+     "r": "VR"
+    },
+    {
+     "n": "Vegetable Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mistletoe",
+     "r": "VR"
+    },
+    {
+     "n": "King Truffle",
+     "r": "VR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "South Gustaberg",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Grain Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Rock Salt",
+     "r": "VR"
+    },
+    {
+     "n": "White Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Decay",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "North Gustaberg",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "La Theine Plateau",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Yellow Ginseng",
+     "r": "U"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Chocobo Fthr.",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Tin Ore",
+     "r": "R"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Zinc Ore",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "VR"
+    },
+    {
+     "n": "Dried Marjoram",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Glory",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Valkurm Dunes",
+   "items": [
+    {
+     "n": "Seashell",
+     "r": "C"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Shall Shell",
+     "r": "R"
+    },
+    {
+     "n": "Shell Bug",
+     "r": "R"
+    },
+    {
+     "n": "Spider Web",
+     "r": "R"
+    },
+    {
+     "n": "Titanictus Shell",
+     "r": "R"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "R"
+    },
+    {
+     "n": "Blue Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Decay",
+     "r": "SR"
+    },
+    {
+     "n": "O. Bronzepiece",
+     "r": "SR"
+    },
+    {
+     "n": "T. Whiteshell",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Konschtat Highlands",
+   "items": [
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Spider Web",
+     "r": "R"
+    },
+    {
+     "n": "Zinc Ore",
+     "r": "R"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Birth",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Tahrongi Canyon",
+   "items": [
+    {
+     "n": "Beastcoin",
+     "r": "C"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "U"
+    },
+    {
+     "n": "Seashell",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Tin Ore",
+     "r": "R"
+    },
+    {
+     "n": "Yagudo Feather",
+     "r": "R"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Red Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Adv.",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Buburimu Peninsula",
+   "items": [
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Seashell",
+     "r": "U"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Shall Shell",
+     "r": "R"
+    },
+    {
+     "n": "Shell Bug",
+     "r": "R"
+    },
+    {
+     "n": "Spider Web",
+     "r": "R"
+    },
+    {
+     "n": "Tin Ore",
+     "r": "R"
+    },
+    {
+     "n": "Titanictus Shell",
+     "r": "R"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "R"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Birth",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Decay",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Jugner Forest",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Acorn",
+     "r": "R"
+    },
+    {
+     "n": "Holly Log",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Maple Log",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Willow Log",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "VR"
+    },
+    {
+     "n": "Elm Log",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mistletoe",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Scream Fungus",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Birth",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Pashhow Marshlands",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "U"
+    },
+    {
+     "n": "Black Rock",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "R"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "R"
+    },
+    {
+     "n": "Willow Log",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Adv.",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "SR"
+    },
+    {
+     "n": "Puffball",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Meriphataud Mountains",
+   "items": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "U"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "U"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "U"
+    },
+    {
+     "n": "Copper Ore",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Adaman Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Adv.",
+     "r": "SR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Batallia Downs",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "C"
+    },
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "R"
+    },
+    {
+     "n": "Copper Ore",
+     "r": "R"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Red Jar",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Purple Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "SR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Adv.",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Rolanberry Fields",
+   "items": [
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "R"
+    },
+    {
+     "n": "Woozyshroom",
+     "r": "R"
+    },
+    {
+     "n": "Danceshroom",
+     "r": "R"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Red Jar",
+     "r": "R"
+    },
+    {
+     "n": "Sage",
+     "r": "R"
+    },
+    {
+     "n": "Coral Fungus",
+     "r": "VR"
+    },
+    {
+     "n": "Puffball",
+     "r": "VR"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Glory",
+     "r": "SR"
+    },
+    {
+     "n": "Deathball",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Orichalcum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Sauromugue Champaign",
+   "items": [
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Seashell",
+     "r": "R"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "R"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Red Jar",
+     "r": "VR"
+    },
+    {
+     "n": "Titanictus Shell",
+     "r": "VR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Glory",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Carpenters' Landing",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Little Worm",
+     "r": "U"
+    },
+    {
+     "n": "Acorn",
+     "r": "R"
+    },
+    {
+     "n": "Holly Log",
+     "r": "R"
+    },
+    {
+     "n": "Maple Log",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Willow Log",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "VR"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "Elm Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mistletoe",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "VR"
+    },
+    {
+     "n": "Scream Fungus",
+     "r": "VR"
+    },
+    {
+     "n": "King Truffle",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    }
+   ]
+  },
+  {
+   "n": "Bibiki Bay",
+   "items": [
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Seashell",
+     "r": "U"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Shall Shell",
+     "r": "R"
+    },
+    {
+     "n": "Titanictus Shell",
+     "r": "R"
+    },
+    {
+     "n": "Tin Ore",
+     "r": "R"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "R"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Shell Bug",
+     "r": "VR"
+    },
+    {
+     "n": "Spider Web",
+     "r": "VR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Birth",
+     "r": "SR"
+    },
+    {
+     "n": "Coral Fragment",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Purgonorgo Isle",
+   "items": [
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Seashell",
+     "r": "U"
+    },
+    {
+     "n": "Bird Feather",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Shall Shell",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Tin Ore",
+     "r": "R"
+    },
+    {
+     "n": "Titanictus Shell",
+     "r": "R"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "R"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Shell Bug",
+     "r": "VR"
+    },
+    {
+     "n": "Spider Web",
+     "r": "VR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Attohwa Chasm",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "VC"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "U"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "U"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Antlion Jaw",
+     "r": "R"
+    },
+    {
+     "n": "Iolite",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Sulfur",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "VR"
+    },
+    {
+     "n": "Red Gravel",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Venom Dust",
+     "r": "VR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Titanium Ore",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Beaucedine Glacier",
+   "items": [
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Beaugreens",
+     "r": "R"
+    },
+    {
+     "n": "Gigas Necklace",
+     "r": "R"
+    },
+    {
+     "n": "Ice Cluster",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Ordrynite",
+     "r": "VR"
+    },
+    {
+     "n": "Platinum Leaf",
+     "r": "VR"
+    }
+   ]
+  },
+  {
+   "n": "Xarcabard",
+   "items": [
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Blk. Tiger Fang",
+     "r": "R"
+    },
+    {
+     "n": "Gigas Socks",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Old Arrow",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Garnet",
+     "r": "SR"
+    },
+    {
+     "n": "Onyx",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    },
+    {
+     "n": "Relic Iron",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Uleguerand Range",
+   "items": [
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Ahriman Lens",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Frost Turnip",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Blk. Tiger Fang",
+     "r": "VR"
+    },
+    {
+     "n": "Buffalo Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Ice Cluster",
+     "r": "VR"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Rabbit Hide",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Flame Geode",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    },
+    {
+     "n": "Snow Geode",
+     "r": "SR"
+    },
+    {
+     "n": "Mammoth Tusk",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Qufim Island",
+   "items": [
+    {
+     "n": "Pebble",
+     "r": "C"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "U"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "U"
+    },
+    {
+     "n": "Silica",
+     "r": "U"
+    },
+    {
+     "n": "Yellow Rock",
+     "r": "U"
+    },
+    {
+     "n": "Zinc Ore",
+     "r": "U"
+    },
+    {
+     "n": "Red Jar",
+     "r": "U"
+    },
+    {
+     "n": "Coral Fragment",
+     "r": "R"
+    },
+    {
+     "n": "Magic Pot Shard",
+     "r": "R"
+    },
+    {
+     "n": "Sparkling Stone",
+     "r": "VR"
+    },
+    {
+     "n": "Tin Ore",
+     "r": "VR"
+    },
+    {
+     "n": "T. Whiteshell",
+     "r": "SR"
+    },
+    {
+     "n": "O. Bronzepiece",
+     "r": "SR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Ruin",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "C"
+    },
+    {
+     "n": "Elemental Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Bkn. Single Rod",
+     "r": "SR"
+    },
+    {
+     "n": "Bkn. Clothespole",
+     "r": "SR"
+    },
+    {
+     "n": "Bkn. Mithran Rod",
+     "r": "SR"
+    },
+    {
+     "n": "Bkn. Willow Rod",
+     "r": "SR"
+    },
+    {
+     "n": "Bkn. Fast. Rod",
+     "r": "SR"
+    },
+    {
+     "n": "Bkn. Carbon Rod",
+     "r": "SR"
+    },
+    {
+     "n": "Bkn. Hume Rod",
+     "r": "SR"
+    },
+    {
+     "n": "Bkn. Halcyon Rod",
+     "r": "SR"
+    },
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Behemoth's Dominion",
+   "items": [
+    {
+     "n": "Bat Wing",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "Lightning Cluster",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Behemoth Hide",
+     "r": "VR"
+    },
+    {
+     "n": "Bloodthread",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Granite",
+     "r": "R"
+    },
+    {
+     "n": "Burning Memory",
+     "r": "SR"
+    },
+    {
+     "n": "Conquest Points",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ],
+   "burrow": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "VC"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    }
+   ],
+   "bore": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Adaman Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Orichalcum Ore",
+     "r": "?"
+    }
+   ]
+  },
+  {
+   "n": "The Sanctuary of Zi'Tah",
+   "items": [
+    {
+     "n": "Silver Beastcoin",
+     "r": "C"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Pebble",
+     "r": "U"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Green Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "VR"
+    },
+    {
+     "n": "Translucent Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Decay",
+     "r": "SR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "SR"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Eastern Altepa Desert",
+   "items": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "U"
+    },
+    {
+     "n": "Fruit Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "Grain Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Herb Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Vegetable Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "R"
+    },
+    {
+     "n": "Zinc Ore",
+     "r": "R"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Orichalcum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Phil. Stone",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Western Altepa Desert",
+   "items": [
+    {
+     "n": "Bone Chip",
+     "r": "C"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Seashell",
+     "r": "R"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "R"
+    },
+    {
+     "n": "Zinc Ore",
+     "r": "R"
+    },
+    {
+     "n": "Coral Fragment",
+     "r": "R"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Phil. Stone",
+     "r": "VR"
+    },
+    {
+     "n": "Spider Web",
+     "r": "VR"
+    },
+    {
+     "n": "Titanictus Shell",
+     "r": "VR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Cape Teriggan",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Manticore Hair",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Seashell",
+     "r": "R"
+    },
+    {
+     "n": "Shall Shell",
+     "r": "R"
+    },
+    {
+     "n": "Spider Web",
+     "r": "R"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Light Chest",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Phil. Stone",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "VR"
+    },
+    {
+     "n": "Shadow Geode",
+     "r": "VR"
+    },
+    {
+     "n": "Yew Log",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Valley of Sorrows",
+   "items": [
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Seashell",
+     "r": "VR"
+    },
+    {
+     "n": "Deathball",
+     "r": "VR"
+    },
+    {
+     "n": "Spider Web",
+     "r": "VR"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Leaf",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Phil. Stone",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Yuhtunga Jungle",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "U"
+    },
+    {
+     "n": "Danceshroom",
+     "r": "R"
+    },
+    {
+     "n": "Woozyshroom",
+     "r": "R"
+    },
+    {
+     "n": "Cinnamon",
+     "r": "R"
+    },
+    {
+     "n": "Dryad Root",
+     "r": "R"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Kitron",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Rattan Lumber",
+     "r": "R"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "R"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Deathball",
+     "r": "VR"
+    },
+    {
+     "n": "King Truffle",
+     "r": "VR"
+    },
+    {
+     "n": "Oak Log",
+     "r": "VR"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "VR"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "SR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Yhoator Jungle",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "U"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "U-"
+    },
+    {
+     "n": "Woozyshroom",
+     "r": "U"
+    },
+    {
+     "n": "Danceshroom",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Kazham Pineapl.",
+     "r": "R"
+    },
+    {
+     "n": "Lauan Log",
+     "r": "R"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "R"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Coral Fungus",
+     "r": "VR"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "VR"
+    },
+    {
+     "n": "Puffball",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Deathball",
+     "r": "SR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Lufaise Meadows",
+   "items": [
+    {
+     "n": "Acorn",
+     "r": "U"
+    },
+    {
+     "n": "Apple Mint",
+     "r": "R"
+    },
+    {
+     "n": "Cibol",
+     "r": "R"
+    },
+    {
+     "n": "Dark Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Earth Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Fire Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Holy Basil",
+     "r": "R"
+    },
+    {
+     "n": "Ice Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Light Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Lufaise Fly",
+     "r": "R"
+    },
+    {
+     "n": "Misx. Parsley",
+     "r": "R"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Popoto",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "VR"
+    },
+    {
+     "n": "Water Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Beehive Chip",
+     "r": "VR"
+    },
+    {
+     "n": "Blue Peas",
+     "r": "VR"
+    },
+    {
+     "n": "Giant Stinger",
+     "r": "VR"
+    },
+    {
+     "n": "Light Chest",
+     "r": "VR"
+    },
+    {
+     "n": "Puffball",
+     "r": "VR"
+    },
+    {
+     "n": "Ram Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Wild Onion",
+     "r": "VR"
+    },
+    {
+     "n": "Vegetable Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "SR"
+    },
+    {
+     "n": "Griffon Hide",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Misareaux Coast",
+   "items": [
+    {
+     "n": "Acorn",
+     "r": "U"
+    },
+    {
+     "n": "Apple Mint",
+     "r": "R"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Blue Peas",
+     "r": "R"
+    },
+    {
+     "n": "Cibol",
+     "r": "R"
+    },
+    {
+     "n": "Flytrap Leaf",
+     "r": "R"
+    },
+    {
+     "n": "Herb Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Holy Basil",
+     "r": "R"
+    },
+    {
+     "n": "Misx. Parsley",
+     "r": "R"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Popoto",
+     "r": "R"
+    },
+    {
+     "n": "Wild Onion",
+     "r": "R"
+    },
+    {
+     "n": "Beehive Chip",
+     "r": "VR"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "Elm Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Puffball",
+     "r": "VR"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "SR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "SR"
+    },
+    {
+     "n": "Saffron Blossom",
+     "r": "SR"
+    },
+    {
+     "n": "Shadow Geode",
+     "r": "VR"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Breeze Geode",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Oxblood",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Bhaflau Thickets",
+   "items": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "C"
+    },
+    {
+     "n": "Colibri Feather",
+     "r": "R"
+    },
+    {
+     "n": "Dried Marjoram",
+     "r": "R"
+    },
+    {
+     "n": "Blue Peas",
+     "r": "R"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "R"
+    },
+    {
+     "n": "Pine Nuts",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "VR"
+    },
+    {
+     "n": "Blue Rock",
+     "r": "VR"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "Elm Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Orichalcum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Peph. Hive Chip",
+     "r": "VR"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Alexandrite",
+     "r": "SR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "SR"
+    },
+    {
+     "n": "Lesser Chigoe",
+     "r": "SR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Wajaom Woodlands",
+   "items": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "C"
+    },
+    {
+     "n": "Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "R"
+    },
+    {
+     "n": "Blue Rock",
+     "r": "R"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Pine Nuts",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Orichalcum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Peph. Hive Chip",
+     "r": "VR"
+    },
+    {
+     "n": "Spider Web",
+     "r": "VR"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "SR"
+    },
+    {
+     "n": "Alexandrite",
+     "r": "SR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Kaolin",
+     "r": "SR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "SR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Caedarva Mire",
+   "items": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "C"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Dogwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "R"
+    },
+    {
+     "n": "Imp Wing",
+     "r": "R"
+    },
+    {
+     "n": "Mistletoe",
+     "r": "R"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "R"
+    },
+    {
+     "n": "Treant Bulb",
+     "r": "R"
+    },
+    {
+     "n": "Water Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Water Lily",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "VR"
+    },
+    {
+     "n": "Bloodwood Log",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Khroma Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Lesser Chigoe",
+     "r": "VR"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "VR"
+    },
+    {
+     "n": "Alexandrite",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Kaolin",
+     "r": "SR"
+    },
+    {
+     "n": "Lancewood Log",
+     "r": "SR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Tama-Hagane",
+     "r": "SR"
+    },
+    {
+     "n": "Wootz Ore",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "East Ronfaure (S)",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Acorn",
+     "r": "R"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "R"
+    },
+    {
+     "n": "Ladybug Wing",
+     "r": "R"
+    },
+    {
+     "n": "Napa",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "VR"
+    },
+    {
+     "n": "Feyweald Log",
+     "r": "VR"
+    },
+    {
+     "n": "Fruit Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Grove Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Silver Leaf",
+     "r": "VR"
+    },
+    {
+     "n": "Teak Log",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Bottled Pixie",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Birth",
+     "r": "SR"
+    },
+    {
+     "n": "Exalted Log",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Jacaranda Log",
+     "r": "SR"
+    },
+    {
+     "n": "O. Bronzepiece",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Jugner Forest (S)",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "VC"
+    },
+    {
+     "n": "Oak Log",
+     "r": "U"
+    },
+    {
+     "n": "Pebble",
+     "r": "U"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "U"
+    },
+    {
+     "n": "Woozyshroom",
+     "r": "U"
+    },
+    {
+     "n": "Danceshroom",
+     "r": "R"
+    },
+    {
+     "n": "Gnole Claw",
+     "r": "R"
+    },
+    {
+     "n": "Grove Cuttings",
+     "r": "R"
+    },
+    {
+     "n": "Holly Log",
+     "r": "R"
+    },
+    {
+     "n": "Bottled Pixie",
+     "r": "VR"
+    },
+    {
+     "n": "Deathball",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Exalted Log",
+     "r": "VR"
+    },
+    {
+     "n": "Feyweald Log",
+     "r": "VR"
+    },
+    {
+     "n": "King Truffle",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "VR"
+    },
+    {
+     "n": "Scream Fungus",
+     "r": "VR"
+    },
+    {
+     "n": "Teak Log",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Adv.",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Herb Seeds",
+     "r": "SR"
+    },
+    {
+     "n": "Jacaranda Log",
+     "r": "SR"
+    },
+    {
+     "n": "O. Bronzepiece",
+     "r": "SR"
+    },
+    {
+     "n": "Puffball",
+     "r": "SR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Vunkerl Inlet (S)",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "VC"
+    },
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Acorn",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Shungiku",
+     "r": "R"
+    },
+    {
+     "n": "Spider Web",
+     "r": "R"
+    },
+    {
+     "n": "Treant Bulb",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Leaf",
+     "r": "VR"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Bottled Pixie",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Herb Seeds",
+     "r": "SR"
+    },
+    {
+     "n": "Maliya. Coral",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Batallia Downs (S)",
+   "items": [
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "U"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "U"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "U"
+    },
+    {
+     "n": "Goblin Mess Tin",
+     "r": "R"
+    },
+    {
+     "n": "Lycopodium Flower",
+     "r": "R"
+    },
+    {
+     "n": "Copper Ore",
+     "r": "R"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "R"
+    },
+    {
+     "n": "Mythril Ore",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Purple Rock",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Smilodon Hide",
+     "r": "R"
+    },
+    {
+     "n": "Spider Web",
+     "r": "R"
+    },
+    {
+     "n": "Bottled Pixie",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Beetle Blood",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Glory",
+     "r": "SR"
+    },
+    {
+     "n": "Grain Seeds",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "O. Bronzepiece",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "North Gustaberg (S)",
+   "items": [
+    {
+     "n": "Black C. Feather",
+     "r": "U"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "U"
+    },
+    {
+     "n": "Phoenix Feather",
+     "r": "U"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "U"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "R"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Moblin Sheepskin",
+     "r": "R"
+    },
+    {
+     "n": "Obsidian",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "R"
+    },
+    {
+     "n": "Spider Web",
+     "r": "R"
+    },
+    {
+     "n": "Zinc Ore",
+     "r": "R"
+    },
+    {
+     "n": "Adaman Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Bottled Pixie",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Fool's Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Hepatizon Ore",
+     "r": "VR"
+    },
+    {
+     "n": "P. Brass Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Grain Seeds",
+     "r": "SR"
+    },
+    {
+     "n": "Smilodon Hide",
+     "r": "SR"
+    },
+    {
+     "n": "Swamp Ore",
+     "r": "SR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Decay",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Grauberg (S)",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Gardenia Seed",
+     "r": "U"
+    },
+    {
+     "n": "Grauberg Lettuce",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "U"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Jacaranda Log",
+     "r": "R"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "VR"
+    },
+    {
+     "n": "Feyweald Log",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Vegetable Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Wyvern Wing",
+     "r": "VR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Beryllium Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "SR"
+    },
+    {
+     "n": "Teak Log",
+     "r": "SR"
+    },
+    {
+     "n": "Yellow Ginseng",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Pashhow Marshlands (S)",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "C"
+    },
+    {
+     "n": "Black Rock",
+     "r": "R"
+    },
+    {
+     "n": "Earth Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Fire Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Ice Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Light Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Peiste Skin",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Water Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Agaricus",
+     "r": "VR"
+    },
+    {
+     "n": "Herb Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "H.Q. Crab Shell",
+     "r": "VR"
+    },
+    {
+     "n": "Malboro Fiber",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "VR"
+    },
+    {
+     "n": "Beryllium Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Willow Log",
+     "r": "VR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "SR"
+    },
+    {
+     "n": "Teak Log",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Birth",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Rolanberry Fields (S)",
+   "items": [
+    {
+     "n": "Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "R"
+    },
+    {
+     "n": "Woozyshroom",
+     "r": "R"
+    },
+    {
+     "n": "Danceshroom",
+     "r": "R"
+    },
+    {
+     "n": "Coral Fungus",
+     "r": "R"
+    },
+    {
+     "n": "Lycopodium Flower",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Rolanberry",
+     "r": "R"
+    },
+    {
+     "n": "Sage",
+     "r": "R"
+    },
+    {
+     "n": "Bottled Pixie",
+     "r": "VR"
+    },
+    {
+     "n": "Deathball",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Light Chest",
+     "r": "VR"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "VR"
+    },
+    {
+     "n": "Sif's Macrame",
+     "r": "VR"
+    },
+    {
+     "n": "Water Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Wyrdstone",
+     "r": "VR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Adv.",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    },
+    {
+     "n": "Puffball",
+     "r": "SR"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "West Sarutabaruta (S)",
+   "items": [
+    {
+     "n": "Gysahl Greens",
+     "r": "C"
+    },
+    {
+     "n": "Burdock",
+     "r": "R"
+    },
+    {
+     "n": "Chamomile",
+     "r": "R"
+    },
+    {
+     "n": "Dark Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Earth Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Fire Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Ginger",
+     "r": "R"
+    },
+    {
+     "n": "Grain Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Green Rock",
+     "r": "R"
+    },
+    {
+     "n": "Ice Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Light Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Lycopodium Flower",
+     "r": "VR"
+    },
+    {
+     "n": "Napa",
+     "r": "VR"
+    },
+    {
+     "n": "Pebble",
+     "r": "VR"
+    },
+    {
+     "n": "Red Moko Grass",
+     "r": "VR"
+    },
+    {
+     "n": "Water Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Maliya. Coral",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "SR"
+    },
+    {
+     "n": "Saruta Cotton",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Adv.",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Fort Karugo-Narugo (S)",
+   "items": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Dragon Fruit",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Karugo Clay",
+     "r": "R"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Obsidian",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Rafflesia Vine",
+     "r": "R"
+    },
+    {
+     "n": "Red Rock",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Adaman Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Bottled Pixie",
+     "r": "VR"
+    },
+    {
+     "n": "Fool's Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Goblin Mess Tin",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Phil. Stone",
+     "r": "VR"
+    },
+    {
+     "n": "Swamp Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Kaolin",
+     "r": "SR"
+    },
+    {
+     "n": "P. Brass Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "SR"
+    },
+    {
+     "n": "T. Whiteshell",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Meriphataud Mountains (S)",
+   "items": [
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Fish Scales",
+     "r": "R"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "Giant Femur",
+     "r": "R"
+    },
+    {
+     "n": "Grain Seeds",
+     "r": "R"
+    },
+    {
+     "n": "H.Q. Pugil Scale",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Lynx Hide",
+     "r": "R"
+    },
+    {
+     "n": "Obsidian",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Red Gravel",
+     "r": "R"
+    },
+    {
+     "n": "Seashell",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Sunflower Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Titanictus Shell",
+     "r": "R"
+    },
+    {
+     "n": "Treant Bulb",
+     "r": "R"
+    },
+    {
+     "n": "Yellow Rock",
+     "r": "R"
+    },
+    {
+     "n": "Adaman Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Demon Skull",
+     "r": "VR"
+    },
+    {
+     "n": "Dragon Scales",
+     "r": "VR"
+    },
+    {
+     "n": "Fool's Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "P. Brass Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Swamp Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Turtle Shell",
+     "r": "VR"
+    },
+    {
+     "n": "Coin of Decay",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "Hepatizon Ore",
+     "r": "SR"
+    },
+    {
+     "n": "T. Whiteshell",
+     "r": "SR"
+    },
+    {
+     "n": "Wyvern Scales",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Sauromugue Champaign (S)",
+   "items": [
+    {
+     "n": "Silver Beastcoin",
+     "r": "C"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Antique Bullet",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "Gnat Wing",
+     "r": "R"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Translucent Rock",
+     "r": "R"
+    },
+    {
+     "n": "Vegetable Seeds",
+     "r": "R"
+    },
+    {
+     "n": "Feyweald Log",
+     "r": "VR"
+    },
+    {
+     "n": "G. Bird Plume",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Jacaranda Log",
+     "r": "VR"
+    },
+    {
+     "n": "Light Chest",
+     "r": "VR"
+    },
+    {
+     "n": "Teak Log",
+     "r": "VR"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "SR"
+    },
+    {
+     "n": "Beryllium Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Coin of Ruin",
+     "r": "SR"
+    },
+    {
+     "n": "Heavy Metal",
+     "r": "SR"
+    },
+    {
+     "n": "P. Brass Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "SR"
+    },
+    {
+     "n": "T. Whiteshell",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Beaucedine Glacier (S)",
+   "items": [
+    {
+     "n": "Ice Cluster",
+     "r": "VC"
+    },
+    {
+     "n": "Blk. Tiger Fang",
+     "r": "R"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Flint Stone",
+     "r": "R"
+    },
+    {
+     "n": "Ice Crystal",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Kopparnickel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Lugworm",
+     "r": "R"
+    },
+    {
+     "n": "Obsidian",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Petrified Log",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Dark Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Dogbolt",
+     "r": "VR"
+    },
+    {
+     "n": "Earth Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Fire Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Fool's Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Gargouille Horn",
+     "r": "VR"
+    },
+    {
+     "n": "Light Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Lightning Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "Platinum Leaf",
+     "r": "VR"
+    },
+    {
+     "n": "Swamp Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Wind Crystal",
+     "r": "VR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Adaman Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Amphiptere Hide",
+     "r": "SR"
+    },
+    {
+     "n": "O. Bronzepiece",
+     "r": "SR"
+    },
+    {
+     "n": "P. Brass Ore",
+     "r": "SR"
+    },
+    {
+     "n": "T. Whiteshell",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Xarcabard (S)",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Silver Beastcoin",
+     "r": "U"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Frost Turnip",
+     "r": "R"
+    },
+    {
+     "n": "Gigas Helm",
+     "r": "R"
+    },
+    {
+     "n": "Mtl. Beastcoin",
+     "r": "R"
+    },
+    {
+     "n": "Mythril Leaf",
+     "r": "R"
+    },
+    {
+     "n": "Oak Log",
+     "r": "R"
+    },
+    {
+     "n": "Old Arrow",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Ruszor Fang",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "VR"
+    },
+    {
+     "n": "Elm Log",
+     "r": "VR"
+    },
+    {
+     "n": "Feyweald Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Jacaranda Log",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Painite",
+     "r": "VR"
+    },
+    {
+     "n": "Plt. Beastcoin",
+     "r": "VR"
+    },
+    {
+     "n": "Teak Log",
+     "r": "VR"
+    },
+    {
+     "n": "Tourmaline",
+     "r": "VR"
+    },
+    {
+     "n": "1 Byne Bill",
+     "r": "SR"
+    },
+    {
+     "n": "Dragon Heart",
+     "r": "SR"
+    },
+    {
+     "n": "O. Bronzepiece",
+     "r": "SR"
+    },
+    {
+     "n": "Peridot",
+     "r": "SR"
+    },
+    {
+     "n": "Shagreen",
+     "r": "SR"
+    },
+    {
+     "n": "Sif's Macrame",
+     "r": "SR"
+    },
+    {
+     "n": "T. Whiteshell",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Ceizak Battlegrounds",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "U"
+    },
+    {
+     "n": "Akaso",
+     "r": "R"
+    },
+    {
+     "n": "Ash Log",
+     "r": "R"
+    },
+    {
+     "n": "Blue Peas",
+     "r": "R"
+    },
+    {
+     "n": "Chapuli Horn",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "R"
+    },
+    {
+     "n": "Felicifruit",
+     "r": "R"
+    },
+    {
+     "n": "Feyweald Log",
+     "r": "R"
+    },
+    {
+     "n": "Guatambu Log",
+     "r": "R"
+    },
+    {
+     "n": "Insect Wing",
+     "r": "R"
+    },
+    {
+     "n": "Isleracea",
+     "r": "R"
+    },
+    {
+     "n": "Leafkin Frond",
+     "r": "R"
+    },
+    {
+     "n": "Paprika",
+     "r": "R"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "R"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "R"
+    },
+    {
+     "n": "Walnut",
+     "r": "R"
+    },
+    {
+     "n": "Walnut Log",
+     "r": "R"
+    },
+    {
+     "n": "White Sand",
+     "r": "R"
+    },
+    {
+     "n": "Zucchini",
+     "r": "R"
+    },
+    {
+     "n": "Beech Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Leaf",
+     "r": "VR"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "VR"
+    },
+    {
+     "n": "Saffron Blossom",
+     "r": "VR"
+    },
+    {
+     "n": "Teak Log",
+     "r": "VR"
+    },
+    {
+     "n": "Ulbuconut",
+     "r": "VR"
+    },
+    {
+     "n": "Urunday Log",
+     "r": "VR"
+    },
+    {
+     "n": "C. Ygg. Shard I",
+     "r": "SR"
+    },
+    {
+     "n": "C. Ygg. Shard II",
+     "r": "SR"
+    },
+    {
+     "n": "C. Ygg. Shard III",
+     "r": "SR"
+    },
+    {
+     "n": "C. Ygg. Shard IV",
+     "r": "SR"
+    },
+    {
+     "n": "C. Ygg. Shard V",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs V",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso V",
+     "r": "SR"
+    },
+    {
+     "n": "Gr. Velkk Coffer",
+     "r": "SR"
+    },
+    {
+     "n": "H-P Bayld",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage I",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage II",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage III",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage IV",
+     "r": "SR-"
+    },
+    {
+     "n": "Rala Visage V",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Yahse Hunting Grounds",
+   "items": [
+    {
+     "n": "Acorn",
+     "r": "U"
+    },
+    {
+     "n": "Akaso",
+     "r": "R"
+    },
+    {
+     "n": "Ash Log",
+     "r": "R"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Blue Peas",
+     "r": "R"
+    },
+    {
+     "n": "Chapuli Wing",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "R"
+    },
+    {
+     "n": "Felicifruit",
+     "r": "R"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "R"
+    },
+    {
+     "n": "Silver Leaf",
+     "r": "R"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "R"
+    },
+    {
+     "n": "Walnut Log",
+     "r": "R"
+    },
+    {
+     "n": "Yellow Ginseng",
+     "r": "R"
+    },
+    {
+     "n": "Zucchini",
+     "r": "R"
+    },
+    {
+     "n": "Beech Log",
+     "r": "R"
+    },
+    {
+     "n": "Guatambu Log",
+     "r": "R"
+    },
+    {
+     "n": "Isleracea",
+     "r": "R"
+    },
+    {
+     "n": "Leafkin Frond",
+     "r": "R"
+    },
+    {
+     "n": "Paprika",
+     "r": "VR"
+    },
+    {
+     "n": "Saffron Blossom",
+     "r": "VR"
+    },
+    {
+     "n": "Ulbuconut",
+     "r": "VR"
+    },
+    {
+     "n": "Urunday Log",
+     "r": "VR"
+    },
+    {
+     "n": "Eudaemon Cape",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Ring",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Sash",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Shld.",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Blade",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso V",
+     "r": "SR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Gr. Velkk Coffer",
+     "r": "SR"
+    },
+    {
+     "n": "H-P Bayld",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard I",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard II",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard III",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard IV",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard V",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage I",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage II",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage III",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage IV",
+     "r": "SR"
+    },
+    {
+     "n": "Rala Visage V",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Foret de Hennetiel",
+   "items": [
+    {
+     "n": "Flint Stone",
+     "r": "VC"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "U"
+    },
+    {
+     "n": "Sleepshroom",
+     "r": "U"
+    },
+    {
+     "n": "Woozyshroom",
+     "r": "R"
+    },
+    {
+     "n": "Danceshroom",
+     "r": "R"
+    },
+    {
+     "n": "Deathball",
+     "r": "R"
+    },
+    {
+     "n": "Gnatbane",
+     "r": "R"
+    },
+    {
+     "n": "Loc. Elutriator",
+     "r": "R"
+    },
+    {
+     "n": "Midrium Ore",
+     "r": "R"
+    },
+    {
+     "n": "Adaman Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Aluminum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "King Truffle",
+     "r": "VR"
+    },
+    {
+     "n": "Orobon Lure",
+     "r": "VR"
+    },
+    {
+     "n": "Orpiment",
+     "r": "VR"
+    },
+    {
+     "n": "Platinum Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Puffball",
+     "r": "VR"
+    },
+    {
+     "n": "Reishi Mushroom",
+     "r": "VR"
+    },
+    {
+     "n": "Eudaemon Cape",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Ring",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Sash",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Shld.",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Blade",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso V",
+     "r": "SR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Gr. Velkk Coffer",
+     "r": "SR"
+    },
+    {
+     "n": "H-P Bayld",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard I",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard II",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard III",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard IV",
+     "r": "SR"
+    },
+    {
+     "n": "Z. Ygg. Shard V",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Morimar Basalt Fields",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "VR"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Copper Ore",
+     "r": "R"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Igneous Rock",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Matamata Shell",
+     "r": "R"
+    },
+    {
+     "n": "Midrium Ore",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Sulfur",
+     "r": "U"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Marble Nugget",
+     "r": "VR"
+    },
+    {
+     "n": "Orpiment",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Vanadium Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Eudaemon Cape",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Ring",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Sash",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Shld.",
+     "r": "SR"
+    },
+    {
+     "n": "Eudaemon Blade",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso V",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard I",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard II",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard III",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard IV",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard V",
+     "r": "SR"
+    },
+    {
+     "n": "Gr. Velkk Coffer",
+     "r": "SR"
+    },
+    {
+     "n": "H-P Bayld",
+     "r": "SR"
+    },
+    {
+     "n": "Rhodium Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Snowsteel Ore",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage I",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage II",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage III",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage IV",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage V",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Yorcia Weald",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "VR"
+    },
+    {
+     "n": "Lizard Molt",
+     "r": "R"
+    },
+    {
+     "n": "Arrowwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Ash Log",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "R"
+    },
+    {
+     "n": "Divine Log",
+     "r": "R"
+    },
+    {
+     "n": "Guatambu Log",
+     "r": "R"
+    },
+    {
+     "n": "Leafkin Frond",
+     "r": "R"
+    },
+    {
+     "n": "Lesser Chigoe",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "R"
+    },
+    {
+     "n": "Snap. Tendril",
+     "r": "R"
+    },
+    {
+     "n": "Verboshroom",
+     "r": "R"
+    },
+    {
+     "n": "Walnut Log",
+     "r": "R"
+    },
+    {
+     "n": "Wildgrass Seeds",
+     "r": "VR"
+    },
+    {
+     "n": "Cactus Stems",
+     "r": "VR"
+    },
+    {
+     "n": "Tree Cuttings",
+     "r": "VR"
+    },
+    {
+     "n": "Urunday Log",
+     "r": "VR"
+    },
+    {
+     "n": "A. Ygg. Shard I",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard II",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard III",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard IV",
+     "r": "SR"
+    },
+    {
+     "n": "A. Ygg. Shard V",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs V",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso V",
+     "r": "SR"
+    },
+    {
+     "n": "Gr. Velkk Coffer",
+     "r": "SR"
+    },
+    {
+     "n": "H-P Bayld",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage I",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage II",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage III",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage IV",
+     "r": "SR"
+    },
+    {
+     "n": "Yorcia Visage V",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Marjami Ravine",
+   "items": [
+    {
+     "n": "Yellow Ginseng",
+     "r": "C"
+    },
+    {
+     "n": "Acorn",
+     "r": "R"
+    },
+    {
+     "n": "Ash Log",
+     "r": "R"
+    },
+    {
+     "n": "Chestnut Log",
+     "r": "R"
+    },
+    {
+     "n": "Copper Ore",
+     "r": "R"
+    },
+    {
+     "n": "Darksteel Ore",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Leafkin Frond",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Little Worm",
+     "r": "R"
+    },
+    {
+     "n": "Mythril Leaf",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Tulfaire Feather",
+     "r": "VR"
+    },
+    {
+     "n": "Walnut Log",
+     "r": "VR"
+    },
+    {
+     "n": "Beech Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Guatambu Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Urunday Log",
+     "r": "SR"
+    },
+    {
+     "n": "Orpiment",
+     "r": "VR"
+    },
+    {
+     "n": "Rhodium Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Snowsteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Vanadium Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Faithful's Legs I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Legs V",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso V",
+     "r": "SR"
+    },
+    {
+     "n": "Gr. Velkk Coffer",
+     "r": "SR"
+    },
+    {
+     "n": "H-P Bayld",
+     "r": "SR"
+    },
+    {
+     "n": "R. Ygg. Shard I",
+     "r": "SR"
+    },
+    {
+     "n": "R. Ygg. Shard II",
+     "r": "SR"
+    },
+    {
+     "n": "R. Ygg. Shard III",
+     "r": "SR"
+    },
+    {
+     "n": "R. Ygg. Shard IV",
+     "r": "SR"
+    },
+    {
+     "n": "R. Ygg. Shard V",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage I",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage II",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage III",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage IV",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage V",
+     "r": "SR"
+    }
+   ]
+  },
+  {
+   "n": "Kamihr Drifts",
+   "items": [
+    {
+     "n": "Arrowwood Log",
+     "r": "R"
+    },
+    {
+     "n": "Blk. Tiger Fang",
+     "r": "R"
+    },
+    {
+     "n": "Bone Chip",
+     "r": "R"
+    },
+    {
+     "n": "Copper Ore",
+     "r": "R"
+    },
+    {
+     "n": "Elm Log",
+     "r": "R"
+    },
+    {
+     "n": "Iron Ore",
+     "r": "R"
+    },
+    {
+     "n": "Leafkin Frond",
+     "r": "R"
+    },
+    {
+     "n": "Pebble",
+     "r": "R"
+    },
+    {
+     "n": "Raaz Tusk",
+     "r": "R"
+    },
+    {
+     "n": "Sheep Tooth",
+     "r": "R"
+    },
+    {
+     "n": "Silver Ore",
+     "r": "R"
+    },
+    {
+     "n": "Yew Log",
+     "r": "R"
+    },
+    {
+     "n": "Ancient Lumber",
+     "r": "VR"
+    },
+    {
+     "n": "Ebony Log",
+     "r": "VR"
+    },
+    {
+     "n": "Gold Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Lacquer Tree Log",
+     "r": "VR"
+    },
+    {
+     "n": "Guatambu Log",
+     "r": "VR"
+    },
+    {
+     "n": "Mahogany Log",
+     "r": "VR"
+    },
+    {
+     "n": "Midrium Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Oak Log",
+     "r": "VR"
+    },
+    {
+     "n": "Orpiment",
+     "r": "VR"
+    },
+    {
+     "n": "Rhodium Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Rosewood Log",
+     "r": "VR"
+    },
+    {
+     "n": "Snowsteel Ore",
+     "r": "VR"
+    },
+    {
+     "n": "Vanadium Ore",
+     "r": "VR"
+    },
+    {
+     "n": "As. Ygg. Sh. I",
+     "r": "SR"
+    },
+    {
+     "n": "As. Ygg. Sh. II",
+     "r": "SR"
+    },
+    {
+     "n": "As. Ygg. Sh. III",
+     "r": "SR"
+    },
+    {
+     "n": "As. Ygg. Sh. IV",
+     "r": "SR"
+    },
+    {
+     "n": "As. Ygg. Sh. V",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso I",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso II",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso III",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso IV",
+     "r": "SR"
+    },
+    {
+     "n": "Faithful's Torso V",
+     "r": "SR"
+    },
+    {
+     "n": "Gr. Velkk Coffer",
+     "r": "SR"
+    },
+    {
+     "n": "H-P Bayld",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage I",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage II",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage III",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage IV",
+     "r": "SR"
+    },
+    {
+     "n": "Ra'Ka. Visage V",
+     "r": "SR"
+    }
+   ]
+  }
+ ]
+}

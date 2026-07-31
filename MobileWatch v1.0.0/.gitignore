@@ -1,0 +1,22 @@
+# Android / Gradle
+.gradle/
+.kotlin/
+build/
+local.properties
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Build products — never committed. `build/` already covers
+# app/build/outputs/apk/..., but the Generate Signed APK wizard writes to
+# app/release/ instead, which nothing above catches.
+app/release/
+*.apk
+*.aab
+
+# NEVER COMMIT THESE — they sign the app as you
+keystore.properties
+*.jks
+*.keystore

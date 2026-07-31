@@ -1,0 +1,36 @@
+# Line-ending policy.
+#
+# GitHub Desktop warns that files "use LF but Git is configured to convert them
+# to CRLF on checkout" (core.autocrlf=true, the Windows default). For most files
+# that is harmless — the repository stores LF either way. For two of them it is
+# not, so the policy is declared here rather than left to each machine's config.
+
+# Normalise text to LF inside the repository; the working copy gets whatever the
+# platform prefers unless overridden below.
+* text=auto
+
+# gradlew is a POSIX shell script. With CRLF endings it fails on Linux, macOS,
+# WSL and any CI runner with "bad interpreter: No such file or directory".
+# It must stay LF everywhere, including on Windows.
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Windows batch files are the mirror case — they need CRLF.
+*.bat text eol=crlf
+
+# Binary assets: never inspected, never converted. Line-ending translation on
+# any of these corrupts the file.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ttf binary
+*.otf binary
+*.jar binary
+*.zip binary
+*.apk binary
+*.aab binary
+*.jks binary
+*.keystore binary
+gradle/wrapper/gradle-wrapper.jar binary

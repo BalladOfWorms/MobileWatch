@@ -1,0 +1,176 @@
+=== (lo) ZONEINFO <-> MOBS.JSON CROSS-CHECK — 294 zones ===
+
+A  zoneinfo names a mob with NO record .......... 532
+B  record exists, zone MISSING .................. 1369
+C  zone present, level MISSING (zoneinfo has it)  229
+D  both have a level and they DISAGREE .......... 299
+E  mobs.json has the zone, zoneinfo never lists it 1553
+
+--- A: no record at all (candidate missing mobs) ---
+   Grand Palace of HuXzoi       Ix'aern (MNK)                      [nms]
+   The Garden of RuHmet         Ix'aern (DRK)                      [nms]
+   The Garden of RuHmet         Ix'aern (DRG)                      [nms]
+   Abyssea-Attohwa              Decontaminator                     [mobs]
+   Abyssea-Attohwa              Disassembler                       [mobs]
+   Abyssea-Misareaux            Decontaminator                     [mobs]
+   Abyssea-Misareaux            Disassembler                       [mobs]
+   Abyssea-Vunkerl              Decontaminator                     [mobs]
+   Abyssea-Vunkerl              Disassembler                       [mobs]
+   Dynamis-Bastok [D]           Lithicthrower Image                [mobs]
+   Dynamis-Bastok [D]           Squadron Weaponmaster              [mobs]
+   Dynamis-Bastok [D]           Regiment Weaponmaster              [mobs]
+   Dynamis-Bastok [D]           Squadron Combatant                 [mobs]
+   Dynamis-Bastok [D]           Regiment Combatant                 [mobs]
+   Dynamis-Bastok [D]           Squadron Trickster                 [mobs]
+   Dynamis-Bastok [D]           Regiment Trickster                 [mobs]
+   Dynamis-Bastok [D]           Squadron Magister                  [mobs]
+   Dynamis-Bastok [D]           Regiment Magister                  [mobs]
+   Dynamis-Bastok [D]           Squadron Magician                  [mobs]
+   Dynamis-Bastok [D]           Regiment Magician                  [mobs]
+   Dynamis-Bastok [D]           Squadron Cavalier                  [mobs]
+   Dynamis-Bastok [D]           Regiment Cavalier                  [mobs]
+   Dynamis-Bastok [D]           Squadron Harnesser                 [mobs]
+   Dynamis-Bastok [D]           Regiment Harnesser                 [mobs]
+   Dynamis-Bastok [D]           Squadron Mender                    [mobs]
+   Dynamis-Bastok [D]           Regiment Mender                    [mobs]
+   Dynamis-Bastok [D]           Squadron Balladeer                 [mobs]
+   Dynamis-Bastok [D]           Regiment Balladeer                 [mobs]
+   Dynamis-Bastok [D]           Squadron Shadowstalker             [mobs]
+   Dynamis-Bastok [D]           Regiment Shadowstalker             [mobs]
+   Dynamis-Bastok [D]           Squadron Scallywag                 [mobs]
+   Dynamis-Bastok [D]           Regiment Scallywag                 [mobs]
+   Dynamis-Bastok [D]           Fighter Leader                     [mobs]
+   Dynamis-Bastok [D]           Fighter Commander                  [mobs]
+   Dynamis-Bastok [D]           Brother Leader                     [mobs]
+   Dynamis-Bastok [D]           Brother Commander                  [mobs]
+   Dynamis-Bastok [D]           Pickpocket Leader                  [mobs]
+   Dynamis-Bastok [D]           Pickpocket Commander               [mobs]
+   Dynamis-Bastok [D]           Magus Leader                       [mobs]
+   Dynamis-Bastok [D]           Magus Commander                    [mobs]
+   ... and 492 more
+
+--- B: zone adds, by zone (top 20) ---
+   Dynamis-Beaucedine               84
+   Dynamis-Xarcabard                49
+   Castle Zvahl Keep [S]            42
+   Castle Zvahl Baileys [S]         39
+   Abyssea-Misareaux                33
+   Abyssea-Vunkerl                  33
+   Dho Gates                        32
+   RaKaznar Inner Court             30
+   Abyssea-Attohwa                  29
+   Abyssea-Konschtat                28
+   Abyssea-La Theine                28
+   Abyssea-Grauberg                 28
+   Marjami Ravine                   27
+   Xarcabard [S]                    27
+   Abyssea-Altepa                   25
+   Abyssea-Uleguerand               24
+   Yorcia Weald                     21
+   Crawlers Nest [S]                21
+   Cirdas Caverns                   20
+   Abyssea-Tahrongi                 19
+
+--- C: level fills, by zone (top 20) ---
+   Dynamis-Buburimu                 13
+   Foret de Hennetiel               12
+   La Vaule [S]                     9
+   North Gustaberg [S]              7
+   Behemoths Dominion               6
+   Mamook                           6
+   Monastic Cavern                  5
+   The Eldieme Necropolis           5
+   FeiYin                           5
+   Promyvion-Holla                  5
+   Promyvion-Vahzl                  5
+   Grauberg [S]                     5
+   Yhoator Jungle                   4
+   Promyvion-Dem                    4
+   Promyvion-Mea                    4
+   Pashhow Marshlands [S]           4
+   Vunkerl Inlet [S]                4
+   Quicksand Caves                  3
+   Kuftal Tunnel                    3
+   RoMaeve                          3
+
+--- D: LEVEL DISAGREEMENTS, sub-classified ---
+   D1 rule-2 merged span, spans MATCH (not a conflict) . 35
+   D2 mobs.json span CONTAINS zoneinfo's ............... 102
+   D3 GENUINE CONFLICT (adjudicate on the page) ........ 158
+   DX unparseable on one side ......................... 4
+
+   --- D3, the ones that actually need a page (first 50) ---
+   Korroloka Tunnel           thoon                      mobs=~43        zoneinfo=~48        [nms]
+   Western Altepa Desert      cactuar cantautor          mobs=56         zoneinfo=56-59      [nms]
+   Quicksand Caves            antican aedilis            mobs=62-72      zoneinfo=62-75      [mobs]
+   Oldton Movalpolos          goblin's bat               mobs=28-31      zoneinfo=28-31, 36-37 [mobs]
+   Oldton Movalpolos          ghost crab                 mobs=25-29      zoneinfo=30-32      [mobs]
+   Newton Movalpolos          goblin's bat               mobs=61-64      zoneinfo=61-64, 69-74 [mobs]
+   Jugner Forest              emperor arthro             mobs=99         zoneinfo=122        [nms]
+   Monastic Cavern            orcish farkiller           mobs=69-71      zoneinfo=62-72      [mobs]
+   Monastic Cavern            orcish dreadnought         mobs=69-72      zoneinfo=63-72      [mobs]
+   Monastic Cavern            orcish champion            mobs=69-72      zoneinfo=64-72      [mobs]
+   Monastic Cavern            orcish dragoon             mobs=69-72      zoneinfo=65-72      [mobs]
+   Lower Delkfutts Tower      gigas's bats               mobs=25-27      zoneinfo=27-29      [mobs]
+   Middle Delkfutts Tower     gigas's bats               mobs=27-29      zoneinfo=25-27      [mobs]
+   Upper Delkfutts Tower      dire bat                   mobs=63-65      zoneinfo=64-66      [mobs]
+   Beaucedine Glacier         goblin's tiger             mobs=33-35      zoneinfo=28-30, 33-35 [mobs]
+   PsoXja                     treasure chest             mobs=56-60      zoneinfo=55-60      [mobs]
+   PsoXja                     goblin mercenary           mobs=63-67      zoneinfo=63-68      [mobs]
+   Xarcabard                  lost soul                  mobs=45-47      zoneinfo=42-45      [mobs]
+   Uleguerand Range           mountain worm              mobs=66-70      zoneinfo=73         [nms]
+   Uleguerand Range           uleguerand tiger           mobs=59-62      zoneinfo=60-63      [mobs]
+   Uleguerand Range           doom soldier               mobs=73-76      zoneinfo=66-70      [mobs]
+   Uleguerand Range           nival raptor               mobs=66-69      zoneinfo=68-70      [mobs]
+   Uleguerand Range           molech                     mobs=78-81      zoneinfo=79-82      [mobs]
+   Uleguerand Range           smolenkos                  mobs=79-80      zoneinfo=80-82      [mobs]
+   Uleguerand Range           kindred black mage         mobs=79-83      zoneinfo=81-84      [mobs]
+   Uleguerand Range           kindred dark knight        mobs=79-83      zoneinfo=81-84      [mobs]
+   Uleguerand Range           kindred summoner           mobs=79-83      zoneinfo=81-84      [mobs]
+   Uleguerand Range           kindred warrior            mobs=79-83      zoneinfo=81-84      [mobs]
+   Castle Zvahl Baileys       evil eye                   mobs=48         zoneinfo=46-48      [mobs]
+   Castle Zvahl Baileys       demon pawn                 mobs=50-52      zoneinfo=48-52      [mobs]
+   Fort Ghelsba               orcish cursemaker          mobs=21         zoneinfo=21-23      [mobs]
+   Fort Ghelsba               orcish fighter             mobs=21         zoneinfo=21-23      [mobs]
+   Kuftal Tunnel              goblin tamer               mobs=66-68      zoneinfo=66-69      [mobs]
+   Open sea route to Al Zahbi gugru crab                 mobs=33-35      zoneinfo=30-35      [mobs]
+   Open sea route to Al Zahbi blanched kraken            mobs=44-46      zoneinfo=40-46      [mobs]
+   Open sea route to Mhaura   gugru crab                 mobs=33-35      zoneinfo=30-35      [mobs]
+   Open sea route to Mhaura   blanched kraken            mobs=44-46      zoneinfo=40-46      [mobs]
+   Attohwa Chasm              ambusher antlion           mobs=68-70      zoneinfo=75-77      [nms]
+   Attohwa Chasm              goblin pathfinder          mobs=35-38      zoneinfo=36-39      [mobs]
+   Attohwa Chasm              goblin smithy              mobs=35-38      zoneinfo=36-39      [mobs]
+   Attohwa Chasm              cutlass scorpion           mobs=66-68      zoneinfo=67-69      [mobs]
+   Meriphataud Mountains      raptor                     mobs=21-24      zoneinfo=21-25      [mobs]
+   Meriphataud Mountains      bogy                       mobs=23-25      zoneinfo=25-29      [mobs]
+   Castle Oztroja             yagudo conductor           mobs=63-67      zoneinfo=63-72      [mobs]
+   The Sanctuary of ZiTah     doomed pilgrims            mobs=60         zoneinfo=70         [nms]
+   RoMaeve                    ominous weapon             mobs=61-63      zoneinfo=61-65      [mobs]
+   The Boyahda Tree           stygian pugil              mobs=64-66      zoneinfo=60-62      [mobs]
+   The Boyahda Tree           bouncing ball              mobs=76-78      zoneinfo=65-67      [mobs]
+   The Boyahda Tree           demonic pugil              mobs=65-72      zoneinfo=70-72, 76-78 [mobs]
+   Dragons Aery               darter                     mobs=77-79      zoneinfo=76-79      [mobs]
+   ... and 108 more
+
+   --- DX ---
+   Riverne-Site B01           boroka                     mobs=~60-62     zoneinfo=?          [nms]
+   Riverne-Site B01           imdugud                    mobs=56-60      zoneinfo=?          [nms]
+   Ghoyus Reverie             serket                     mobs=83         zoneinfo=80+        [nms]
+   Rolanberry Fields [S]      dark ixion                 mobs=80-85      zoneinfo=80+        [nms]
+
+--- E: by zone (top 15) ---
+   Al Zahbi                         84
+   Reisenjima Henge                 73
+   QuBia Arena                      46
+   Dynamis-Buburimu                 46
+   Escha RuAun                      43
+   Dynamis-Valkurm                  38
+   Dynamis-Qufim                    37
+   Nyzul Isle                       35
+   Temenos                          33
+   Ghoyus Reverie                   32
+   Arrapago Remnants                31
+   Ilrusi Atoll                     30
+   Reisenjima                       30
+   Waughroon Shrine                 29
+   Horlais Peak                     27
