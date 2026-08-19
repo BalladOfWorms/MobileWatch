@@ -1,6 +1,6 @@
 # MobileWatch — the complete bestiary
 
-Generated 2026-08-02 from `mobs.json`. **6,810 monsters** across **202 families** in **21 ecosystems**, **1,591 ability definitions**. 2,582 are flagged notorious monsters; 5,997 have at least one zone recorded.
+Generated 2026-08-16 from `mobs.json`. **6,810 monsters** across **202 families** in **21 ecosystems**, **1,592 ability definitions**. 2,582 are flagged notorious monsters; 5,997 have at least one zone recorded.
 
 This is the whole record in one file — nothing here is summarised or truncated. Part 1 is every ability definition, Part 2 is every monster.
 
@@ -24,7 +24,7 @@ This is the whole record in one file — nothing here is summarised or truncated
 
 # Part 1 — Ability reference
 
-1,591 definitions, alphabetical. `Used by` counts the monsters whose ability list names it; a definition used by 0 monsters is still here because something else may reference it.
+1,592 definitions, alphabetical. `Used by` counts the monsters whose ability list names it; a definition used by 0 monsters is still here because something else may reference it.
 
 ### 1,000 Needles
 Deals 1,000 damage divided among targets in range.
@@ -1360,6 +1360,13 @@ Magical AoE damage with additional Plague, Defense Down and Magic Defense Down.
 - Notes: Midge types only.
 - Used by: 17 monsters
 
+### Boreas Mantle
+Creates ghostly copies of the user.
+
+- Target: Self
+- Notes: Only used by the Phantom Puk in the ISNM Shadows of the Mind. Instead of the ordinary Blink effect it creates replicas of itself (500 HP each).
+- Used by: 1 monster
+
 ### Bowels of Agony
 - Type: Magical · Target: AoE · Range: Limited radius
 - Notes: Limited-range second-form attack seen on the Very Difficult (★) battlefield.
@@ -2188,7 +2195,7 @@ Deals damage (about 1/12 of max HP) to players in a frontal cone. Additional eff
 
 - Type: Breath · Element: Wind · Target: Cone AoE · Range: Conal
 - Notes: Bypasses shadows, but does not remove them.
-- Used by: 2 monsters
+- Used by: 23 monsters
 
 ### Crowning Flatus
 Area-of-effect damage plus Stun and Knockback.
@@ -5363,7 +5370,7 @@ Deals wind damage in an area of effect and dispels one beneficial status effect.
 
 - Type: Magical · Element: Wind · Target: AoE
 - Notes: Dispel is darkness-based. Removes all shadows. Used by Mamook Puks and Notorious Monsters only.
-- Used by: 2 monsters
+- Used by: 10 monsters
 
 ### Illustrious Aid
 Restores about 1200 HP to Arciela and Ygnas.
@@ -6850,10 +6857,10 @@ Single-target HP drain (~300 + dINT).
 ### Obfuscate
 Inflicts Flash on players in an area of effect.
 
-- Type: Magical · Target: AoE · Range: 10' radial
+- Type: Magical · Element: Light · Target: AoE · Range: 10' radial
 - Effects: Flash
 - Notes: Bypasses shadows, but does not remove them.
-- Used by: 1 monster
+- Used by: 22 monsters
 
 ### Oblivion Smash
 AoE damage.
@@ -11101,7 +11108,7 @@ Recovers HP based on the caster’s maximum HP.
 
 - Target: Self
 - Notes: Used by Peapuks (one time only) and by Notorious Monsters (at will).
-- Used by: 0 monsters
+- Used by: 8 monsters
 
 ### Wild Carrot
 Restores the enemy's HP.
@@ -11161,7 +11168,7 @@ Deals damage to players in an area of effect. Additional effect: Knockback. Dama
 
 - Type: Magical · Element: Wind · Target: AoE · Range: 10' radial
 - Notes: Consumes 2-3 shadows. Vulpangue uses an enhanced version that inflicts Weight.
-- Used by: 3 monsters
+- Used by: 24 monsters
 
 ### Wind Wall
 Invokes a protective wind barrier for increased evasion.
@@ -11408,7 +11415,7 @@ Grants the caster Blink.
 - Target: Self
 - Effects: Blink
 - Notes: 4 shadows for ordinary Puks; up to 10 for Notorious Monsters.
-- Used by: 2 monsters
+- Used by: 22 monsters
 
 ### Zero Hour
 Deals AoE magic-based damage, resets enmity, and inflicts a 60-second Inhibit TP.
@@ -65388,7 +65395,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Level: 123-124
 - Flags: NM
 - Detects: Sight, Sound
-- Weak to: Piercing +25%, Ice +12.5%
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Ice +30%, Earth +15%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind, White Wind
 - Zones: Escha RuAun
 - Content: Geas Fete: Escha RuAun: Tier 2
 - Spawn: Summoned by Amymone when its HP drops below 50%, or by specific spell triggers
@@ -65403,8 +65412,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind
 - Zones: Mamook
 - Spawn: Quest (The Art of War)
 
@@ -65414,8 +65424,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Warrior
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 - Zones: Abyssea-La Theine (79-80)
 - Content: Abyssea: Abyssea-La Theine: Adversary
 
@@ -65426,8 +65437,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Job: Bard
 - Crystal: Wind
 - Respawn: 300s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 - Zones: Abyssea-Altepa (85-100)
 - Content: Abyssea: Abyssea-Altepa: Adversary
 
@@ -65437,8 +65449,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 
 #### Eschan Puk
 - Level: 107-110
@@ -65447,8 +65460,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Job: Bard
 - Crystal: Wind
 - Respawn: 180s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 - Zones: Escha ZiTah (107-110)
 
 #### Jaculus
@@ -65457,8 +65471,8 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Crystal: Wind
 - Respawn: 900s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
 - Abilities: Wind Shear, Crosswind, Zephyr Mantle
 - Zones: Abyssea-Grauberg
 - Content: Abyssea: Abyssea-Grauberg: NM
@@ -65471,8 +65485,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 
 #### Nguruvilu
 - Level: 85
@@ -65480,24 +65495,25 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Warrior
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
 - Abilities: Ill Wind, Wind Shear, Obfuscate, Zephyr Mantle
 - Zones: Abyssea-La Theine
 - Content: Abyssea: Abyssea-La Theine: NM
 - Spawn: Forced (trade Winter Puk Egg to ??? (I-12))
 - Drops: Ruffian Leggings
 - Notes:
-    - Prefers III Wind (~700 damage, dispels one effect) and Wind Shear strongly; Wind Shear can hit hard if it connects fully, so keep shadows up. High Double Attack rate.
+    - Prefers Ill Wind (~700 damage, dispels one effect) and Wind Shear strongly; Wind Shear can hit hard if it connects fully, so keep shadows up. High Double Attack rate.
 
 #### Nis Puk
 - Level: 77
 - Flags: NM, Aggressive
 - Detects: Sight, Sound
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind, White Wind
 - Zones: Bhaflau Thickets (77)
-- Spawn: Lottery (Sea Puk)
+- Spawn: Lottery (Sea Puk) (H-9, second map)
 - Drops: Tempest Belt
 
 #### Peapuk
@@ -65507,8 +65523,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Job: Bard
 - Crystal: Wind
 - Respawn: 300s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, White Wind
 - Zones: Abyssea-Vunkerl (81-82)
 - Content: Abyssea: Abyssea-Vunkerl: Adversary
 
@@ -65518,8 +65535,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 
 #### Phantom Puk
 - Level: 75
@@ -65527,8 +65545,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Boreas Mantle
 
 #### Pit Puk
 - Level: 75
@@ -65536,8 +65555,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 
 #### Puk
 - Level: 62-72
@@ -65546,8 +65566,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Job: Bard
 - Crystal: Wind
 - Respawn: 330s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind
 - Zones: Mamook (70-72); Wajaom Woodlands (68-70)
 
 #### Puk Executioner
@@ -65556,8 +65577,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 
 #### Putrid Peapuk
 - Level: 84-85
@@ -65566,8 +65588,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Job: Bard
 - Crystal: Wind
 - Respawn: 300s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, White Wind
 - Zones: Abyssea-Grauberg (85-100)
 - Content: Abyssea: Abyssea-Grauberg: Adversary
 
@@ -65575,15 +65598,15 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Level: 94-95
 - Flags: NM
 - Detects: Sight, Sound
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
 - Abilities: Wind Shear, Crosswind, Ill Wind, Somnial Durance
 - Spells: Aero IV, Aeroga II, Aeroga III, Silencega
 - Zones: East Ronfaure
 - Spawn: Voidwatch (Crimson stratum abyssite + Voidstone)
 - Drops: Chimera Hairpin
 - Notes:
-    - Very high evasion; Triple Attack trait steps up at 50% and 25% HP. Above 50% HP uses Wind Shear and Crosswind; below 50% HP uses III Wind and Somnial Durance, followed by an instant-cast Aeroga III and a hate reset.
+    - Very high evasion; Triple Attack trait steps up at 50% and 25% HP. Above 50% HP uses Wind Shear and Crosswind; below 50% HP uses Ill Wind and Somnial Durance, followed by an instant-cast Aeroga III and a hate reset.
 
 #### Scout Puk
 - Level: 81-83
@@ -65591,8 +65614,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Detects: Sight, Sound
 - Job: Bard
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle
 
 #### Sea Puk
 - Level: 76-78
@@ -65601,16 +65625,18 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Job: Bard
 - Crystal: Wind
 - Respawn: 330s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind
 - Zones: Bhaflau Thickets (77-78); Mamook (76-78)
 
 #### Seps
 - Level: 85-87
 - Flags: NM
 - Detects: Sight, Sound
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind, White Wind
 - Zones: Abyssea-Vunkerl
 - Content: Abyssea: Abyssea-Vunkerl: NM
 - Spawn: Forced (trade Opaque Wing to ??? (G-13))
@@ -65622,8 +65648,9 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Job: Bard
 - Crystal: Wind
 - Respawn: 330s
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, White Wind
 - Zones: The Boyahda Tree (102-105)
 
 #### Vulpangue
@@ -65631,18 +65658,20 @@ These are player job abilities and weapon skills that a monster genuinely uses; 
 - Flags: NM, Aggressive
 - Detects: Sight
 - Crystal: Wind
-- Weak to: Slashing +200%, Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Slashing +200%, Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind, White Wind
 - Zones: Wajaom Woodlands (75-80)
-- Spawn: Forced (trade Hellcage Butterfly to ???)
+- Spawn: Forced (trade Hellcage Butterfly to ??? (D-10))
 - Drops: Karura Hachigane, Sylphid Epee, Vulpangue's Wing
 
 #### Waugyl
 - Flags: NM
 - Detects: Sight, Sound
 - Crystal: Wind
-- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Lightning +30%, Water +15%, Light +15%, Dark +15%
-- Absorbs: Ice
+- Weak to: Piercing +12.5%, Ranged +12.5%, Fire +15%, Earth +15%, Ice +30%, Water +15%, Light +15%, Dark +15%
+- Absorbs: Wind
+- Abilities: Crosswind, Obfuscate, Wind Shear, Zephyr Mantle, Ill Wind, White Wind
 - Zones: Abyssea-Altepa
 - Content: Abyssea: Abyssea-Altepa: NM
 - Spawn: Forced (trade Puppet's Blood to ??? (F-9))
