@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -54,6 +56,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -61,9 +66,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.balladofworms.mobilewatch.*
@@ -110,6 +117,7 @@ fun MobileWatchApp(vm: MobileWatchViewModel = viewModel()) {
     val holder = rememberSaveableStateHolder()
     when {
         ui.showSettings -> holder.Page("settings") { BackHandler { vm.closeSettings() }; SettingsScreen(vm) }
+        ui.showMusic -> holder.Page("music") { BackHandler { vm.closeMusic() }; MusicScreen(onBack = { vm.closeMusic() }) }
         ui.selectedSubtype != null && ui.selectedMob != null -> holder.Page("subtype:${ui.selectedSubtype?.name}") { BackHandler { vm.clearSubtype() }; SubtypeDetailScreen(vm) }
         ui.selectedMob != null -> holder.Page("mob:${ui.selectedMob?.key}") { BackHandler { vm.clearMob() }; MobDetailScreen(vm) }
         ui.mode == "maps" && ui.selectedZone != null && ui.showMap -> holder.Page("map:${ui.selectedZone?.id}") { BackHandler { vm.closeMap() }; MapViewerScreen(vm) }
@@ -140,6 +148,8 @@ fun MobileWatchApp(vm: MobileWatchViewModel = viewModel()) {
         ui.mode == "hobbies" && ui.selectedHobby == "digging" -> holder.Page("hobby:digging") { BackHandler { vm.clearHobby() }; DiggingScreen(vm) }
         ui.mode == "hobbies" && ui.selectedHobby in CraftKeys && ui.selectedRecipe != null -> holder.Page("recipe:${ui.selectedHobby}:${ui.selectedRecipe?.id}") { BackHandler { vm.clearRecipe() }; RecipeDetailScreen(vm) }
         ui.mode == "hobbies" && ui.selectedHobby in CraftKeys -> holder.Page("hobby:${ui.selectedHobby}") { BackHandler { vm.clearHobby() }; CraftScreen(vm, ui.selectedHobby!!) }
+        ui.mode == "quests" && ui.selectedQuestArea != null ->
+            holder.Page("questarea:${ui.selectedQuestArea}") { BackHandler { vm.clearQuestArea() }; QuestAreaScreen(vm) }
         ui.mode == "trusts" && ui.selectedTrust != null ->
             holder.Page("trust:${ui.selectedTrust}") { BackHandler { vm.clearTrust() }; TrustScreen(vm) }
         ui.mode == "chains" && ui.showWsList ->
@@ -168,7 +178,7 @@ fun MobileWatchApp(vm: MobileWatchViewModel = viewModel()) {
 }
 
 @Composable
-private fun GradientTopBar(title: String, titleColor: Color = AccentGold, onBack: (() -> Unit)? = null, trailing: String? = null, logoRes: Int? = null, onLogoClick: (() -> Unit)? = null, actions: (@Composable () -> Unit)? = null) {
+internal fun GradientTopBar(title: String, titleColor: Color = AccentGold, onBack: (() -> Unit)? = null, trailing: String? = null, logoRes: Int? = null, onLogoClick: (() -> Unit)? = null, middle: (@Composable () -> Unit)? = null, actions: (@Composable () -> Unit)? = null) {
     Box(
         Modifier.fillMaxWidth()
             .background(Brush.horizontalGradient(listOf(Charcoal, HeaderAccent, Charcoal)))
@@ -183,7 +193,8 @@ private fun GradientTopBar(title: String, titleColor: Color = AccentGold, onBack
                 Image(painterResource(logoRes), title,
                     modifier = Modifier.height(40.dp)
                         .then(if (onLogoClick != null) Modifier.clickable { onLogoClick() } else Modifier))
-                Spacer(Modifier.weight(1f))
+                // Optional button centred between the logo and the actions (the music note).
+                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { middle?.invoke() }
             } else {
                 Text(title, color = titleColor, fontWeight = FontWeight.Bold, fontSize = 20.sp,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
@@ -375,7 +386,7 @@ private fun ZoneRow(vm: MobileWatchViewModel, zone: Zone) {
 // through the same list, so the gesture and the menu can never disagree about what comes next.
 private val MODES = listOf(
     "items" to "Items", "events" to "Events", "jobs" to "Jobs", "mobs" to "Bestiary",
-    "maps" to "Zones", "content" to "Content", "hobbies" to "Hobbies", "trusts" to "Trusts",
+    "maps" to "Zones", "content" to "Content", "quests" to "Quests", "hobbies" to "Hobbies", "trusts" to "Trusts",
     "chains" to "Chains"
 )
 
@@ -395,7 +406,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
     ) { mutableStateMapOf<String, Boolean>() }
     Scaffold(
         containerColor = Charcoal,
-        topBar = { GradientTopBar("MobileWatch", logoRes = R.drawable.mobilewatch_logo, onLogoClick = { vm.openSettings() }, actions = { WorldDropdown(ui.world, vm::setWorld) }) },
+        topBar = { GradientTopBar("MobileWatch", logoRes = R.drawable.mobilewatch_logo, onLogoClick = { vm.openSettings() }, middle = { MusicHeaderButton(onClick = { vm.openMusic() }) }, actions = { WorldDropdown(ui.world, vm::setWorld) }) },
         bottomBar = { if (items) PopulationStrip(vm) }
     ) { pad ->
         val tabScroll = rememberScrollState()
@@ -443,7 +454,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                     }
                 }
             }
-            if (ui.mode != "chains" && ui.mode != "events" && ui.mode != "jobs" && ui.mode != "hobbies" && ui.mode != "content" && ui.mode != "trusts") {
+            if (ui.mode != "chains" && ui.mode != "events" && ui.mode != "jobs" && ui.mode != "hobbies" && ui.mode != "content" && ui.mode != "quests" && ui.mode != "trusts") {
                 Row(
                     Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -708,6 +719,8 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                 TrustsContent(vm)
             } else if (ui.mode == "content") {
                 ContentTabContent(vm)
+            } else if (ui.mode == "quests") {
+                QuestsContent(vm)
             } else if (ui.mode == "maps") {
                 val zoneList = if (ui.zoneFilter == "all") ui.zoneResults
                 else ui.zoneResults.filter { vm.zoneType(it).equals(ui.zoneFilter, true) }
@@ -731,6 +744,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                         Row(Modifier.fillMaxWidth().clickable { vm.select(item) },
                             verticalAlignment = Alignment.CenterVertically) {
                             Box(Modifier.width(3.dp).height(38.dp).background(AccentGreen.copy(alpha = 0.55f)))
+                            ItemIcon(item.id, 32.dp, Modifier.padding(start = 12.dp))
                             Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
                                 Text(vm.label(item), color = TextSoft, maxLines = 1,
                                     overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Medium)
@@ -920,6 +934,98 @@ private fun MobDetailScreen(vm: MobileWatchViewModel) {
     }
 }
 
+/**
+ * Item icon by item id, out of assets/itemicons, the device cache or the hosted set --
+ * ItemIcons works out which of those exists on its own (see IconConfig for where to put them).
+ *
+ * Draws NOTHING, and takes no space, until icons are actually installed, so a build without
+ * them looks exactly as it did before. `probe` is for the item detail screen: it attempts the
+ * fetch even before we know a hosted set exists, which is what discovers one.
+ */
+@Composable
+private fun ItemIcon(id: Int, size: Dp, modifier: Modifier = Modifier, probe: Boolean = false) {
+    val ctx = LocalContext.current
+    val bmp by produceState(ItemIcons.peek(id), id) {
+        if (value == null) value = withContext(Dispatchers.IO) { ItemIcons.load(ctx, id, probe) }
+    }
+    // Nothing here may touch the filesystem: this runs during composition, on the main
+    // thread, once per visible row. The load itself is dispatched to IO above.
+    // The tile is reserved only once we know icons exist, so rows do not jump as images
+    // resolve; on the detail screen it is dropped entirely when the item has no icon.
+    if (bmp == null && (probe || !ItemIcons.available)) return
+    Box(modifier.size(size), contentAlignment = Alignment.Center) {
+        bmp?.let { Image(it, null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Fit) }
+    }
+}
+
+/**
+ * The client's item help window -- the panel the game draws when you highlight an item,
+ * and the same thing the wiki's item images are screenshots of.
+ *
+ * Nothing here is fetched: the client composes that window from the description string and
+ * the icon in the item record, both of which are already on the device. Lines are rendered
+ * verbatim from Item.desc in a monospace face so the stat columns line up the way they do
+ * in game.
+ *
+ * MISSING vs the real window: the "(Dagger)All Races" line. Weapon skill and race mask are
+ * not in ffxi_items.json -- they are in Windower's items.lua as `skill` and `races`, so
+ * this line appears as soon as those two fields are added to the bundled JSON.
+ */
+@Composable
+private fun ItemHelpBox(item: Item, modifier: Modifier = Modifier) {
+    val jobs = FfxiDecode.jobs(item.jobsMask)
+    val jobLine = when {
+        jobs.isEmpty() -> ""
+        jobs == "All jobs" -> "Lv.${item.level} All Jobs"
+        item.level > 0 -> "Lv.${item.level} " + jobs.replace(" ", "/")
+        else -> jobs.replace(" ", "/")
+    }
+    Box(modifier.fillMaxWidth().background(Color(0xFF23232E), RoundedCornerShape(8.dp))
+        .padding(horizontal = 12.dp, vertical = 10.dp)) {
+        Row(Modifier.fillMaxWidth()) {
+            ItemIcon(item.id, 36.dp, Modifier.padding(end = 10.dp, top = 2.dp), probe = true)
+            Column(Modifier.weight(1f)) {
+                Text(item.name, color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                if (item.desc.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    for (line in item.desc.split("\n")) {
+                        DescLine(line, TextSoft)
+                    }
+                }
+                if (jobLine.isNotEmpty()) {
+                    Text(jobLine, color = JobsBlue, fontSize = 13.sp,
+                        fontFamily = FontFamily.Monospace, lineHeight = 17.sp,
+                        modifier = Modifier.padding(top = 2.dp))
+                }
+                if (item.ilevel > 0 || item.stack > 1) {
+                    Spacer(Modifier.height(4.dp))
+                    Row(Modifier.fillMaxWidth()) {
+                        if (item.stack > 1)
+                            Text("Stacks to ${item.stack}", color = TextMuted, fontSize = 12.sp)
+                        Spacer(Modifier.weight(1f))
+                        if (item.ilevel > 0)
+                            Text("<Item Level:${item.ilevel}>", color = TextMuted, fontSize = 12.sp,
+                                fontFamily = FontFamily.Monospace)
+                    }
+                }
+            }
+            // Rare / Ex sit in the window's top-right corner, as they do in game.
+            if (item.rareEx.isNotEmpty()) {
+                Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 8.dp)) {
+                    for (flag in item.rareEx.split("/")) {
+                        val c = if (flag.equals("Rare", true)) Color(0xFF8FD39A) else Color(0xFF7FC4C9)
+                        Box(Modifier.padding(bottom = 3.dp)
+                            .background(c.copy(alpha = 0.18f), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 6.dp, vertical = 1.dp)) {
+                            Text(flag, color = c, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun SubtypeImage(path: String?, size: Dp) {
     val ctx = LocalContext.current
@@ -1002,6 +1108,73 @@ private fun GeneralNotesSection(notes: List<String>) {
             }
         }
     }
+}
+
+// The game writes the eight element icons into item descriptions as private-use
+// codepoints, U+E000 through U+E007 in the in-game element order. Android has no
+// glyph for those, so the system reaches into a fallback font and you get a stray
+// CJK character where the element belongs -- Sirocco Kukri reads as two symbols
+// rather than Ice-7 Wind+7. Spell the element out instead, in its own colour.
+private val ELEM_ICON_ORDER =
+    listOf("Fire", "Ice", "Wind", "Earth", "Lightning", "Water", "Light", "Dark")
+
+private fun elemForIcon(ch: Char): String? =
+    ELEM_ICON_ORDER.getOrNull(ch.code - 0xE000)
+
+// The game's own eight element icons, 32x32 RGBA, the same set OmniBeast uses.
+// Decoded once for the life of the process -- eight small bitmaps, and the item
+// help box can redraw on every keystroke in the search field.
+private val elemIconCache = HashMap<String, ImageBitmap?>()
+
+private fun elemIcon(ctx: android.content.Context, name: String): ImageBitmap? {
+    // containsKey, not getOrPut: a null means "we looked and it is not there",
+    // and getOrPut would re-open the asset on every redraw for a missing file.
+    if (elemIconCache.containsKey(name)) return elemIconCache[name]
+    val bmp = runCatching {
+        ctx.assets.open("elemicons/${name.lowercase()}.png").use {
+            BitmapFactory.decodeStream(it)?.asImageBitmap()
+        }
+    }.getOrNull()
+    elemIconCache[name] = bmp
+    return bmp
+}
+
+/**
+ * A description line with its element icons drawn inline, at text height and
+ * on the text baseline, so the columns line up the way they do in game.
+ *
+ * appendInlineContent carries the element's NAME as its alternate text, so a
+ * missing or unreadable png degrades to "Ice-7" rather than to a blank.
+ */
+@Composable
+private fun DescLine(line: String, color: Color) {
+    val ctx = LocalContext.current
+    val used = remember(line) { line.mapNotNull { elemForIcon(it) }.distinct() }
+    val icons = remember(used) { used.associateWith { elemIcon(ctx, it) } }
+    val text = remember(line, icons) {
+        buildAnnotatedString {
+            for (ch in line) {
+                val el = elemForIcon(ch)
+                when {
+                    el == null -> append(ch)
+                    icons[el] != null -> appendInlineContent("elem:$el", el)
+                    else -> withStyle(SpanStyle(color = elemColor(el))) { append(el) }
+                }
+            }
+        }
+    }
+    val inline = remember(icons) {
+        icons.filterValues { it != null }.entries.associate { (el, bmp) ->
+            "elem:$el" to InlineTextContent(
+                Placeholder(1.25.em, 1.25.em, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Image(bitmap = bmp!!, contentDescription = el,
+                    modifier = Modifier.fillMaxSize())
+            }
+        }
+    }
+    Text(text, inlineContent = inline, color = color, fontSize = 13.sp,
+        fontFamily = FontFamily.Monospace, lineHeight = 17.sp)
 }
 
 private fun elemColor(name: String): Color = when (name) {
@@ -1360,19 +1533,7 @@ private fun DetailScreen(vm: MobileWatchViewModel) {
         LazyColumn(Modifier.padding(pad).fillMaxSize().padding(horizontal = 16.dp)) {
             item {
                 Spacer(Modifier.height(10.dp))
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(metaLine(item), color = TextMuted, fontSize = 13.sp, modifier = Modifier.weight(1f))
-                    if (item.stack > 1) Text("Stacks to ${item.stack}", color = TextSoft, fontSize = 13.sp)
-                }
-                if (item.desc.isNotEmpty()) {
-                    Spacer(Modifier.height(8.dp))
-                    Surface(color = CharcoalDark, shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        Text(item.desc, color = TextSoft, fontSize = 13.sp,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp))
-                    }
-                }
-                val jobs = FfxiDecode.jobs(item.jobsMask)
-                if (jobs.isNotEmpty()) { Spacer(Modifier.height(6.dp)); Text("Jobs:  $jobs", color = JobsBlue, fontSize = 13.sp) }
+                ItemHelpBox(item)
                 Spacer(Modifier.height(10.dp))
                 val nm = item.name.replace(" ", "_")
                 val linkPad = PaddingValues(horizontal = 4.dp, vertical = 6.dp)
@@ -1835,6 +1996,82 @@ private fun TimeExtensionBody(contentKey: String) {
 private fun Placeholder() {
     Text("Not written yet.", color = TextMuted, fontSize = 13.sp,
         modifier = Modifier.padding(vertical = 6.dp))
+}
+
+@Composable
+private fun QuestsContent(vm: MobileWatchViewModel) {
+    // The eleven sections the in-game quest log is divided into, in the
+    // order the log itself lists them. Each row carries how many of that
+    // area you have ticked, so the tab doubles as a progress summary.
+    val areas = vm.questAreas()
+    LazyColumn(Modifier.fillMaxSize()) {
+        items(areas, key = { it.key }) { area ->
+            TopLevelRow(
+                area.label,
+                trailing = "${vm.questDoneCount(area.key)} / ${area.quests.size}"
+            ) { vm.selectQuestArea(area.key) }
+        }
+    }
+}
+
+@Composable
+private fun QuestAreaScreen(vm: MobileWatchViewModel) {
+    val key = vm.ui.selectedQuestArea ?: return
+    val area = vm.questArea(key) ?: return
+    val ctx = LocalContext.current
+    val done = vm.questDoneCount(key)
+    Scaffold(
+        containerColor = Charcoal,
+        topBar = {
+            GradientTopBar(area.label, onBack = { vm.clearQuestArea() },
+                trailing = "$done / ${area.quests.size}")
+        }
+    ) { pad ->
+        LazyColumn(Modifier.fillMaxSize().padding(pad)) {
+            items(area.quests, key = { it.name }) { q ->
+                val ticked = vm.questDone(key, q.name)
+                Row(
+                    Modifier.fillMaxWidth().padding(start = 4.dp, end = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // The box is the tick; the name is the wiki link. Two
+                    // targets on one row so marking one off never opens a
+                    // browser you did not ask for.
+                    Checkbox(
+                        checked = ticked,
+                        onCheckedChange = { vm.toggleQuest(key, q.name) },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = AccentGreen,
+                            uncheckedColor = TextMuted,
+                            checkmarkColor = Charcoal
+                        )
+                    )
+                    Text(
+                        q.name,
+                        color = if (ticked) TextMuted else JobsBlue,
+                        fontWeight = FontWeight.Medium, fontSize = 14.sp,
+                        textDecoration = if (ticked) TextDecoration.LineThrough else null,
+                        modifier = Modifier.weight(1f).clickable {
+                            val slug = q.slug ?: q.name.replace(" ", "_")
+                            runCatching {
+                                ctx.startActivity(Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("https://www.bg-wiki.com/ffxi/$slug")))
+                            }
+                        }.padding(vertical = 12.dp)
+                    )
+                }
+                HorizontalDivider(color = CharcoalDark)
+            }
+            item(key = "__reset") {
+                Row(Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.Center) {
+                    OutlinedButton(onClick = { vm.clearQuestTicks(key) }) {
+                        Text("Clear ticks for ${area.label}", color = TextMuted, fontSize = 13.sp)
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -6633,6 +6870,8 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                     + "and chocobo hobbies.")
                 AboutLine("Trusts", "All 122 alter egos by role.")
                 AboutLine("Chains", "Skillchains and the full weapon skill reference.")
+                AboutLine("Music", "The \u266a button in the header: FFXI's soundtrack from your own game files, " +
+                    "looped the way the game loops it. No music is included.")
                 Spacer(Modifier.height(10.dp))
                 Text("Data is compiled by hand from BG-wiki and checked against the game. If something "
                     + "looks wrong, it probably is \u2014 tell me and it gets fixed.",
@@ -6886,17 +7125,3 @@ private fun SpellDetailScreen(vm: MobileWatchViewModel) {
     }
 }
 
-private fun metaLine(it: Item): String {
-    // keep each chip on one line; wrapping only happens at the separators
-    fun nb(s: String) = s.replace(" ", "\u00a0")
-    val bits = ArrayList<String>()
-    if (it.category.isNotBlank()) bits.add(nb(it.category))          // type of weapon / gear
-    val lvl = when {
-        it.ilevel > 0 -> "iLv ${it.ilevel}"
-        it.level > 0 -> "Lv ${it.level}"
-        else -> ""
-    }
-    if (lvl.isNotEmpty()) bits.add(nb(lvl))
-    if (it.rareEx.isNotEmpty()) bits.add(nb(it.rareEx))
-    return bits.joinToString("   \u00b7   ")
-}

@@ -2,9 +2,9 @@ package com.balladofworms.mobilewatch.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Charcoal      = Color(0xFF1E1E28)   // background
-val CharcoalDark  = Color(0xFF181820)   // bars / strips
-val Panel         = Color(0xFF14141C)   // list surfaces
+val Charcoal      = Color(0xFF14141B)   // background (darkened for the music update; was 1E1E28)
+val CharcoalDark  = Color(0xFF101016)   // bars / strips (was 181820)
+val Panel         = Color(0xFF0D0D13)   // list surfaces (was 14141C)
 val TextPrimary   = Color(0xFFDCDCE6)
 val TextSoft      = Color(0xFFC8CEDE)
 val TextMuted     = Color(0xFF8A90A2)

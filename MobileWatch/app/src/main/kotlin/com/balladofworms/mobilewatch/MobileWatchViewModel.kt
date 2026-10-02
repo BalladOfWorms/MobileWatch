@@ -34,11 +34,13 @@ data class UiState(
     val showMap: Boolean = false,
     val scChain: List<WeaponSkill> = emptyList(),
     val showSettings: Boolean = false,
+    val showMusic: Boolean = false,            // the music player screen (header note button)
     val selectedJob: Job? = null,
     val selectedHobby: String? = null,
     val selectedContent: String? = null,       // Content tab: which content type (e.g. "dynamis")
     val selectedContentZone: String? = null,   // Content tab: which zone page inside it
     val selectedTrust: String? = null,         // Trusts tab: which alter ego's page is open
+    val selectedQuestArea: String? = null,     // Quests tab: which log area is open
     val showWsList: Boolean = false,           // Chains tab: the full weapon-skill reference page
     val selectedFish: Fish? = null,
     val selectedRecipe: Recipe? = null,
@@ -74,6 +76,8 @@ data class UiState(
     val historyNote: String? = null,
 )
 
+private const val QUEST_TICKS_KEY = "quest_ticks"
+
 class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
 
     var ui by mutableStateOf(UiState())
@@ -98,6 +102,7 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
     private var loggingDb: LoggingDb? = null
     private var trustDb: TrustDb? = null
     private var wsListDb: WsListDb? = null
+    private var questDb: QuestDb? = null
     private val crossCache = HashMap<Int, HashMap<String, List<Pair<String, Int>>>>()
     private var popToken = 0
     private var histToken = 0
@@ -128,6 +133,7 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
             loggingDb = withContext(Dispatchers.IO) { runCatching { LoggingDb.load(app) }.getOrNull() }
             trustDb = withContext(Dispatchers.IO) { runCatching { TrustDb.load(app) }.getOrNull() }
             wsListDb = withContext(Dispatchers.IO) { runCatching { WsListDb.load(app) }.getOrNull() }
+            questDb = withContext(Dispatchers.IO) { runCatching { QuestDb.load(app) }.getOrNull() }
             itemDb = items
             mobDb = mobs
             zoneInfoDb = zinfo
@@ -205,6 +211,8 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
     fun clearPet() { ui = ui.copy(selectedPet = null) }
 
     fun openSettings() { ui = ui.copy(showSettings = true) }
+    fun openMusic() { ui = ui.copy(showMusic = true) }
+    fun closeMusic() { ui = ui.copy(showMusic = false) }
 
     fun closeSettings() { ui = ui.copy(showSettings = false) }
 
@@ -217,7 +225,7 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
             selected = null, selectedMob = null, selectedSubtype = null, selectedZone = null, selectedJob = null,
             selectedHobby = null, selectedFish = null, selectedRecipe = null, selectedDigZone = null, selectedPlanting = null, selectedHarvestZone = null, selectedMineZone = null, selectedExcZone = null, selectedLogZone = null, showHobbyInfo = false,
             selectedContent = null, selectedContentZone = null,
-            selectedTrust = null, showWsList = false)
+            selectedTrust = null, showWsList = false, selectedQuestArea = null)
     }
 
     // ---- Trusts tab --------------------------------------------------------
@@ -229,6 +237,96 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
     fun trustCount(): Int = trustDb?.trusts?.size ?: 0
     fun selectTrust(name: String) { ui = ui.copy(selectedTrust = name) }
     fun clearTrust() { ui = ui.copy(selectedTrust = null) }
+
+    // ---- Quests tab --------------------------------------------------------
+    // WHY THE TICKS ARE SHAPED THIS WAY. Two things bit the first version, and
+    // both are avoided rather than patched around:
+    //
+    //   1. A tick is ONE immutable map, area -> set of lowercased quest names,
+    //      replaced wholesale on every change. A brand-new value is the one
+    //      thing Compose can never miss, so a row cannot show a tick the state
+    //      does not hold.
+    //   2. It is stored as ONE JSON string, not as putStringSet. A string set
+    //      handed back by SharedPreferences is a cached instance with rules
+    //      about mutating it, and "the tick was there until I left the page"
+    //      is exactly what breaking those rules looks like. A string has no
+    //      such trap.
+    //
+    // It is also read where it is declared, not after the quest db loads, so a
+    // slow or failed asset read can never cost a tick. (It has to be a property
+    // initializer rather than a line in init{}: Kotlin runs those in declaration
+    // order, and this property is declared well below the init block.) Being one
+    // JSON blob also makes it the natural payload if this ever syncs with
+    // OmniWatch.
+    private var questTicks by mutableStateOf(readQuestTicks())
+
+    fun questAreas(): List<QuestArea> = questDb?.areas ?: emptyList()
+    fun questArea(key: String): QuestArea? = questDb?.area(key)
+    fun selectQuestArea(key: String) { ui = ui.copy(selectedQuestArea = key) }
+    fun clearQuestArea() { ui = ui.copy(selectedQuestArea = null) }
+
+    private fun readQuestTicks(): Map<String, Set<String>> {
+        val raw = prefs.getString(QUEST_TICKS_KEY, null) ?: return readLegacyQuestTicks()
+        return runCatching {
+            val o = org.json.JSONObject(raw)
+            val out = HashMap<String, Set<String>>()
+            for (k in o.keys()) {
+                val arr = o.optJSONArray(k) ?: continue
+                val set = HashSet<String>()
+                for (i in 0 until arr.length()) set.add(arr.optString(i))
+                if (set.isNotEmpty()) out[k] = set
+            }
+            out
+        }.getOrElse { emptyMap() }
+    }
+
+    /**
+     * Anything ticked under the first build's per-area string sets, brought
+     * across once so nobody re-ticks a list of ninety-five by hand.
+     */
+    private fun readLegacyQuestTicks(): Map<String, Set<String>> {
+        val out = HashMap<String, Set<String>>()
+        prefs.all.keys.filter { it.startsWith("questsdone_") }.forEach { k ->
+            val set = prefs.getStringSet(k, emptySet()) ?: emptySet()
+            if (set.isNotEmpty()) out[k.removePrefix("questsdone_")] = HashSet(set)
+        }
+        return out
+    }
+
+    private fun writeQuestTicks(m: Map<String, Set<String>>) {
+        val o = org.json.JSONObject()
+        m.forEach { (area, names) ->
+            if (names.isNotEmpty()) o.put(area, org.json.JSONArray(names.toList()))
+        }
+        prefs.edit().putString(QUEST_TICKS_KEY, o.toString()).apply()
+    }
+
+    fun questDone(area: String, name: String): Boolean =
+        questTicks[area]?.contains(name.lowercase()) == true
+
+    fun toggleQuest(area: String, name: String) {
+        val n = name.lowercase()
+        val cur = questTicks[area].orEmpty()
+        val next = if (n in cur) cur - n else cur + n
+        val m = questTicks.toMutableMap()
+        if (next.isEmpty()) m.remove(area) else m[area] = next
+        questTicks = m          // new instance: the read side cannot miss it
+        writeQuestTicks(m)
+    }
+
+    /** Completed count for an area, for the "n / m" on its row. */
+    fun questDoneCount(area: String): Int {
+        val done = questTicks[area] ?: return 0
+        return questArea(area)?.quests?.count { it.name.lowercase() in done } ?: 0
+    }
+
+    /** Wipe one area's ticks. Offered on the area page so a mis-tap is undoable. */
+    fun clearQuestTicks(area: String) {
+        val m = questTicks.toMutableMap()
+        m.remove(area)
+        questTicks = m
+        writeQuestTicks(m)
+    }
 
     // ---- Weapon-skill reference (Chains tab) -------------------------------
     fun wsWeapons(): List<WsWeapon> = wsListDb?.weapons ?: emptyList()

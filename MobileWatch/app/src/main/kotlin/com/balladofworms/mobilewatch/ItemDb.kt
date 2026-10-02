@@ -28,6 +28,19 @@ class ItemDb private constructor(
 ) {
     fun get(id: Int): Item? = byId[id]
 
+    /** Lowercase name -> item, lowest id wins where a name repeats (the REMA upgrade stages).
+     *  Everywhere that holds only an item NAME -- mob drops, recipe outputs, the hobby ledgers --
+     *  can reach the record through this, and so reach the item's icon. */
+    private val nameMap: Map<String, Item> by lazy {
+        val m = HashMap<String, Item>(nameIndex.size)
+        nameIndex.sortedBy { it.id }.forEach { m.putIfAbsent(it.name.lowercase(), it) }
+        m
+    }
+
+    fun byName(name: String): Item? = nameMap[name.trim().lowercase()]
+
+    fun idForName(name: String): Int? = byName(name)?.id
+
     /** Display label for the results list: appends a level/DMG suffix to items
      *  that share a name (REMA upgrade stages), leaving unique names untouched. */
     fun label(item: Item): String =

@@ -19,12 +19,44 @@ cached on the device (see **Zone maps** below).
 | **Bestiary** | **6,810 monsters** across 218 families, browsable by family, by zone or by content. Resist grid, immunities, absorbs, detection, drops, spawn conditions, per-zone level ranges, and **1,591 ability definitions** with target shape, element and effects. |
 | **Zones** | 294 zones. Maps, travel and transport schedules, battlefields, quests, NM and mob rosters, connected-zone navigation. |
 | **Content** | Endgame content organised by strategy — Dynamis and Dynamis Divergence, area by area, with boss tiers, time extensions, farming routes and rewards read live from the bestiary. |
+| **Quests** | Every quest in the game's own quest log, 1,091 of them across the eleven sections the log itself uses — San d'Oria through Coalition. Tick one off as you finish it and the count on its area follows; tap the name for its BG-wiki page. |
 | **Hobbies** | 22 hobbies: fishing, the nine crafts (cooking, goldsmithing, alchemy, smithing, clothcraft, leathercraft, bonecraft, woodworking, synergy), gardening, harvesting, mining, excavation, logging, chocobo digging/raising/racing, clamming, Mog Garden, Monstrosity. |
 | **Trusts** | All 122 alter egos with portraits, grouped by role. |
 | **Chains** | 230 weapon skills across 15 weapon types, plus the full skillchain and magic-burst tables. |
 
 Swipe or use the mode menu to move between tabs — both walk the same list, so
 they can never disagree about what comes next.
+
+## Music
+
+The **♪ button in the header** (between the logo and the world picker) opens a
+player for FINAL FANTASY XI's soundtrack, built from the desktop **OmniPlayer**.
+
+- Copy the game's music folders to the phone (`sound`, `sound2`, `sound3` … from
+  your FFXI install, or just their `win\music\data` folders), and/or tracks
+  exported as MP3, FLAC, WAV, OGG or M4A, then choose that folder in the player.
+  Android's own folder picker is used, so no storage permission is needed.
+- `.bgw` files are decoded in the app and **loop exactly the way the game loops
+  them** — intro once, then the loop section seamlessly. The repeat button
+  switches to playing each track once, then the next.
+- Tracks are **named automatically** from OmniPlayer's catalogue of 216 tracks
+  (title, composer, expansion and where it's heard), by the same rules: the
+  `soundN` folder a file is in, what else is in its folder, or its remembered
+  fingerprint. Other formats use their own tags.
+- Favourites (heart), search, shuffle, and seeking.
+- **Select tracks:** long-press a track (or use the select-all button in the top
+  bar) to pick several; tap to add or remove. Select all takes every track in the
+  list as shown, so after a search or the favourites filter, just those. Then
+  favourite the whole selection at once, or play it as its own queue.
+- **Plays in the background** — screen off, phone in your pocket, or another app in
+  front — with **controls in the notification and on the lock screen** (previous,
+  play/pause, next, seek, close). Headset and Bluetooth buttons work too. Tapping the
+  notification opens the player.
+- Pauses when headphones are unplugged or a call comes in; closing the notification,
+  backing out of MobileWatch, or swiping it away in Recents stops the music.
+
+**No music is included with MobileWatch.** It plays the files from your own copy
+of the game. FINAL FANTASY XI's music is © SQUARE ENIX CO., LTD.
 
 ## Data is bundled
 
@@ -97,6 +129,8 @@ app/src/main/kotlin/com/balladofworms/mobilewatch/
     SearchEngine.kt              AH protocol client (Kotlin port of the desktop engine)
     *Db.kt                       one loader per asset file
 app/src/main/assets/             all bundled data
+    quests.json                  the quest log, by area
+    elemicons/                   the eight element icons, drawn inline in item text
 _project/                        data-build scripts, audits and notes (not compiled)
 ```
 

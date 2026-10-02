@@ -1,0 +1,1142 @@
+{
+ "_about": "OmniPlayer's track catalogue (BalladOfWorms). Sections keyed 'soundN' belong to that game sound folder; others are recognised from a folder's contents. Row: [title, composer, where heard, optional own expansion].",
+ "sections": {
+  "sound": {
+   "expansion": "Original",
+   "tracks": {
+    "101": [
+     "Battle Theme",
+     "Naoshi Mizuta",
+     "Field area battle theme (solo)"
+    ],
+    "102": [
+     "Battle in the Dungeon #2",
+     "Naoshi Mizuta",
+     "Dungeon area battle theme (party)"
+    ],
+    "103": [
+     "Battle Theme #2",
+     "Naoshi Mizuta",
+     "Field area battle theme (party)"
+    ],
+    "104": [
+     "Ghelsba / A Road Once Traveled",
+     "Naoshi Mizuta",
+     "Mission/quest scenes (formerly Fort Ghelsba's and Yughott Grotto's theme in the FFXI beta)"
+    ],
+    "105": [
+     "Mhaura",
+     "Naoshi Mizuta",
+     "Mhaura"
+    ],
+    "106": [
+     "Voyager",
+     "Naoshi Mizuta",
+     "Ferry - Mhaura/Selbina"
+    ],
+    "107": [
+     "The Kingdom of San d'Oria",
+     "Naoshi Mizuta",
+     "Kingdom of San d'Oria"
+    ],
+    "108": [
+     "Vana'diel March",
+     "Naoshi Mizuta",
+     "Title screen"
+    ],
+    "109": [
+     "Ronfaure",
+     "Nobuo Uematsu",
+     "Ronfaure"
+    ],
+    "110": [
+     "The Grand Duchy of Jeuno",
+     "Naoshi Mizuta",
+     "Jeuno"
+    ],
+    "111": [
+     "Blackout",
+     "Naoshi Mizuta",
+     "K.O."
+    ],
+    "112": [
+     "Selbina",
+     "Naoshi Mizuta",
+     "Selbina"
+    ],
+    "113": [
+     "Sarutabaruta",
+     "Naoshi Mizuta",
+     "Sarutabaruta"
+    ],
+    "114": [
+     "Batallia Downs",
+     "Naoshi Mizuta",
+     "Batallia Downs"
+    ],
+    "115": [
+     "Battle in the Dungeon",
+     "Naoshi Mizuta",
+     "Dungeon area battle theme (solo)"
+    ],
+    "116": [
+     "Gustaberg",
+     "Kumi Tanioka",
+     "Gustaberg"
+    ],
+    "117": [
+     "Ru'Lude Gardens",
+     "Kumi Tanioka",
+     "Ru'Lude Gardens"
+    ],
+    "118": [
+     "Rolanberry Fields",
+     "Naoshi Mizuta",
+     "Rolanberry Fields"
+    ],
+    "119": [
+     "Awakening",
+     "Kumi Tanioka",
+     "The Rank 5 mission"
+    ],
+    "120": [
+     "Vana'diel March #2",
+     "Naoshi Mizuta",
+     "Mission/quest scenes"
+    ],
+    "121": [
+     "Shadow Lord",
+     "Kumi Tanioka",
+     "Mission/quest scenes"
+    ],
+    "122": [
+     "One Last Time / Just Once More",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "123": [
+     "Hopelessness",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "124": [
+     "Recollection",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "125": [
+     "Tough Battle",
+     "Naoshi Mizuta",
+     "Battlefields"
+    ],
+    "126": [
+     "Mog House",
+     "Naoshi Mizuta",
+     "Mog House"
+    ],
+    "127": [
+     "Anxiety",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "128": [
+     "Airship",
+     "Nobuo Uematsu",
+     "Airship"
+    ],
+    "130": [
+     "Tarutaru Female",
+     "Kumi Tanioka",
+     "Character creation"
+    ],
+    "131": [
+     "Elvaan Female",
+     "Kumi Tanioka",
+     "Character creation"
+    ],
+    "132": [
+     "Elvaan Male",
+     "Naoshi Mizuta",
+     "Character creation"
+    ],
+    "133": [
+     "Hume Male",
+     "Naoshi Mizuta",
+     "Character creation"
+    ],
+    "151": [
+     "The Federation of Windurst",
+     "Naoshi Mizuta",
+     "Windurst"
+    ],
+    "152": [
+     "The Republic of Bastok",
+     "Kumi Tanioka",
+     "Bastok"
+    ],
+    "153": [
+     "Prelude",
+     "Nobuo Uematsu",
+     "Login, updating, quest scenes"
+    ],
+    "154": [
+     "Metalworks",
+     "Kumi Tanioka",
+     "Bastok"
+    ],
+    "155": [
+     "Castle Zvahl",
+     "Naoshi Mizuta",
+     "Castle Zvahl"
+    ],
+    "156": [
+     "Chateau d'Oraguille",
+     "Naoshi Mizuta",
+     "Chateau d'Oraguille"
+    ],
+    "157": [
+     "Fury",
+     "Kumi Tanioka",
+     "Mission/quest scenes"
+    ],
+    "158": [
+     "Sauromugue Champaign",
+     "Naoshi Mizuta",
+     "Sauromugue Champaign"
+    ],
+    "159": [
+     "Sorrow",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "160": [
+     "Repression (Memoro de la Ŝtono)",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "161": [
+     "Despair (Memoro de la Ŝtono)",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "162": [
+     "Heavens Tower",
+     "Naoshi Mizuta",
+     "Heavens Tower"
+    ],
+    "163": [
+     "Sometime, Somewhere",
+     "Nobuo Uematsu",
+     "Mission/quest scenes"
+    ],
+    "164": [
+     "Xarcabard",
+     "Naoshi Mizuta",
+     "Xarcabard"
+    ],
+    "165": [
+     "Galka",
+     "Naoshi Mizuta",
+     "Character creation"
+    ],
+    "166": [
+     "Mithra",
+     "Kumi Tanioka",
+     "Character creation"
+    ],
+    "167": [
+     "Tarutaru Male",
+     "Naoshi Mizuta",
+     "Character creation"
+    ],
+    "168": [
+     "Hume Female",
+     "Kumi Tanioka",
+     "Character creation"
+    ],
+    "169": [
+     "Regeneracy",
+     "Kumi Tanioka",
+     "Job Change Land (removed in a 2002 update)"
+    ],
+    "170": [
+     "Buccaneers",
+     "Naoshi Mizuta",
+     "Ferry - Mhaura/Selbina (pirate attack)"
+    ],
+    "214": [
+     "Eternal Oath / Wedding March",
+     "Naoshi Mizuta",
+     "Wedding Support - wedding ceremony"
+    ]
+   }
+  },
+  "sound2": {
+   "expansion": "Rise of the Zilart",
+   "tracks": {
+    "134": [
+     "Yuhtunga Jungle",
+     "Naoshi Mizuta",
+     "Elshimo Lowlands"
+    ],
+    "135": [
+     "Kazham",
+     "Naoshi Mizuta",
+     "Kazham"
+    ],
+    "171": [
+     "Altepa Desert",
+     "Naoshi Mizuta",
+     "Kuzotz"
+    ],
+    "190": [
+     "The Sanctuary of Zi'Tah",
+     "Naoshi Mizuta",
+     "The Sanctuary of Zi'Tah"
+    ],
+    "191": [
+     "Battle Theme #3",
+     "Naoshi Mizuta",
+     "Zilart field area battle theme"
+    ],
+    "192": [
+     "Battle In the Dungeon #3",
+     "Naoshi Mizuta",
+     "Zilart dungeon area battle theme"
+    ],
+    "193": [
+     "Tough Battle #2",
+     "Naoshi Mizuta",
+     "Zilart BF"
+    ],
+    "194": [
+     "Bloody Promises",
+     "Naoshi Mizuta",
+     "Mission/quest scenes (Raogrimm's theme)"
+    ],
+    "195": [
+     "Belief",
+     "Naoshi Mizuta",
+     "Rise of the Zilart final boss theme (phase 2)"
+    ],
+    "196": [
+     "Fighters of the Crystal",
+     "Naoshi Mizuta",
+     "Zilart Missions (Ark Angels)"
+    ],
+    "197": [
+     "To The Heavens / Kamlanaut#2",
+     "Naoshi Mizuta",
+     "Zilart Missions"
+    ],
+    "198": [
+     "Eald'narche",
+     "Naoshi Mizuta",
+     "Rise of the Zilart final boss theme (phase 1)"
+    ],
+    "199": [
+     "Grav'iton",
+     "Naoshi Mizuta",
+     "Zilart Missions"
+    ],
+    "200": [
+     "Hidden Truths / Kamlanaut#1",
+     "Nobuo Uematsu",
+     "Zilart Missions"
+    ],
+    "201": [
+     "End Theme",
+     "Naoshi Mizuta",
+     "Rise of the Zilart ending theme"
+    ],
+    "202": [
+     "Moongate (Memoro de la Ŝtono): Ancient Verse of Ro'Maeve / Ancient Verse of Altepa / Ancient Verse of Uggalepih",
+     "Naoshi Mizuta",
+     "Mission scenes"
+    ],
+    "206": [
+     "Revenant Maiden / The Zilart",
+     "Naoshi Mizuta",
+     "Zilart Missions (Yve'noile)"
+    ],
+    "207": [
+     "Ve'Lugannon Palace",
+     "Naoshi Mizuta",
+     "Ve'Lugannon Palace"
+    ],
+    "208": [
+     "Rabao",
+     "Naoshi Mizuta",
+     "Rabao"
+    ],
+    "209": [
+     "Norg",
+     "Naoshi Mizuta",
+     "Norg"
+    ],
+    "210": [
+     "Tu'Lia",
+     "Naoshi Mizuta",
+     "Tu'Lia"
+    ],
+    "211": [
+     "Ro'Maeve",
+     "Naoshi Mizuta",
+     "Ro'Maeve"
+    ],
+    "212": [
+     "Dash de Chocobo",
+     "Naoshi Mizuta",
+     "Riding a chocobo"
+    ],
+    "213": [
+     "Hall of the Gods",
+     "Naoshi Mizuta",
+     "Hall of the Gods"
+    ],
+    "227": [
+     "Sunbreeze Shuffle",
+     "Naoshi Mizuta",
+     "Sunbreeze Festival, Legion"
+    ]
+   }
+  },
+  "sound3": {
+   "expansion": "Chains of Promathia",
+   "tracks": {
+    "129": [
+     "Hook, Line, and Sinker",
+     "Naoshi Mizuta",
+     "Fishing (small fish)"
+    ],
+    "136": [
+     "The Big One",
+     "Naoshi Mizuta",
+     "Fishing (large fish)"
+    ],
+    "137": [
+     "A Realm of Emptiness",
+     "Naoshi Mizuta",
+     "Chains of Promathia final boss theme (2nd phase), Apocalypse Nigh boss theme"
+    ],
+    "218": [
+     "Depths Of The Soul",
+     "Naoshi Mizuta",
+     "Promathia dungeon battle theme"
+    ],
+    "219": [
+     "Onslaught",
+     "Naoshi Mizuta",
+     "Promathia field battle theme"
+    ],
+    "220": [
+     "Turmoil",
+     "Naoshi Mizuta",
+     "Promathia Mission BF"
+    ],
+    "221": [
+     "Moblin Menagerie - Movalpolos",
+     "Naoshi Mizuta",
+     "Movalpolos"
+    ],
+    "222": [
+     "Faded Memories - Promyvion",
+     "Naoshi Mizuta",
+     "Promyvion"
+    ],
+    "223": [
+     "Conflict: March of the Hero",
+     "Naoshi Mizuta",
+     "Conflict (team is winning)"
+    ],
+    "224": [
+     "Dusk and Dawn",
+     "Naoshi Mizuta",
+     "Promathia Missions"
+    ],
+    "225": [
+     "Words Unspoken - Pso'Xja",
+     "Naoshi Mizuta",
+     "Pso'Xja"
+    ],
+    "226": [
+     "Conflict: You Want To Live Forever?",
+     "Naoshi Mizuta",
+     "Conflict (team is losing or tied)"
+    ],
+    "228": [
+     "Gates Of Paradise - The Garden of Ru'Hmet",
+     "Naoshi Mizuta",
+     "The Garden of Ru'Hmet"
+    ],
+    "229": [
+     "The Currents of Time",
+     "Naoshi Mizuta",
+     "Manaclipper"
+    ],
+    "230": [
+     "A New Horizon - Tavnazian Archipelago",
+     "Naoshi Mizuta",
+     "Tavnazian Archipelago"
+    ],
+    "231": [
+     "Celestial Thunder / Trembling Sky",
+     "Naoshi Mizuta",
+     "Promathia Missions (Nag'molada's theme)"
+    ],
+    "232": [
+     "Ruler of the Skies",
+     "Naoshi Mizuta",
+     "Promathia Missions"
+    ],
+    "233": [
+     "The Celestial Capital - Al'Taieu",
+     "Naoshi Mizuta",
+     "Promathia Missions"
+    ],
+    "234": [
+     "Happily Ever After",
+     "Naoshi Mizuta",
+     "Promathia Missions"
+    ],
+    "235": [
+     "First Ode: Nocturne Of The Gods",
+     "Nobuo Uematsu",
+     "Promathia Missions"
+    ],
+    "236": [
+     "Fourth Ode: Clouded Dawn",
+     "Naoshi Mizuta",
+     "Promathia Missions"
+    ],
+    "237": [
+     "Third Ode: Memoria de la Ŝtono",
+     "Nobuo Uematsu",
+     "Promathia Missions"
+    ],
+    "238": [
+     "A New Morning",
+     "Naoshi Mizuta",
+     "Promathia Missions"
+    ],
+    "239": [
+     "Jeuno ~Starlight Celebration~",
+     "Naoshi Mizuta",
+     "Starlight Celebration, Dynamis - Tavnazia"
+    ],
+    "240": [
+     "Second Ode: Distant Promises",
+     "Nobuo Uematsu",
+     "Promathia Missions"
+    ],
+    "241": [
+     "Fifth Ode: A Time for Prayer",
+     "Naoshi Mizuta",
+     "Promathia Missions"
+    ],
+    "242": [
+     "Unity",
+     "Naoshi Mizuta",
+     "Title screen"
+    ],
+    "243": [
+     "Grav'iton",
+     "Naoshi Mizuta",
+     "Promathia Missions (Grav'iton's theme) -- same music as Zilart's music199"
+    ],
+    "244": [
+     "Revenant Maiden / The Zilart",
+     "Naoshi Mizuta",
+     "Promathia Missions (Yve'noile's theme) -- same music as Zilart's music206"
+    ],
+    "245": [
+     "The Forgotten City - Tavnazian Safehold",
+     "Naoshi Mizuta",
+     "Tavnazian Safehold"
+    ],
+    "900": [
+     "Distant Worlds",
+     "Nobuo Uematsu",
+     "Promathia Missions ending theme"
+    ]
+   }
+  },
+  "sound4": {
+   "expansion": "Treasures of Aht Urhgan",
+   "tracks": {
+    "138": [
+     "Mercenaries' Delight",
+     "Naoshi Mizuta",
+     "Aht Urhgan field area battle theme"
+    ],
+    "139": [
+     "Delve",
+     "Naoshi Mizuta",
+     "Aht Urhgan dungeon area battle theme"
+    ],
+    "142": [
+     "Fated Strife -Besieged-",
+     "Naoshi Mizuta",
+     "Besieged"
+    ],
+    "143": [
+     "Hellriders",
+     "Naoshi Mizuta",
+     "Aht Urhgan Mission BF"
+    ],
+    "144": [
+     "Rapid Onslaught -Assault-",
+     "Naoshi Mizuta",
+     "Assault"
+    ],
+    "146": [
+     "The Colosseum",
+     "Naoshi Mizuta",
+     "Pankration"
+    ],
+    "147": [
+     "Eastward Bound...",
+     "Naoshi Mizuta",
+     "Ferry - Mhaura/Al Zahbi, Ferry - Nashmau/Al Zahbi"
+    ],
+    "148": [
+     "Forbidden Seal",
+     "Naoshi Mizuta",
+     "Nyzul Isle"
+    ],
+    "149": [
+     "Jeweled Boughs",
+     "Naoshi Mizuta",
+     "Bhaflau Thickets, Wajaom Woodlands"
+    ],
+    "150": [
+     "Ululations from Beyond",
+     "Naoshi Mizuta",
+     "Arrapago Reef"
+    ],
+    "172": [
+     "Black Coffin",
+     "Naoshi Mizuta",
+     "The Ashu Talif"
+    ],
+    "173": [
+     "Illusions in the Mist",
+     "Naoshi Mizuta",
+     "Caedarva Mire"
+    ],
+    "174": [
+     "Whispers of the Gods",
+     "Naoshi Mizuta",
+     "Aydeewa Subterrane"
+    ],
+    "175": [
+     "Bandits' Market",
+     "Naoshi Mizuta",
+     "Nashmau"
+    ],
+    "176": [
+     "Circuit de Chocobo",
+     "Naoshi Mizuta",
+     "Chocobo Circuit"
+    ],
+    "177": [
+     "Run Chocobo Run!",
+     "Naoshi Mizuta",
+     "Chocobo Circuit"
+    ],
+    "178": [
+     "The Bustle of the Capital",
+     "Naoshi Mizuta",
+     "Aht Urhgan Whitegate, Al Zahbi"
+    ],
+    "179": [
+     "Vana'diel March #4",
+     "Naoshi Mizuta",
+     "Title screen"
+    ],
+    "183": [
+     "A Puppet's Slumber",
+     "Naoshi Mizuta",
+     "Aht Urhgan Missions"
+    ],
+    "184": [
+     "Eternal Gravestone",
+     "Naoshi Mizuta",
+     "Aht Urhgan Missions, Besieged (defeated)"
+    ],
+    "185": [
+     "Ever-Turning Wheels",
+     "Naoshi Mizuta",
+     "Aht Urhgan Missions"
+    ],
+    "186": [
+     "Iron Colossus",
+     "Naoshi Mizuta",
+     "Aht Urhgan Missions, Einherjar"
+    ],
+    "187": [
+     "Ragnarok",
+     "Naoshi Mizuta",
+     "Aht Urhgan final boss theme"
+    ],
+    "188": [
+     "Choc-A-Bye-Baby",
+     "Nobuo Uematsu",
+     "Chocobo Raising"
+    ],
+    "189": [
+     "An Invisible Crown",
+     "Naoshi Mizuta",
+     "Treasures of Aht Urhgan ending theme"
+    ]
+   }
+  },
+  "sound5": {
+   "expansion": "Wings of the Goddess",
+   "tracks": {
+    "40": [
+     "Cloister of Time and Souls",
+     "Naoshi Mizuta",
+     "The Threshold, Walk of Echoes"
+    ],
+    "41": [
+     "Royal Wanderlust",
+     "Naoshi Mizuta",
+     "Wings of the Goddess Missions (Cait Sith's theme)"
+    ],
+    "42": [
+     "Snowdrift Waltz",
+     "Naoshi Mizuta",
+     "Xarcabard (S)"
+    ],
+    "43": [
+     "Troubled Shadows",
+     "Naoshi Mizuta",
+     "Castle Zvahl Baileys (S), Castle Zvahl Keep (S)"
+    ],
+    "44": [
+     "Where Lords Rule Not",
+     "Naoshi Mizuta",
+     "La Vaule (S), Beadeaux (S), Castle Oztroja (S)"
+    ],
+    "45": [
+     "Summers Lost",
+     "Naoshi Mizuta",
+     "Wings of the Goddess Missions (Lilisette's theme)"
+    ],
+    "46": [
+     "Goddess Divine",
+     "Naoshi Mizuta",
+     "Wings of the Goddess final boss theme"
+    ],
+    "54": [
+     "Everlasting Bonds",
+     "Naoshi Mizuta",
+     "Wings of the Goddess ending theme"
+    ],
+    "140": [
+     "Wings of the Goddess",
+     "Naoshi Mizuta",
+     "Title screen"
+    ],
+    "141": [
+     "The Cosmic Wheel",
+     "Naoshi Mizuta",
+     "West Sarutabaruta (S)"
+    ],
+    "145": [
+     "Encampment Dreams",
+     "Naoshi Mizuta",
+     "Wings of the Goddess Missions"
+    ],
+    "180": [
+     "Thunder of the March",
+     "Naoshi Mizuta",
+     "Bastok Markets (S)"
+    ],
+    "182": [
+     "Stargazing",
+     "Naoshi Mizuta",
+     "Windurst Waters (S)"
+    ],
+    "215": [
+     "Clash of Standards",
+     "Naoshi Mizuta",
+     "Wings of the Goddess field battle theme"
+    ],
+    "216": [
+     "On this Blade",
+     "Naoshi Mizuta",
+     "Wings of the Goddess dungeon battle theme"
+    ],
+    "217": [
+     "Kindred Cry",
+     "Naoshi Mizuta",
+     "Wings of the Goddess Mission BF, Odyssey"
+    ],
+    "246": [
+     "March of the Allied Forces",
+     "Naoshi Mizuta",
+     "Wings of the Goddess quests"
+    ],
+    "247": [
+     "Roar of the Battle Drums",
+     "Naoshi Mizuta",
+     "Campaign Battle theme"
+    ],
+    "248": [
+     "Young Griffons in Flight",
+     "Naoshi Mizuta",
+     "Wings of the Goddess quests (The Young Griffons' theme)"
+    ],
+    "249": [
+     "Run Maggot, Run!",
+     "Naoshi Mizuta",
+     "Wings of the Goddess quest BF, Moblin Maze Mongers"
+    ],
+    "250": [
+     "Under a Clouded Moon",
+     "Naoshi Mizuta",
+     "Wings of the Goddess quest BF"
+    ],
+    "251": [
+     "Autumn Footfalls",
+     "Naoshi Mizuta",
+     "East Ronfaure (S)"
+    ],
+    "252": [
+     "Flowers on the Battlefield",
+     "Naoshi Mizuta",
+     "Batallia Downs (S), Rolanberry Fields (S), Sauromugue Champaign (S)"
+    ],
+    "253": [
+     "Echoes of a Zephyr",
+     "Naoshi Mizuta",
+     "North Gustaberg (S)"
+    ],
+    "254": [
+     "Griffons Never Die",
+     "Naoshi Mizuta",
+     "Southern San d'Oria (S)"
+    ]
+   }
+  },
+  "soa": {
+   "expansion": "Seekers of Adoulin",
+   "tracks": {
+    "57": [
+     "Steel Sings, Blades Dance",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin battle theme"
+    ],
+    "58": [
+     "A New Direction",
+     "Naoshi Mizuta",
+     "Title screen"
+    ],
+    "59": [
+     "The Pioneers",
+     "Naoshi Mizuta",
+     "Western Adoulin"
+    ],
+    "60": [
+     "Into Lands Primeval - Ulbuka",
+     "Naoshi Mizuta",
+     "East Ulbuka Territory"
+    ],
+    "61": [
+     "Water's Umbral Knell",
+     "Naoshi Mizuta",
+     "Rala Waterways, Yorcia Weald"
+    ],
+    "62": [
+     "Keepers of the Wild",
+     "Naoshi Mizuta",
+     "Wildskeeper Reive, Skirmish, Delve"
+    ],
+    "63": [
+     "The Sacred City of Adoulin",
+     "Naoshi Mizuta",
+     "Eastern Adoulin"
+    ],
+    "64": [
+     "Breaking Ground",
+     "Naoshi Mizuta",
+     "Reive battle theme"
+    ],
+    "65": [
+     "Hades",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin final boss theme (phase 1)"
+    ],
+    "66": [
+     "Arciela",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin Missions (Arciela's theme)"
+    ],
+    "67": [
+     "Mog Resort",
+     "Naoshi Mizuta",
+     "Mog Garden"
+    ],
+    "68": [
+     "Worlds Away",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin Missions"
+    ],
+    "72": [
+     "The Serpentine Labyrinth",
+     "Naoshi Mizuta",
+     "Outer Ra'Kaznar, Ra'Kaznar Inner Court"
+    ],
+    "73": [
+     "The Divine",
+     "Naoshi Mizuta",
+     "Mount Kamihr"
+    ],
+    "74": [
+     "Clouds Over Ulbuka",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin BF"
+    ],
+    "75": [
+     "The Price",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin final boss theme (phase 2)"
+    ],
+    "76": [
+     "Forever Today",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin ending theme"
+    ],
+    "78": [
+     "Forever Today (instrumental version)",
+     "Naoshi Mizuta",
+     "Seekers of Adoulin epilogue quests"
+    ]
+   }
+  },
+  "rov": {
+   "expansion": "Rhapsodies of Vana'diel",
+   "tracks": {
+    "79": [
+     "Iroha",
+     "Naoshi Mizuta",
+     "Reisenjima, Rhapsodies of Vana'diel Missions"
+    ],
+    "80": [
+     "The Boundless Black",
+     "Naoshi Mizuta",
+     "Escha"
+    ],
+    "81": [
+     "Isle of the Gods",
+     "Naoshi Mizuta",
+     "Rhapsodies of Vana'diel Missions"
+    ],
+    "82": [
+     "Wail of the Void",
+     "Naoshi Mizuta",
+     "Rhapsodies of Vana'diel final boss theme"
+    ],
+    "83": [
+     "Rhapsodies of Vana'diel",
+     "Naoshi Mizuta",
+     "Rhapsodies of Vana'diel ending theme"
+    ]
+   }
+  },
+  "tvr": {
+   "expansion": "The Voracious Resurgence",
+   "tracks": {
+    "25": [
+     "The Voracious Resurgence",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence Missions"
+    ],
+    "26": [
+     "The Devoured",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence battle theme"
+    ],
+    "27": [
+     "Encroaching Perils",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence Missions"
+    ],
+    "28": [
+     "The Destiny Destroyers",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence Missions"
+    ],
+    "31": [
+     "Black Stars Rise",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence Missions"
+    ],
+    "32": [
+     "All Smiles",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence Missions"
+    ],
+    "33": [
+     "Valhalla",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence final boss theme (phase 1)"
+    ],
+    "34": [
+     "We Are Vana'diel",
+     "Naoshi Mizuta",
+     "Title screen"
+    ],
+    "37": [
+     "All-Consuming Chaos",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence final boss theme (phase 2)"
+    ],
+    "38": [
+     "Your Choice",
+     "Naoshi Mizuta",
+     "The Voracious Resurgence ending theme"
+    ]
+   }
+  },
+  "addon": {
+   "expansion": "Add-on Scenarios & Battle Areas",
+   "tracks": {
+    "47": [
+     "Echoes of Creation",
+     "Naoshi Mizuta",
+     "A Crystalline Prophecy final boss theme, Rhapsodies of Vana'diel Missions",
+     "A Crystalline Prophecy"
+    ],
+    "48": [
+     "Main Theme -FINAL FANTASY XI Version-",
+     "Naoshi Mizuta",
+     "A Crystalline Prophecy ending theme, Abyssea ending theme",
+     "A Crystalline Prophecy"
+    ],
+    "49": [
+     "Luck of the Mog",
+     "Naoshi Mizuta",
+     "A Moogle Kupo d'Etat final boss theme",
+     "A Moogle Kupo d'Etat"
+    ],
+    "50": [
+     "Feast of the Ladies",
+     "Naoshi Mizuta",
+     "A Shantotto Ascension final boss theme",
+     "A Shantotto Ascension"
+    ],
+    "51": [
+     "Abyssea - Scarlet Skies, Shadowed Plains",
+     "Naoshi Mizuta",
+     "Abyssea",
+     "Abyssea"
+    ],
+    "52": [
+     "Melodies Errant",
+     "Naoshi Mizuta",
+     "Abyssea battle theme",
+     "Abyssea"
+    ],
+    "53": [
+     "Shinryu",
+     "Naoshi Mizuta",
+     "Abyssea final boss theme",
+     "Abyssea"
+    ],
+    "55": [
+     "Provenance Watcher",
+     "Naoshi Mizuta",
+     "Voidwatch final boss theme"
+    ],
+    "56": [
+     "Where it All Begins",
+     "Naoshi Mizuta",
+     "Provenance"
+    ]
+   }
+  },
+  "other": {
+   "expansion": "Other",
+   "tracks": {
+    "28": [
+     "Devils' Delight",
+     "Naoshi Mizuta",
+     "Harvest Festival"
+    ],
+    "30": [
+     "Sojourner",
+     "Naoshi Mizuta",
+     "Odyssey (Bumba's battle theme)"
+    ],
+    "35": [
+     "Goddesspeed",
+     "Naoshi Mizuta",
+     "Sortie - ground level"
+    ],
+    "36": [
+     "Good Fortune",
+     "Naoshi Mizuta",
+     "Sortie - basement"
+    ],
+    "70": [
+     "Monstrosity",
+     "Naoshi Mizuta",
+     "Monstrosity"
+    ],
+    "84": [
+     "Full Speed Ahead!",
+     "Naoshi Mizuta",
+     "Mounts"
+    ],
+    "85": [
+     "Times Grow Tense",
+     "Naoshi Mizuta",
+     "Ambuscade"
+    ],
+    "87": [
+     "For a Friend",
+     "Naoshi Mizuta",
+     "Omen"
+    ],
+    "88": [
+     "Between Dreams and Reality",
+     "Naoshi Mizuta",
+     "Dynamis - Divergence wave 1 / wave 2"
+    ],
+    "89": [
+     "Disjoined One",
+     "Naoshi Mizuta",
+     "Dynamis - Divergence wave 3"
+    ],
+    "90": [
+     "Winds of Change",
+     "Naoshi Mizuta",
+     "Heroines' Combat II"
+    ],
+    "69": [
+     "Distant Worlds -Nanaa Mihgo's Version-",
+     "Naoshi Mizuta",
+     "Nanaa Mihgo Statue (Orchestrion)"
+    ],
+    "71": [
+     "The Pioneers -Nanaa Mihgo's Version-",
+     "Naoshi Mizuta",
+     "Nanaa Mihgo Statue II (Orchestrion)"
+    ],
+    "77": [
+     "Distant Worlds (instrumental version)",
+     "Naoshi Mizuta",
+     "Sheet of Promathia tunes (Orchestrion)"
+    ],
+    "86": [
+     "The Shadow Lord Battle (Final Fantasy Record Keeper version)",
+     "Naoshi Mizuta",
+     "Sheet of Shadow Lord tunes (Orchestrion)"
+    ]
+   }
+  }
+ }
+}
