@@ -116,7 +116,7 @@
      "n": "Lufet's Lake Salt"
     },
     {
-     "n": "Lure of the Wildcat"
+     "n": "Lure of the Wildcat (San d'Oria)"
     },
     {
      "n": "Messenger from Beyond"
@@ -671,7 +671,7 @@
      "n": "Let Sleeping Dogs Lie"
     },
     {
-     "n": "Lure of the Wildcat"
+     "n": "Lure of the Wildcat (Windurst)"
     },
     {
      "n": "Making Amends"
@@ -863,6 +863,9 @@
      "n": "Axe the Competition"
     },
     {
+     "n": "Beam Me Up...No, Not There!"
+    },
+    {
      "n": "Beat Around the Bushin"
     },
     {
@@ -980,6 +983,9 @@
      "n": "Full Speed Ahead!"
     },
     {
+     "n": "Further Founts"
+    },
+    {
      "n": "Girl in the Looking Glass"
     },
     {
@@ -995,10 +1001,13 @@
      "n": "Lakeside Minuet"
     },
     {
-     "n": "Lure of the Wildcat"
+     "n": "Lure of the Wildcat (Jeuno)"
     },
     {
      "n": "Martial Mastery"
+    },
+    {
+     "n": "Middle Lands Investigation"
     },
     {
      "n": "Mirror Images"
@@ -1016,6 +1025,30 @@
      "n": "Mysteries of Beadeaux II"
     },
     {
+     "n": "Mystery of Darkness"
+    },
+    {
+     "n": "Mystery of Earth"
+    },
+    {
+     "n": "Mystery of Fire"
+    },
+    {
+     "n": "Mystery of Ice"
+    },
+    {
+     "n": "Mystery of Light"
+    },
+    {
+     "n": "Mystery of Lightning"
+    },
+    {
+     "n": "Mystery of Water"
+    },
+    {
+     "n": "Mystery of Wind"
+    },
+    {
      "n": "Never to Return"
     },
     {
@@ -1023,6 +1056,9 @@
     },
     {
      "n": "Northward"
+    },
+    {
+     "n": "Now Recording..."
     },
     {
      "n": "Painful Memory"
@@ -1044,6 +1080,9 @@
     },
     {
      "n": "Regaining Trust"
+    },
+    {
+     "n": "Researchers from the West"
     },
     {
      "n": "Riding on the Clouds"
@@ -1073,7 +1112,13 @@
      "n": "Shattering Stars"
     },
     {
+     "n": "Shifty Shades of Prey"
+    },
+    {
      "n": "Storms of Fate"
+    },
+    {
+     "n": "Teleports by Twilight"
     },
     {
      "n": "Tenshodo Membership"
@@ -1086,6 +1131,9 @@
     },
     {
      "n": "The Clockmaster"
+    },
+    {
+     "n": "The Flying Machine of Eld"
     },
     {
      "n": "The Gobbiebag Part I"
@@ -1148,67 +1196,10 @@
      "n": "The Wonder Magic Set"
     },
     {
+     "n": "To Kill Mocking Birds"
+    },
+    {
      "n": "Unlisted Qualities"
-    },
-    {
-     "n": "Unlocking a Myth: Bard"
-    },
-    {
-     "n": "Unlocking a Myth: Beastmaster"
-    },
-    {
-     "n": "Unlocking a Myth: Black Mage"
-    },
-    {
-     "n": "Unlocking a Myth: Blue Mage"
-    },
-    {
-     "n": "Unlocking a Myth: Corsair"
-    },
-    {
-     "n": "Unlocking a Myth: Dancer"
-    },
-    {
-     "n": "Unlocking a Myth: Dark Knight"
-    },
-    {
-     "n": "Unlocking a Myth: Dragoon"
-    },
-    {
-     "n": "Unlocking a Myth: Monk"
-    },
-    {
-     "n": "Unlocking a Myth: Ninja"
-    },
-    {
-     "n": "Unlocking a Myth: Paladin"
-    },
-    {
-     "n": "Unlocking a Myth: Puppetmaster"
-    },
-    {
-     "n": "Unlocking a Myth: Ranger"
-    },
-    {
-     "n": "Unlocking a Myth: Red Mage"
-    },
-    {
-     "n": "Unlocking a Myth: Samurai"
-    },
-    {
-     "n": "Unlocking a Myth: Scholar"
-    },
-    {
-     "n": "Unlocking a Myth: Summoner"
-    },
-    {
-     "n": "Unlocking a Myth: Thief"
-    },
-    {
-     "n": "Unlocking a Myth: Warrior"
-    },
-    {
-     "n": "Unlocking a Myth: White Mage"
     },
     {
      "n": "VW Op. #115: Valkurm Duster",
@@ -1545,6 +1536,9 @@
      "n": "Everyone's Grudging"
     },
     {
+     "n": "Fish Favors the Bold"
+    },
+    {
      "n": "Forge Your Destiny"
     },
     {
@@ -1593,6 +1587,9 @@
      "n": "Stop Your Whining"
     },
     {
+     "n": "Thanks for All the Fish"
+    },
+    {
      "n": "The Firebloom Tree"
     },
     {
@@ -1612,6 +1609,9 @@
     },
     {
      "n": "The Sacred Katana"
+    },
+    {
+     "n": "The Sahagin's Key"
     },
     {
      "n": "The Sahagin's Stash"
@@ -1644,16 +1644,13 @@
      "n": "Voidwatch Ops: Border Crossing"
     },
     {
-     "n": "VW Op. #054: Elshimo List",
-     "slug": "VW_Op._054:_Elshimo_List"
+     "n": "VW Op. 054: Elshimo List"
     },
     {
-     "n": "VW Op. #101: Detour to Zepwell",
-     "slug": "VW_Op._101:_Detour_to_Zepwell"
+     "n": "VW Op. 101: Detour to Zepwell"
     },
     {
-     "n": "VW Op. #115: Li'Telor Variant",
-     "slug": "VW_Op._115:_Li'Telor_Variant"
+     "n": "VW Op. 115: Li'Telor Variant"
     },
     {
      "n": "Wandering Souls"
@@ -1750,6 +1747,9 @@
     },
     {
      "n": "Luck of the Draw"
+    },
+    {
+     "n": "Lure of the Wildcat (Whitegate)"
     },
     {
      "n": "Moment of Truth"
@@ -1867,6 +1867,66 @@
     },
     {
      "n": "Two Horn the Savage"
+    },
+    {
+     "n": "Unlocking a Myth: Bard"
+    },
+    {
+     "n": "Unlocking a Myth: Beastmaster"
+    },
+    {
+     "n": "Unlocking a Myth: Black Mage"
+    },
+    {
+     "n": "Unlocking a Myth: Blue Mage"
+    },
+    {
+     "n": "Unlocking a Myth: Corsair"
+    },
+    {
+     "n": "Unlocking a Myth: Dancer"
+    },
+    {
+     "n": "Unlocking a Myth: Dark Knight"
+    },
+    {
+     "n": "Unlocking a Myth: Dragoon"
+    },
+    {
+     "n": "Unlocking a Myth: Monk"
+    },
+    {
+     "n": "Unlocking a Myth: Ninja"
+    },
+    {
+     "n": "Unlocking a Myth: Paladin"
+    },
+    {
+     "n": "Unlocking a Myth: Puppetmaster"
+    },
+    {
+     "n": "Unlocking a Myth: Ranger"
+    },
+    {
+     "n": "Unlocking a Myth: Red Mage"
+    },
+    {
+     "n": "Unlocking a Myth: Samurai"
+    },
+    {
+     "n": "Unlocking a Myth: Scholar"
+    },
+    {
+     "n": "Unlocking a Myth: Summoner"
+    },
+    {
+     "n": "Unlocking a Myth: Thief"
+    },
+    {
+     "n": "Unlocking a Myth: Warrior"
+    },
+    {
+     "n": "Unlocking a Myth: White Mage"
     },
     {
      "n": "Unwavering Resolve"
@@ -2021,6 +2081,9 @@
      "n": "Her Memories: Carnelian Footfalls"
     },
     {
+     "n": "Her Memories: Grave Resolve"
+    },
+    {
      "n": "Her Memories: Homecoming Queen"
     },
     {
@@ -2034,9 +2097,6 @@
     },
     {
      "n": "Her Memories: The Faux Pas"
-    },
-    {
-     "n": "Her Memories: The Grave Resolve"
     },
     {
      "n": "Her Memories: Verdure Footfalls"
@@ -2358,130 +2418,172 @@
      "n": "Destiny Odyssey"
     },
     {
-     "n": "Dominion Op #01 (Altepa)"
+     "n": "Dominion Op #01 (Altepa)",
+     "slug": "Dominion_Op_01_(Altepa)"
     },
     {
-     "n": "Dominion Op #01 (Grauberg)"
+     "n": "Dominion Op #01 (Grauberg)",
+     "slug": "Dominion_Op_01_(Grauberg)"
     },
     {
-     "n": "Dominion Op #01 (Uleguerand)"
+     "n": "Dominion Op #01 (Uleguerand)",
+     "slug": "Dominion_Op_01_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #02 (Altepa)"
+     "n": "Dominion Op #02 (Altepa)",
+     "slug": "Dominion_Op_02_(Altepa)"
     },
     {
-     "n": "Dominion Op #02 (Grauberg)"
+     "n": "Dominion Op #02 (Grauberg)",
+     "slug": "Dominion_Op_02_(Grauberg)"
     },
     {
-     "n": "Dominion Op #02 (Uleguerand)"
+     "n": "Dominion Op #02 (Uleguerand)",
+     "slug": "Dominion_Op_02_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #03 (Altepa)"
+     "n": "Dominion Op #03 (Altepa)",
+     "slug": "Dominion_Op_03_(Altepa)"
     },
     {
-     "n": "Dominion Op #03 (Grauberg)"
+     "n": "Dominion Op #03 (Grauberg)",
+     "slug": "Dominion_Op_03_(Grauberg)"
     },
     {
-     "n": "Dominion Op #03 (Uleguerand)"
+     "n": "Dominion Op #03 (Uleguerand)",
+     "slug": "Dominion_Op_03_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #04 (Altepa)"
+     "n": "Dominion Op #04 (Altepa)",
+     "slug": "Dominion_Op_04_(Altepa)"
     },
     {
-     "n": "Dominion Op #04 (Grauberg)"
+     "n": "Dominion Op #04 (Grauberg)",
+     "slug": "Dominion_Op_04_(Grauberg)"
     },
     {
-     "n": "Dominion Op #04 (Uleguerand)"
+     "n": "Dominion Op #04 (Uleguerand)",
+     "slug": "Dominion_Op_04_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #05 (Altepa)"
+     "n": "Dominion Op #05 (Altepa)",
+     "slug": "Dominion_Op_05_(Altepa)"
     },
     {
-     "n": "Dominion Op #05 (Grauberg)"
+     "n": "Dominion Op #05 (Grauberg)",
+     "slug": "Dominion_Op_05_(Grauberg)"
     },
     {
-     "n": "Dominion Op #05 (Uleguerand)"
+     "n": "Dominion Op #05 (Uleguerand)",
+     "slug": "Dominion_Op_05_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #06 (Altepa)"
+     "n": "Dominion Op #06 (Altepa)",
+     "slug": "Dominion_Op_06_(Altepa)"
     },
     {
-     "n": "Dominion Op #06 (Grauberg)"
+     "n": "Dominion Op #06 (Grauberg)",
+     "slug": "Dominion_Op_06_(Grauberg)"
     },
     {
-     "n": "Dominion Op #06 (Uleguerand)"
+     "n": "Dominion Op #06 (Uleguerand)",
+     "slug": "Dominion_Op_06_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #07 (Altepa)"
+     "n": "Dominion Op #07 (Altepa)",
+     "slug": "Dominion_Op_07_(Altepa)"
     },
     {
-     "n": "Dominion Op #07 (Grauberg)"
+     "n": "Dominion Op #07 (Grauberg)",
+     "slug": "Dominion_Op_07_(Grauberg)"
     },
     {
-     "n": "Dominion Op #07 (Uleguerand)"
+     "n": "Dominion Op #07 (Uleguerand)",
+     "slug": "Dominion_Op_07_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #08 (Altepa)"
+     "n": "Dominion Op #08 (Altepa)",
+     "slug": "Dominion_Op_08_(Altepa)"
     },
     {
-     "n": "Dominion Op #08 (Grauberg)"
+     "n": "Dominion Op #08 (Grauberg)",
+     "slug": "Dominion_Op_08_(Grauberg)"
     },
     {
-     "n": "Dominion Op #08 (Uleguerand)"
+     "n": "Dominion Op #08 (Uleguerand)",
+     "slug": "Dominion_Op_08_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #09 (Altepa)"
+     "n": "Dominion Op #09 (Altepa)",
+     "slug": "Dominion_Op_09_(Altepa)"
     },
     {
-     "n": "Dominion Op #09 (Grauberg)"
+     "n": "Dominion Op #09 (Grauberg)",
+     "slug": "Dominion_Op_09_(Grauberg)"
     },
     {
-     "n": "Dominion Op #09 (Uleguerand)"
+     "n": "Dominion Op #09 (Uleguerand)",
+     "slug": "Dominion_Op_09_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #10 (Altepa)"
+     "n": "Dominion Op #10 (Altepa)",
+     "slug": "Dominion_Op_10_(Altepa)"
     },
     {
-     "n": "Dominion Op #10 (Grauberg)"
+     "n": "Dominion Op #10 (Grauberg)",
+     "slug": "Dominion_Op_10_(Grauberg)"
     },
     {
-     "n": "Dominion Op #10 (Uleguerand)"
+     "n": "Dominion Op #10 (Uleguerand)",
+     "slug": "Dominion_Op_10_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #11 (Altepa)"
+     "n": "Dominion Op #11 (Altepa)",
+     "slug": "Dominion_Op_11_(Altepa)"
     },
     {
-     "n": "Dominion Op #11 (Grauberg)"
+     "n": "Dominion Op #11 (Grauberg)",
+     "slug": "Dominion_Op_11_(Grauberg)"
     },
     {
-     "n": "Dominion Op #11 (Uleguerand)"
+     "n": "Dominion Op #11 (Uleguerand)",
+     "slug": "Dominion_Op_11_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #12 (Altepa)"
+     "n": "Dominion Op #12 (Altepa)",
+     "slug": "Dominion_Op_12_(Altepa)"
     },
     {
-     "n": "Dominion Op #12 (Grauberg)"
+     "n": "Dominion Op #12 (Grauberg)",
+     "slug": "Dominion_Op_12_(Grauberg)"
     },
     {
-     "n": "Dominion Op #12 (Uleguerand)"
+     "n": "Dominion Op #12 (Uleguerand)",
+     "slug": "Dominion_Op_12_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #13 (Altepa)"
+     "n": "Dominion Op #13 (Altepa)",
+     "slug": "Dominion_Op_13_(Altepa)"
     },
     {
-     "n": "Dominion Op #13 (Grauberg)"
+     "n": "Dominion Op #13 (Grauberg)",
+     "slug": "Dominion_Op_13_(Grauberg)"
     },
     {
-     "n": "Dominion Op #13 (Uleguerand)"
+     "n": "Dominion Op #13 (Uleguerand)",
+     "slug": "Dominion_Op_13_(Uleguerand)"
     },
     {
-     "n": "Dominion Op #14 (Altepa)"
+     "n": "Dominion Op #14 (Altepa)",
+     "slug": "Dominion_Op_14_(Altepa)"
     },
     {
-     "n": "Dominion Op #14 (Grauberg)"
+     "n": "Dominion Op #14 (Grauberg)",
+     "slug": "Dominion_Op_14_(Grauberg)"
     },
     {
-     "n": "Dominion Op #14 (Uleguerand)"
+     "n": "Dominion Op #14 (Uleguerand)",
+     "slug": "Dominion_Op_14_(Uleguerand)"
     },
     {
      "n": "Dropping The Bomb"
@@ -2850,6 +2952,9 @@
      "n": "Empty Nest"
     },
     {
+     "n": "Endeavoring to Awaken"
+    },
+    {
      "n": "Epiphany"
     },
     {
@@ -2958,6 +3063,9 @@
      "n": "Poisoning the Well"
     },
     {
+     "n": "Quiescence"
+    },
+    {
      "n": "Raptor Rapture"
     },
     {
@@ -2995,6 +3103,9 @@
     },
     {
      "n": "The Secret to Success"
+    },
+    {
+     "n": "The Silent Forest"
     },
     {
      "n": "The Starving"
@@ -3055,6 +3166,9 @@
     },
     {
      "n": "Western Waypoints, Ho!"
+    },
+    {
+     "n": "Winds of Eternity"
     }
    ]
   },

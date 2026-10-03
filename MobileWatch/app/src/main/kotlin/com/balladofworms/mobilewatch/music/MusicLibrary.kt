@@ -24,6 +24,8 @@ class MusicTrack(
     val durationMs: Long = 0
 ) {
     val isBgw get() = bgw != null
+    /** False only for a .bgw file in a format this app doesn't know (none of FFXI's). */
+    val playable: Boolean get() = bgw?.playable ?: true
     var cat: CatalogEntry? = null
 
     val number: Int? = Regex("(\\d+)").find(fileName.substringBeforeLast('.'))?.value?.toIntOrNull()
@@ -73,15 +75,81 @@ object MusicLibrary {
     private fun prefs(ctx: Context) = ctx.getSharedPreferences("mobilewatch", Context.MODE_PRIVATE)
     private fun cacheFile(ctx: Context) = File(ctx.filesDir, "music_library.json")
 
-    fun treeUri(ctx: Context): Uri? = prefs(ctx).getString("music_tree", null)?.let(Uri::parse)
+    // ── folders: any number can be added; each one adds to the library ──
+    fun treeUris(ctx: Context): List<Uri> {
+        val p = prefs(ctx)
+        val list = runCatching {
+            val a = JSONArray(p.getString("music_trees", "[]"))
+            List(a.length()) { a.getString(it) }
+        }.getOrDefault(emptyList()).toMutableList()
+        // Before several folders were possible there was just one.
+        p.getString("music_tree", null)?.let { old ->
+            if (old !in list) list.add(0, old)
+            p.edit().remove("music_tree").putString("music_trees", JSONArray(list).toString()).apply()
+        }
+        return list.map(Uri::parse)
+    }
 
-    fun setTree(ctx: Context, uri: Uri) {
+    private fun saveTrees(ctx: Context, list: List<Uri>) {
+        prefs(ctx).edit().putString("music_trees", JSONArray(list.map { it.toString() }).toString()).apply()
+    }
+
+    /** Add a folder to the library (adding one that's already there brings back any of its
+     *  tracks that were removed). */
+    fun addTree(ctx: Context, uri: Uri) {
         runCatching {
             ctx.contentResolver.takePersistableUriPermission(uri,
                 android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        prefs(ctx).edit().putString("music_tree", uri.toString()).apply()
-        cacheFile(ctx).delete()
+        val list = treeUris(ctx).toMutableList()
+        if (list.none { it == uri }) list.add(uri)
+        saveTrees(ctx, list)
+        val pre = "$uri/document/"
+        saveRemoved(ctx, removed(ctx).filterNot { it.startsWith(pre) }.toSet())
+    }
+
+    /** Take a folder out of the library (its files are not touched). */
+    fun removeTree(ctx: Context, uri: Uri) {
+        runCatching {
+            ctx.contentResolver.releasePersistableUriPermission(uri,
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        saveTrees(ctx, treeUris(ctx).filter { it != uri })
+    }
+
+    /** A folder's name for showing: "Music/FFXI" from its tree id ("primary:Music/FFXI"). */
+    fun treeLabel(uri: Uri): String = runCatching {
+        DocumentsContract.getTreeDocumentId(uri).substringAfter(':')
+    }.getOrDefault("").ifBlank { "Phone storage" }
+
+    // ── tracks taken off the list (by file); the files are untouched ──
+    fun removed(ctx: Context): Set<String> =
+        prefs(ctx).getStringSet("music_removed", emptySet())!!.toSet()
+
+    private fun saveRemoved(ctx: Context, set: Set<String>) {
+        prefs(ctx).edit().putStringSet("music_removed", set).apply()
+    }
+
+    fun removeTracks(ctx: Context, uris: Collection<String>) {
+        saveRemoved(ctx, removed(ctx) + uris)
+    }
+
+    /**
+     * What the list shows: everything found, minus removed tracks and minus duplicate copies of
+     * the same music. The game ships a couple of tracks twice (Zilart's Grav'iton and Revenant
+     * Maiden again as Promathia files); when both copies are there, only the first is listed.
+     */
+    fun visible(ctx: Context, all: List<MusicTrack>): List<MusicTrack> {
+        val gone = removed(ctx)
+        val kept = all.filter { it.uri !in gone }
+        val hide = HashSet<String>()
+        kept.filter { it.cat != null }.groupBy { it.cat!!.title.lowercase() }.values
+            .filter { it.size > 1 }
+            .forEach { same ->
+                val keep = same.minByOrNull { it.number ?: Int.MAX_VALUE }
+                same.filter { it !== keep }.forEach { hide.add(it.uri) }
+            }
+        return kept.filter { it.uri !in hide }
     }
 
     fun favourites(ctx: Context): MutableSet<String> =
@@ -89,6 +157,25 @@ object MusicLibrary {
 
     fun saveFavourites(ctx: Context, favs: Set<String>) {
         prefs(ctx).edit().putStringSet("music_favs", favs.toSet()).apply()
+    }
+
+    // ── playlists: name -> tracks (by the same key as favourites), in the order added ──
+    fun playlists(ctx: Context): LinkedHashMap<String, List<String>> {
+        val out = LinkedHashMap<String, List<String>>()
+        runCatching {
+            val o = JSONObject(prefs(ctx).getString("music_playlists", "{}")!!)
+            for (k in o.keys()) {
+                val a = o.getJSONArray(k)
+                out[k] = List(a.length()) { a.getString(it) }
+            }
+        }
+        return out
+    }
+
+    fun savePlaylists(ctx: Context, lists: Map<String, List<String>>) {
+        val o = JSONObject()
+        lists.forEach { (k, v) -> o.put(k, JSONArray(v)) }
+        prefs(ctx).edit().putString("music_playlists", o.toString()).apply()
     }
 
     /** Favourites key a track by folder + file name, so they survive a re-scan. */
@@ -119,14 +206,22 @@ object MusicLibrary {
         return tracks
     }
 
-    /** Walk the picked folder (and every folder inside it). Slow-ish: run off the main thread. */
+    /** Walk every added folder (and every folder inside them). Slow-ish: run off the main thread. */
     fun scan(ctx: Context): List<MusicTrack> {
-        val tree = treeUri(ctx) ?: return emptyList()
-        val cr = ctx.contentResolver
         val out = ArrayList<MusicTrack>()
+        for (tree in treeUris(ctx)) runCatching { scanTree(ctx, tree, out) }
+        recognise(ctx, out)
+        runCatching { cacheFile(ctx).writeText(JSONArray(out.map { it.toJson() }).toString()) }
+        return out
+    }
+
+    private fun scanTree(ctx: Context, tree: Uri, out: MutableList<MusicTrack>) {
+        val cr = ctx.contentResolver
         val rootId = DocumentsContract.getTreeDocumentId(tree)
         val queue = ArrayDeque<Pair<String, String>>()       // (documentId, folder path)
-        queue.add(rootId to "")
+        // Paths start with the folder's own location ("Music/FFXI/sound2/..."), so tracks in
+        // different added folders never share a path, and a picked "sound2" folder still counts.
+        queue.add(rootId to rootId.substringAfter(':'))
         val cols = arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID,
             DocumentsContract.Document.COLUMN_DISPLAY_NAME,
             DocumentsContract.Document.COLUMN_MIME_TYPE,
@@ -157,7 +252,8 @@ object MusicLibrary {
                                 }
                             }.getOrNull() ?: continue
                             val info = BgwInfo.parse(head) ?: continue
-                            if (info.playable) out.add(MusicTrack(uri.toString(), name, path, size, info))
+                            // Listed even if it couldn't be played, so the library matches the PC.
+                            out.add(MusicTrack(uri.toString(), name, path, size, info))
                         } else if (ext in AUDIO_EXT) {
                             var title: String? = null; var artist: String? = null
                             var album: String? = null; var ms = 0L
@@ -177,9 +273,6 @@ object MusicLibrary {
                 }
             }
         }
-        recognise(ctx, out)
-        runCatching { cacheFile(ctx).writeText(JSONArray(out.map { it.toJson() }).toString()) }
-        return out
     }
 
     private fun recognise(ctx: Context, tracks: List<MusicTrack>) {

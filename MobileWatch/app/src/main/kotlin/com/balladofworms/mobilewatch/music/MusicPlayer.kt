@@ -47,6 +47,12 @@ object MusicPlayer {
     var favourites by mutableStateOf<Set<String>>(emptySet())
         private set
     var message by mutableStateOf<String?>(null)
+    var folders by mutableStateOf<List<Uri>>(emptyList())
+        private set
+    var playlists by mutableStateOf<Map<String, List<String>>>(emptyMap())
+        private set
+    /** The playlist being shown, or null for the whole library. */
+    var activePlaylist by mutableStateOf<String?>(null)
     var hasFolder by mutableStateOf(false)
         private set
 
@@ -74,15 +80,17 @@ object MusicPlayer {
         repeat = p.getBoolean("music_repeat", true)
         shuffle = p.getBoolean("music_shuffle", false)
         favourites = MusicLibrary.favourites(app)
-        hasFolder = MusicLibrary.treeUri(app) != null
+        playlists = MusicLibrary.playlists(app)
+        folders = MusicLibrary.treeUris(app)
+        hasFolder = folders.isNotEmpty()
         // Pause when headphones are unplugged, like any music app.
         androidx.core.content.ContextCompat.registerReceiver(app, object : BroadcastReceiver() {
             override fun onReceive(c: Context?, i: Intent?) { if (playing) togglePause() }
         }, IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY),
             androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED)
         worker.execute {
-            val cached = MusicLibrary.cached(app)
-            main.post { if (tracks.isEmpty()) tracks = cached }
+            val cached = MusicLibrary.visible(app, MusicLibrary.cached(app))
+            main.post { if (tracks.isEmpty()) { tracks = cached; adoptFavourites() } }
         }
         session = MediaSession(app, "MobileWatch").apply {
             setCallback(object : MediaSession.Callback() {
@@ -94,6 +102,81 @@ object MusicPlayer {
                 override fun onStop() = stop()
             })
         }
+    }
+
+    // ── zone music: a short taste of a zone's theme on its page ──────
+    //
+    // Opening a zone in the Zones tab plays the start of that zone's music from your library,
+    // fading in, then out after a few seconds. It never interrupts: nothing happens if music
+    // is already playing (this player or any other app), or if it's switched off in Settings.
+    // It shows no notification and doesn't touch the now-playing bar.
+    private var preview: Backend? = null
+    const val CANT_PLAY = "This file can't be played -- it may be damaged or in an unknown format."
+    private var previewToken = 0
+
+    fun zoneMusicOn(): Boolean =
+        app.getSharedPreferences("mobilewatch", Context.MODE_PRIVATE).getBoolean("zone_music", true)
+
+    fun setZoneMusicOn(on: Boolean) {
+        app.getSharedPreferences("mobilewatch", Context.MODE_PRIVATE).edit().putBoolean("zone_music", on).apply()
+        if (!on) endPreview()
+    }
+
+    /** The library track that's this zone's music, or null (see ZoneMusic for the matching). */
+    fun zoneTrack(zoneName: String, region: String, type: String = ""): MusicTrack? =
+        ZoneMusic.pick(tracks, zoneName, region, type)
+
+    fun previewZone(zoneName: String, region: String, type: String = "") {
+        if (!started || !zoneMusicOn()) return
+        val am = app.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        if (playing || loading || am.isMusicActive) return
+        val t = zoneTrack(zoneName, region, type)?.takeIf { it.playable } ?: return
+        endPreview(fade = false)
+        val token = ++previewToken
+        loader.execute {
+            val b: Backend? = runCatching {
+                if (t.bgw != null) {
+                    val data = app.contentResolver.openInputStream(Uri.parse(t.uri))!!.use { it.readBytes() }
+                    BgwBackend(data, t.bgw, false, 0L) { }
+                } else MediaBackend(app, Uri.parse(t.uri), false, 0L) { }
+            }.getOrNull()
+            main.post {
+                if (token != previewToken || playing || b == null) { b?.release(); return@post }
+                preview = b
+                b.setVolume(0f)
+                b.start()
+                ramp(b, token, 0f, 1f, 1200) {                 // fade in
+                    main.postDelayed({
+                        if (token == previewToken) ramp(b, token, 1f, 0f, 3500) { endPreview(fade = false) }
+                    }, 9000)                                    // ...hold, then fade out
+                }
+            }
+        }
+    }
+
+    /** Stop the zone music (leaving the zone page): a quick fade, then silence. */
+    fun endPreview(fade: Boolean = true) {
+        val b = preview ?: return
+        val token = ++previewToken
+        if (fade) ramp(b, token, 0.6f, 0f, 400) { if (preview === b) { b.release(); preview = null } }
+        else { b.release(); preview = null }
+    }
+
+    private fun ramp(b: Backend, token: Int, from: Float, to: Float, ms: Long, then: () -> Unit) {
+        val steps = maxOf(1, (ms / 50).toInt())
+        var i = 0
+        val r = object : Runnable {
+            override fun run() {
+                if (preview !== b || (token != previewToken && to != 0f)) return
+                i++
+                val f = i.toFloat() / steps
+                // Ease the level so the fade sounds even to the ear.
+                val v = from + (to - from) * f
+                b.setVolume(v * v)
+                if (i < steps) main.postDelayed(this, 50) else then()
+            }
+        }
+        main.post(r)
     }
 
     // ── notification / lock screen ───────────────────────────────────
@@ -140,10 +223,46 @@ object MusicPlayer {
     }
 
     // ── library ──────────────────────────────────────────────────────
-    fun setFolder(uri: Uri) {
-        MusicLibrary.setTree(app, uri)
-        hasFolder = true
+    /** Add a folder; the folders already added stay. */
+    fun addFolder(uri: Uri) {
+        MusicLibrary.addTree(app, uri)
+        folders = MusicLibrary.treeUris(app)
+        hasFolder = folders.isNotEmpty()
         rescan()
+    }
+
+    /** Take a folder out of the library (nothing on the phone is deleted). */
+    fun removeFolder(uri: Uri) {
+        MusicLibrary.removeTree(app, uri)
+        folders = MusicLibrary.treeUris(app)
+        hasFolder = folders.isNotEmpty()
+        val pre = "$uri/document/"
+        if (current?.uri?.startsWith(pre) == true) stop()
+        tracks = tracks.filterNot { it.uri.startsWith(pre) }
+        message = "Removed ${MusicLibrary.treeLabel(uri)} from the library"
+    }
+
+    /** Take tracks off the list (their files are untouched; adding their folder again brings
+     *  them back). */
+    fun removeTracks(list: List<MusicTrack>) {
+        val uris = list.map { it.uri }.toSet()
+        MusicLibrary.removeTracks(app, uris)
+        if (current?.uri?.let { it in uris } == true) stop()
+        tracks = tracks.filterNot { it.uri in uris }
+        message = "Removed ${list.size} track${if (list.size == 1) "" else "s"} from the list"
+    }
+
+    /** Favourites saved before several folders were possible were keyed by the path inside the
+     *  one folder; match them up to the same tracks' new keys. */
+    private fun adoptFavourites() {
+        val keys = tracks.map { MusicLibrary.favKey(it) }
+        val known = keys.toSet()
+        val stale = favourites.filter { it !in known }
+        if (stale.isEmpty()) return
+        val moved = stale.mapNotNull { old -> keys.firstOrNull { it.endsWith("/$old") || it.endsWith(old) }?.let { old to it } }
+        if (moved.isEmpty()) return
+        favourites = favourites - moved.map { it.first }.toSet() + moved.map { it.second }.toSet()
+        MusicLibrary.saveFavourites(app, favourites)
     }
 
     fun rescan() {
@@ -151,15 +270,65 @@ object MusicPlayer {
         scanning = true
         worker.execute {
             val found = runCatching { MusicLibrary.scan(app) }.getOrDefault(emptyList())
+            val shown = MusicLibrary.visible(app, found)
             main.post {
-                tracks = found
+                tracks = shown
+                adoptFavourites()
                 scanning = false
-                message = if (found.isEmpty()) "No music found in that folder" else "Found ${found.size} tracks"
+                message = if (shown.isEmpty()) "No music found" else "Found ${shown.size} tracks"
             }
         }
     }
 
     fun isFav(t: MusicTrack) = MusicLibrary.favKey(t) in favourites
+
+    // ── playlists ────────────────────────────────────────────────────
+    private fun putPlaylists(p: Map<String, List<String>>) {
+        playlists = p
+        MusicLibrary.savePlaylists(app, p)
+    }
+
+    /** The tracks of a playlist, in its order (ones no longer in the library are skipped). */
+    fun playlistTracks(name: String): List<MusicTrack> {
+        val byKey = tracks.associateBy { MusicLibrary.favKey(it) }
+        return playlists[name].orEmpty().mapNotNull { byKey[it] }
+    }
+
+    fun createPlaylist(name: String, start: List<MusicTrack> = emptyList()): Boolean {
+        val n = name.trim()
+        if (n.isEmpty() || n in playlists) return false
+        putPlaylists(playlists + (n to start.map { MusicLibrary.favKey(it) }.distinct()))
+        message = "Created \"$n\""
+        return true
+    }
+
+    fun addToPlaylist(name: String, list: List<MusicTrack>) {
+        val cur = playlists[name] ?: return
+        val add = list.map { MusicLibrary.favKey(it) }.filter { it !in cur }
+        putPlaylists(playlists + (name to cur + add))
+        message = "Added ${add.size} to \"$name\""
+    }
+
+    fun removeFromPlaylist(name: String, list: List<MusicTrack>) {
+        val cur = playlists[name] ?: return
+        val drop = list.map { MusicLibrary.favKey(it) }.toSet()
+        putPlaylists(playlists + (name to cur.filterNot { it in drop }))
+    }
+
+    fun renamePlaylist(old: String, new: String): Boolean {
+        val n = new.trim()
+        if (n.isEmpty() || (n != old && n in playlists)) return false
+        val rebuilt = LinkedHashMap<String, List<String>>()
+        playlists.forEach { (k, v) -> rebuilt[if (k == old) n else k] = v }
+        putPlaylists(rebuilt)
+        if (activePlaylist == old) activePlaylist = n
+        return true
+    }
+
+    fun deletePlaylist(name: String) {
+        putPlaylists(playlists - name)
+        if (activePlaylist == name) activePlaylist = null
+    }
 
     /** Favourite (or un-favourite) several tracks at once. */
     fun setFavs(list: List<MusicTrack>, on: Boolean) {
@@ -177,12 +346,14 @@ object MusicPlayer {
     // ── playback ─────────────────────────────────────────────────────
     /** Play [t]; [order] is the list as shown, which next/previous walk. */
     fun play(t: MusicTrack, order: List<MusicTrack> = queue) {
+        if (!t.playable) { message = CANT_PLAY; return }
         queue = order
         current?.let { if (it !== t) history.add(it) }
         start(t, 0L)
     }
 
     private fun start(t: MusicTrack, fromMs: Long, autoPlay: Boolean = true) {
+        endPreview(fade = false)
         release()
         current = t
         loading = true
@@ -223,7 +394,7 @@ object MusicPlayer {
     }
 
     fun next() {
-        val pool = queue.ifEmpty { tracks }
+        val pool = queue.ifEmpty { tracks }.filter { it.playable }
         if (pool.isEmpty()) return
         val cur = current
         val at = pool.indexOfFirst { it.uri == cur?.uri }          // by file: a rescan makes new objects
@@ -236,7 +407,7 @@ object MusicPlayer {
     fun previous() {
         // A few seconds in, "previous" restarts the track, like most players.
         if (positionMs() > 3000) { seekTo(0L); return }
-        val pool = queue.ifEmpty { tracks }
+        val pool = queue.ifEmpty { tracks }.filter { it.playable }
         if (pool.isEmpty()) return
         val at = pool.indexOfFirst { it.uri == current?.uri }
         val prev = if (shuffle && history.isNotEmpty()) history.removeAt(history.size - 1)
@@ -310,6 +481,7 @@ object MusicPlayer {
 
 private interface Backend {
     val begun: Boolean               // start() has been called
+    fun setVolume(v: Float)
     fun start()
     fun pause()
     fun resume()
@@ -327,7 +499,7 @@ private class BgwBackend(
     data: ByteArray, private val info: BgwInfo, private val looping: Boolean,
     startMs: Long, private val onEnd: () -> Unit
 ) : Backend {
-    private val stream = BgwStream(data, info)
+    private val stream = openBgw(data, info)
     private val rate = info.sampleRate
     private val track: AudioTrack
     private val segments = ArrayList<LongArray>()      // [frames written before it, track frame]
@@ -355,6 +527,7 @@ private class BgwBackend(
 
     override var begun = false
     override fun start() { begun = true; track.play(); thread.start() }
+    override fun setVolume(v: Float) { runCatching { track.setVolume(v) } }
     override fun pause() { paused = true; track.pause() }
     override fun resume() { paused = false; track.play() }
 
@@ -422,6 +595,7 @@ private class MediaBackend(
 
     override var begun = false
     override fun start() { begun = true; mp.start() }
+    override fun setVolume(v: Float) { runCatching { mp.setVolume(v, v) } }
     override fun pause() = mp.pause()
     override fun resume() = mp.start()
     override fun positionMs(): Long = runCatching { mp.currentPosition.toLong() }.getOrDefault(0L)

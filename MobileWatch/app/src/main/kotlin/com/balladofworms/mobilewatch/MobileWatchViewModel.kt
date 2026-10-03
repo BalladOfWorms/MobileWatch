@@ -134,6 +134,7 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
             trustDb = withContext(Dispatchers.IO) { runCatching { TrustDb.load(app) }.getOrNull() }
             wsListDb = withContext(Dispatchers.IO) { runCatching { WsListDb.load(app) }.getOrNull() }
             questDb = withContext(Dispatchers.IO) { runCatching { QuestDb.load(app) }.getOrNull() }
+            migrateQuestTicks()
             itemDb = items
             mobDb = mobs
             zoneInfoDb = zinfo
@@ -318,6 +319,44 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
     fun questDoneCount(area: String): Int {
         val done = questTicks[area] ?: return 0
         return questArea(area)?.quests?.count { it.name.lowercase() in done } ?: 0
+    }
+
+    /**
+     * Keep ticks when the quest list changes: a quest that was renamed, or moved to another
+     * area (the Unlocking a Myth quests now file under Aht Urhgan, as they do in the game's
+     * log), carries its tick to its new name and place. Runs once each time the list loads;
+     * a tick that already matches is left alone, so running it again changes nothing.
+     */
+    private fun migrateQuestTicks() {
+        val db = questDb ?: return
+        val renamed = mapOf(
+            "lure of the wildcat" to mapOf(
+                "sandoria" to "lure of the wildcat (san d'oria)",
+                "windurst" to "lure of the wildcat (windurst)",
+                "jeuno" to "lure of the wildcat (jeuno)",
+                "aht_urhgan" to "lure of the wildcat (whitegate)"),
+            "her memories: the grave resolve" to mapOf("" to "her memories: grave resolve"),
+            "vw op. #054: elshimo list" to mapOf("" to "vw op. 054: elshimo list"),
+            "vw op. #101: detour to zepwell" to mapOf("" to "vw op. 101: detour to zepwell"),
+            "vw op. #115: li'telor variant" to mapOf("" to "vw op. 115: li'telor variant"))
+        val names = db.areas.associate { a -> a.key to a.quests.map { it.name.lowercase() }.toSet() }
+        val m = HashMap<String, MutableSet<String>>()
+        var changed = false
+        for ((area, ticks) in questTicks) {
+            for (t in ticks) {
+                var name = t
+                val r = renamed[t]
+                if (r != null) { name = r[area] ?: r[""] ?: t; if (name != t) changed = true }
+                var dest = area
+                if (names[area]?.contains(name) != true) {
+                    names.entries.firstOrNull { name in it.value }?.let { dest = it.key; changed = true }
+                }
+                m.getOrPut(dest) { HashSet() }.add(name)
+            }
+        }
+        if (!changed) return
+        questTicks = m
+        writeQuestTicks(m)
     }
 
     /** Wipe one area's ticks. Offered on the area page so a mis-tap is undoable. */

@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +16,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.QueueMusic
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Favorite
@@ -59,6 +67,9 @@ internal fun MusicHeaderButton(onClick: () -> Unit) {
     }
 }
 
+/** The now-playing bar's colour -- blue, so it stands apart from the gold of the playing row. */
+private val NowBlue = androidx.compose.ui.graphics.Color(0xFF4FA3FF)
+
 private fun fmtTime(ms: Long): String {
     val s = (ms / 1000).coerceAtLeast(0)
     return "%d:%02d".format(s / 60, s % 60)
@@ -77,7 +88,7 @@ internal fun MusicScreen(onBack: () -> Unit) {
             askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS)
     }
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-        if (uri != null) MusicPlayer.setFolder(uri)
+        if (uri != null) MusicPlayer.addFolder(uri)
     }
     val msg = MusicPlayer.message
     LaunchedEffect(msg) {
@@ -97,15 +108,20 @@ internal fun MusicScreen(onBack: () -> Unit) {
 
     val all = MusicPlayer.tracks
     val favs = MusicPlayer.favourites
-    val shown = remember(all, query, favOnly, favs) {
+    val playlist = MusicPlayer.activePlaylist
+    val lists = MusicPlayer.playlists
+    // Name prompt for new / renamed playlists: (title, starting text, what to do with the name).
+    var namePrompt by remember { mutableStateOf<Triple<String, String, (String) -> Boolean>?>(null) }
+    val shown = remember(all, query, favOnly, favs, playlist, lists) {
         val q = query.trim().lowercase()
-        all.asSequence()
-            .filter { !favOnly || MusicPlayer.isFav(it) }
+        // A playlist keeps its own order; the library is A-Z.
+        val base = if (playlist != null) MusicPlayer.playlistTracks(playlist).asSequence()
+                   else all.asSequence().sortedWith(compareBy({ it.title.lowercase() }, { it.fileName }))
+        base.filter { !favOnly || MusicPlayer.isFav(it) }
             .filter {
                 q.isEmpty() || it.title.lowercase().contains(q) || it.expansion.lowercase().contains(q) ||
                     it.composer.lowercase().contains(q) || it.fileName.lowercase().contains(q)
             }
-            .sortedWith(compareBy({ it.title.lowercase() }, { it.fileName }))
             .toList()
     }
 
@@ -124,6 +140,40 @@ internal fun MusicScreen(onBack: () -> Unit) {
                             if (allFav) "Remove from favourites" else "Add to favourites",
                             tint = if (allFav) AccentGold else TextPrimary)
                     }
+                    Box {
+                        var addMenu by remember { mutableStateOf(false) }
+                        IconButton(onClick = { addMenu = true }) {
+                            Icon(Icons.Filled.PlaylistAdd, "Add to playlist", tint = TextPrimary)
+                        }
+                        DropdownMenu(expanded = addMenu, onDismissRequest = { addMenu = false },
+                            modifier = Modifier.background(CharcoalDark)) {
+                            DropdownMenuItem(
+                                text = { Text("New playlist\u2026", color = AccentGold) },
+                                leadingIcon = { Icon(Icons.Filled.Add, null, tint = AccentGold) },
+                                onClick = {
+                                    addMenu = false
+                                    val pick = chosen
+                                    namePrompt = Triple<String, String, (String) -> Boolean>("New playlist", "") { n ->
+                                        MusicPlayer.createPlaylist(n, pick).also { if (it) selectedList = emptyList() }
+                                    }
+                                })
+                            lists.keys.filter { it != playlist }.forEach { name ->
+                                DropdownMenuItem(
+                                    text = { Text(name, color = TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                                    leadingIcon = { Icon(Icons.Filled.QueueMusic, null, tint = TextMuted) },
+                                    onClick = { addMenu = false; MusicPlayer.addToPlaylist(name, chosen); selectedList = emptyList() })
+                            }
+                        }
+                    }
+                    IconButton(onClick = {
+                        // In a playlist: take them out of it. In the library: off the list.
+                        if (playlist != null) MusicPlayer.removeFromPlaylist(playlist, chosen)
+                        else MusicPlayer.removeTracks(chosen)
+                        selectedList = emptyList()
+                    }) {
+                        Icon(Icons.Filled.Delete, if (playlist != null) "Remove from playlist" else "Remove from list",
+                            tint = TextPrimary)
+                    }
                     IconButton(onClick = {
                         // Play the selection as its own queue, in list order.
                         if (chosen.isNotEmpty()) MusicPlayer.play(chosen.first(), chosen)
@@ -132,7 +182,7 @@ internal fun MusicScreen(onBack: () -> Unit) {
                         Icon(Icons.Filled.PlayArrow, "Play selected", tint = AccentGold)
                     }
                 })
-            } else GradientTopBar("Music", onBack = onBack, actions = {
+            } else GradientTopBar(playlist ?: "Music", onBack = onBack, actions = {
                 if (shown.isNotEmpty()) IconButton(onClick = { selectedList = shown.map { it.uri } }) {
                     Icon(Icons.Filled.SelectAll, "Select all", tint = TextMuted)
                 }
@@ -140,11 +190,85 @@ internal fun MusicScreen(onBack: () -> Unit) {
                     Icon(if (favOnly) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         "Favourites only", tint = if (favOnly) AccentGold else TextMuted)
                 }
-                if (MusicPlayer.hasFolder) IconButton(onClick = { MusicPlayer.rescan() }) {
-                    Icon(Icons.Filled.Refresh, "Rescan folder", tint = TextMuted)
+                if (MusicPlayer.hasFolder) Box {
+                    var listMenu by remember { mutableStateOf(false) }
+                    IconButton(onClick = { listMenu = true }) {
+                        Icon(Icons.Filled.QueueMusic, "Playlists",
+                            tint = if (playlist != null) AccentGold else TextMuted)
+                    }
+                    DropdownMenu(expanded = listMenu, onDismissRequest = { listMenu = false },
+                        modifier = Modifier.background(CharcoalDark)) {
+                        DropdownMenuItem(
+                            text = { Text("All tracks", color = TextPrimary) },
+                            leadingIcon = { Icon(Icons.Filled.LibraryMusic, null, tint = TextMuted) },
+                            trailingIcon = { if (playlist == null) Icon(Icons.Filled.Check, null, tint = AccentGold) },
+                            onClick = { listMenu = false; MusicPlayer.activePlaylist = null; selectedList = emptyList() })
+                        lists.forEach { (name, keys) ->
+                            DropdownMenuItem(
+                                text = { Text("$name  (${keys.size})", color = TextPrimary, maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis) },
+                                leadingIcon = { Icon(Icons.Filled.QueueMusic, null, tint = TextMuted) },
+                                trailingIcon = { if (playlist == name) Icon(Icons.Filled.Check, null, tint = AccentGold) },
+                                onClick = { listMenu = false; MusicPlayer.activePlaylist = name; selectedList = emptyList() })
+                        }
+                        HorizontalDivider(color = Selection)
+                        DropdownMenuItem(
+                            text = { Text("New playlist\u2026", color = AccentGold) },
+                            leadingIcon = { Icon(Icons.Filled.Add, null, tint = AccentGold) },
+                            onClick = {
+                                listMenu = false
+                                namePrompt = Triple<String, String, (String) -> Boolean>("New playlist", "") { n ->
+                                    MusicPlayer.createPlaylist(n).also { if (it) MusicPlayer.activePlaylist = n.trim() }
+                                }
+                            })
+                        if (playlist != null) {
+                            DropdownMenuItem(
+                                text = { Text("Rename \"$playlist\"\u2026", color = TextPrimary, maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis) },
+                                leadingIcon = { Icon(Icons.Filled.Edit, null, tint = TextMuted) },
+                                onClick = {
+                                    listMenu = false
+                                    namePrompt = Triple<String, String, (String) -> Boolean>("Rename playlist", playlist) { n -> MusicPlayer.renamePlaylist(playlist, n) }
+                                })
+                            DropdownMenuItem(
+                                text = { Text("Delete \"$playlist\"", color = TextPrimary, maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis) },
+                                leadingIcon = { Icon(Icons.Filled.Delete, null, tint = TextMuted) },
+                                onClick = { listMenu = false; MusicPlayer.deletePlaylist(playlist) })
+                        }
+                    }
                 }
-                IconButton(onClick = { pickFolder.launch(null) }) {
-                    Icon(Icons.Filled.FolderOpen, "Choose music folder", tint = TextMuted)
+                Box {
+                    var folderMenu by remember { mutableStateOf(false) }
+                    IconButton(onClick = {
+                        // No folders yet: go straight to the picker; otherwise show the folders.
+                        if (MusicPlayer.folders.isEmpty()) pickFolder.launch(null) else folderMenu = true
+                    }) {
+                        Icon(Icons.Filled.FolderOpen, "Music folders", tint = TextMuted)
+                    }
+                    DropdownMenu(expanded = folderMenu, onDismissRequest = { folderMenu = false },
+                        modifier = Modifier.background(CharcoalDark)) {
+                        DropdownMenuItem(
+                            text = { Text("Add a folder\u2026", color = AccentGold) },
+                            leadingIcon = { Icon(Icons.Filled.Add, null, tint = AccentGold) },
+                            onClick = { folderMenu = false; pickFolder.launch(null) })
+                        DropdownMenuItem(
+                            text = { Text("Rescan folders", color = TextPrimary) },
+                            leadingIcon = { Icon(Icons.Filled.Refresh, null, tint = TextMuted) },
+                            onClick = { folderMenu = false; MusicPlayer.rescan() })
+                        MusicPlayer.folders.forEach { f ->
+                            DropdownMenuItem(
+                                text = { Text(com.balladofworms.mobilewatch.music.MusicLibrary.treeLabel(f),
+                                    color = TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                                leadingIcon = { Icon(Icons.Filled.FolderOpen, null, tint = TextMuted) },
+                                trailingIcon = {
+                                    IconButton(onClick = { folderMenu = false; MusicPlayer.removeFolder(f) }) {
+                                        Icon(Icons.Filled.Close, "Remove this folder", tint = TextMuted)
+                                    }
+                                },
+                                onClick = { })
+                        }
+                    }
                 }
             })
         },
@@ -154,18 +278,10 @@ internal fun MusicScreen(onBack: () -> Unit) {
             when {
                 !MusicPlayer.hasFolder -> EmptyMusic(onPick = { pickFolder.launch(null) })
                 else -> {
-                    OutlinedTextField(
+                    CompactSearchField(
                         value = query, onValueChange = { query = it },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
-                        singleLine = true, shape = RoundedCornerShape(12.dp),
-                        leadingIcon = { Icon(Icons.Filled.Search, null) },
-                        trailingIcon = {
-                            if (query.isNotEmpty()) IconButton(onClick = { query = "" }) {
-                                Icon(Icons.Filled.Close, "Clear", tint = TextMuted)
-                            }
-                        },
-                        placeholder = { Text("Search track, expansion or composer", maxLines = 1,
-                            overflow = TextOverflow.Ellipsis) }
+                        placeholder = "Search track, expansion or composer",
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)
                     )
                     if (MusicPlayer.scanning) {
                         Row(Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -176,7 +292,9 @@ internal fun MusicScreen(onBack: () -> Unit) {
                         }
                     }
                     if (shown.isEmpty() && !MusicPlayer.scanning) {
-                        Text(if (favOnly) "No favourites yet \u2014 tap a heart to add one."
+                        Text(if (playlist != null && query.isEmpty() && !favOnly)
+                                 "This playlist is empty. Select tracks in All tracks, then add them with the playlist button."
+                             else if (favOnly) "No favourites yet \u2014 tap a heart to add one."
                              else if (all.isEmpty()) "No music found. Tap the folder button to choose another folder."
                              else "Nothing matches.",
                             color = TextMuted, fontSize = 13.sp, modifier = Modifier.padding(16.dp))
@@ -190,6 +308,28 @@ internal fun MusicScreen(onBack: () -> Unit) {
             }
         }
     }
+    namePrompt?.let { (title, start, action) ->
+        NameDialog(title, start, onDismiss = { namePrompt = null }) { name ->
+            if (action(name)) namePrompt = null
+            else MusicPlayer.message = "That name is empty or already used"
+        }
+    }
+}
+
+@Composable
+private fun NameDialog(title: String, start: String, onDismiss: () -> Unit, onOk: (String) -> Unit) {
+    var text by remember { mutableStateOf(start) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CharcoalDark,
+        title = { Text(title, color = AccentGold) },
+        text = {
+            OutlinedTextField(value = text, onValueChange = { text = it }, singleLine = true,
+                placeholder = { Text("Playlist name") })
+        },
+        confirmButton = { TextButton(onClick = { onOk(text) }) { Text("OK", color = AccentGold) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel", color = TextMuted) } }
+    )
 }
 
 @Composable
@@ -202,14 +342,14 @@ private fun EmptyMusic(onPick: () -> Unit) {
         Spacer(Modifier.height(8.dp))
         Text("Copy the game's music onto your phone -- the sound, sound2, sound3 ... folders from your " +
              "FINAL FANTASY XI install (or just their win\\music\\data folders), or tracks you've " +
-             "exported as MP3 or FLAC -- then choose that folder here. Tracks are named automatically " +
-             "and loop the way the game loops them.",
+             "exported as MP3 or FLAC -- then add that folder here (add as many folders as you like). " +
+             "Tracks are named automatically and loop the way the game loops them.",
             color = TextSoft, fontSize = 13.sp)
         Spacer(Modifier.height(16.dp))
         Button(onClick = onPick, colors = ButtonDefaults.buttonColors(containerColor = Selection)) {
             Icon(Icons.Filled.FolderOpen, null, tint = TextPrimary)
             Spacer(Modifier.width(8.dp))
-            Text("Choose music folder", color = TextPrimary)
+            Text("Add a music folder", color = TextPrimary)
         }
         Spacer(Modifier.height(16.dp))
         Text("No music is included with MobileWatch; it plays the files from your own copy of the game.",
@@ -242,11 +382,12 @@ private fun TrackRow(t: MusicTrack, order: List<MusicTrack>, selecting: Boolean,
                 tint = if (fav) AccentGold else TextMuted, modifier = Modifier.size(20.dp))
         }
         Column(Modifier.weight(1f)) {
-            Text(t.title, color = if (isCur) AccentGold else TextPrimary, fontSize = 14.sp,
+            Text(t.title, color = if (isCur) AccentGold else if (t.playable) TextPrimary else TextMuted, fontSize = 14.sp,
                 fontWeight = if (isCur) FontWeight.Bold else FontWeight.Normal,
                 maxLines = 1, overflow = TextOverflow.Ellipsis)
-            val sub = listOf(t.expansion, t.composer).filter { it.isNotBlank() }.joinToString("  \u00b7  ")
-                .ifBlank { t.fileName }
+            val sub = if (!t.playable) "Can't play this file"
+                else listOf(t.expansion, t.composer).filter { it.isNotBlank() }.joinToString("  \u00b7  ")
+                    .ifBlank { t.fileName }
             Text(sub, color = TextMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         Text(fmtTime((t.seconds * 1000).toLong()), color = TextMuted, fontSize = 12.sp,
@@ -254,6 +395,7 @@ private fun TrackRow(t: MusicTrack, order: List<MusicTrack>, selecting: Boolean,
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NowPlayingBar() {
     val t = MusicPlayer.current ?: return
@@ -267,14 +409,15 @@ private fun NowPlayingBar() {
     val shownPos = pos.coerceIn(0L, dur)
     Surface(color = CharcoalDark, tonalElevation = 0.dp) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp)) {
-            Text(t.title, color = AccentGold, fontWeight = FontWeight.Bold, fontSize = 16.sp,
-                maxLines = 1, overflow = TextOverflow.Ellipsis)
+            // Long titles slide sideways instead of being cut off.
+            Text(t.title, color = NowBlue, fontWeight = FontWeight.Bold, fontSize = 16.sp,
+                maxLines = 1, modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE))
             val sub = buildList {
                 if (t.expansion.isNotBlank()) add(t.expansion)
                 if (t.heard.isNotBlank()) add(t.heard)
             }.joinToString("  \u00b7  ")
             if (sub.isNotBlank()) Text(sub, color = TextMuted, fontSize = 11.sp, maxLines = 1,
-                overflow = TextOverflow.Ellipsis)
+                modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE))
             Slider(
                 value = dragging ?: (shownPos.toFloat() / dur),
                 onValueChange = { dragging = it },
@@ -282,7 +425,7 @@ private fun NowPlayingBar() {
                     dragging?.let { MusicPlayer.seekTo((it * dur).toLong()); pos = (it * dur).toLong() }
                     dragging = null
                 },
-                colors = SliderDefaults.colors(thumbColor = AccentGold, activeTrackColor = AccentGold,
+                colors = SliderDefaults.colors(thumbColor = NowBlue, activeTrackColor = NowBlue,
                     inactiveTrackColor = Selection),
                 modifier = Modifier.fillMaxWidth().height(28.dp)
             )
@@ -297,13 +440,13 @@ private fun NowPlayingBar() {
                 verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { MusicPlayer.changeRepeat(!MusicPlayer.repeat) }) {
                     Icon(Icons.Filled.Repeat, if (MusicPlayer.repeat) "Repeat on" else "Repeat off",
-                        tint = if (MusicPlayer.repeat) AccentGold else TextMuted)
+                        tint = if (MusicPlayer.repeat) NowBlue else TextMuted)
                 }
                 IconButton(onClick = { MusicPlayer.previous() }) {
                     Icon(Icons.Filled.SkipPrevious, "Previous", tint = TextPrimary, modifier = Modifier.size(30.dp))
                 }
                 Box(
-                    Modifier.size(56.dp).clip(CircleShape).background(AccentGold)
+                    Modifier.size(56.dp).clip(CircleShape).background(NowBlue)
                         .clickable { MusicPlayer.togglePause() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -318,7 +461,7 @@ private fun NowPlayingBar() {
                 }
                 IconButton(onClick = { MusicPlayer.changeShuffle(!MusicPlayer.shuffle) }) {
                     Icon(Icons.Filled.Shuffle, if (MusicPlayer.shuffle) "Shuffle on" else "Shuffle off",
-                        tint = if (MusicPlayer.shuffle) AccentGold else TextMuted)
+                        tint = if (MusicPlayer.shuffle) NowBlue else TextMuted)
                 }
             }
         }

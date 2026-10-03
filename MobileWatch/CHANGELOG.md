@@ -1,3 +1,44 @@
+## MobileWatch v1.1.1
+
+### Improved
+
+- **Vana'diel clock.** The clock button in the header shows the current
+  Vana'diel time and date, the day of the week and moon phase, Japan time, and
+  how long until each upcoming day and moon phase.
+- **Music from several folders.** Add as many music folders as you like; each
+  one adds to the library. The folder button lists them, and any folder can be
+  taken out again (nothing on your phone is deleted).
+- **Remove tracks from the list.** Select tracks and tap the bin to take them off
+  the list. Adding their folder again brings them back.
+- **Playlists.** The playlist button at the top of the player switches between
+  all tracks and your playlists, and creates, renames and deletes them. Select
+  tracks to add them to a playlist.
+- **The now-playing bar is blue,** so it stands apart from the gold of the track
+  playing in the list, and long titles slide sideways instead of being cut off.
+- **Zone music.** Opening a zone in Zones plays a few seconds of that zone's music
+  from your library, fading in and out, and the zone page shows which track it is
+  with a button to play it in full. It never interrupts music that's already
+  playing, and can be switched off in Settings.
+- **Every track plays,** including the game's newer music (Abyssea onwards),
+  which is stored in a different format. Abyssea, the airships and every
+  Dynamis area now have their zone music.
+- **Quests brought up to date.** 1,116 quests, now matching OmniWatch's checklist:
+  the Unlocking a Myth quests file under Aht Urhgan as they do in the game's log,
+  Lure of the Wildcat is listed once in each area it appears in, and over twenty
+  quests are added across Jeuno, the Outlands and Adoulin. Your ticks carry over.
+
+### Changed
+
+- **More room in the Items, Bestiary and Zones tabs:** a slimmer search box, and
+  the server population on a single line.
+
+### Fixed
+
+- **Grav'iton and Revenant Maiden are listed once.** Each appears a single time
+  even when both of the game's copies are in your library.
+
+---
+
 ## MobileWatch v1.1.0
 
 ### New

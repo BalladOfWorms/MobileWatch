@@ -27,6 +27,14 @@ cached on the device (see **Zone maps** below).
 Swipe or use the mode menu to move between tabs — both walk the same list, so
 they can never disagree about what comes next.
 
+## Vana'diel clock
+
+The **clock button in the header** (beside the music button) shows the current
+Vana'diel time and date, the day of the week (in its element's colour) and the
+moon phase, plus Japan time and your own, and how long until each upcoming day
+and moon phase — the same clock OmniWatch shows. It needs no connection: the game
+clock is a fixed function of real time.
+
 ## Music
 
 The **♪ button in the header** (between the logo and the world picker) opens a
@@ -34,9 +42,12 @@ player for FINAL FANTASY XI's soundtrack, built from the desktop **OmniPlayer**.
 
 - Copy the game's music folders to the phone (`sound`, `sound2`, `sound3` … from
   your FFXI install, or just their `win\music\data` folders), and/or tracks
-  exported as MP3, FLAC, WAV, OGG or M4A, then choose that folder in the player.
-  Android's own folder picker is used, so no storage permission is needed.
-- `.bgw` files are decoded in the app and **loop exactly the way the game loops
+  exported as MP3, FLAC, WAV, OGG or M4A, then add that folder in the player.
+  **Add as many folders as you like** — the folder button lists them, and any can
+  be taken out again. Android's own folder picker is used, so no storage
+  permission is needed.
+- `.bgw` files are decoded in the app — both the original format and the
+  encrypted ATRAC3 used by the newer music — and **loop exactly the way the game loops
   them** — intro once, then the loop section seamlessly. The repeat button
   switches to playing each track once, then the next.
 - Tracks are **named automatically** from OmniPlayer's catalogue of 216 tracks
@@ -44,16 +55,26 @@ player for FINAL FANTASY XI's soundtrack, built from the desktop **OmniPlayer**.
   `soundN` folder a file is in, what else is in its folder, or its remembered
   fingerprint. Other formats use their own tags.
 - Favourites (heart), search, shuffle, and seeking.
+- **Playlists:** the playlist button at the top switches between all tracks and
+  your playlists, and makes, renames and deletes them; select tracks to add them.
 - **Select tracks:** long-press a track (or use the select-all button in the top
   bar) to pick several; tap to add or remove. Select all takes every track in the
   list as shown, so after a search or the favourites filter, just those. Then
-  favourite the whole selection at once, or play it as its own queue.
+  favourite the whole selection at once, play it as its own queue, or remove it
+  from the list (adding its folder again brings it back).
+- **Zone music.** Opening a zone in the Zones tab plays a few seconds of its music,
+  fading in and out, and the zone page names the track with a play button. It
+  stays quiet if music is already playing, and Settings → Music switches it off.
 - **Plays in the background** — screen off, phone in your pocket, or another app in
   front — with **controls in the notification and on the lock screen** (previous,
   play/pause, next, seek, close). Headset and Bluetooth buttons work too. Tapping the
   notification opens the player.
 - Pauses when headphones are unplugged or a call comes in; closing the notification,
   backing out of MobileWatch, or swiping it away in Recents stops the music.
+
+The ATRAC3 decoder (`music/Atrac3Decoder.kt`) is a Kotlin port of FFmpeg's ATRAC3
+decoder, by Maxim Poliakovski and Benjamin Larsson, and is under the GNU LGPL 2.1 or
+later (see that file). The format details come from vgmstream and Moogle Toolbox.
 
 **No music is included with MobileWatch.** It plays the files from your own copy
 of the game. FINAL FANTASY XI's music is © SQUARE ENIX CO., LTD.

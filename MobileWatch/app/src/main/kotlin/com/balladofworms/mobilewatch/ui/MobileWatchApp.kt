@@ -21,6 +21,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -406,7 +408,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
     ) { mutableStateMapOf<String, Boolean>() }
     Scaffold(
         containerColor = Charcoal,
-        topBar = { GradientTopBar("MobileWatch", logoRes = R.drawable.mobilewatch_logo, onLogoClick = { vm.openSettings() }, middle = { MusicHeaderButton(onClick = { vm.openMusic() }) }, actions = { WorldDropdown(ui.world, vm::setWorld) }) },
+        topBar = { GradientTopBar("MobileWatch", logoRes = R.drawable.mobilewatch_logo, onLogoClick = { vm.openSettings() }, middle = { Row(verticalAlignment = Alignment.CenterVertically) { MusicHeaderButton(onClick = { vm.openMusic() }); VanaClockButton() } }, actions = { WorldDropdown(ui.world, vm::setWorld) }) },
         bottomBar = { if (items) PopulationStrip(vm) }
     ) { pad ->
         val tabScroll = rememberScrollState()
@@ -459,16 +461,10 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                     Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedTextField(
+                    CompactSearchField(
                         value = ui.query, onValueChange = vm::onQueryChange,
-                        modifier = Modifier.weight(1f), singleLine = true, shape = RoundedCornerShape(12.dp),
-                        leadingIcon = { Icon(Icons.Filled.Search, null) },
-                        trailingIcon = {
-                            if (ui.query.isNotEmpty()) IconButton(onClick = { vm.onQueryChange("") }) {
-                                Icon(Icons.Filled.Close, "Clear", tint = TextMuted)
-                            }
-                        },
-                        placeholder = { Text(when (ui.mode) { "mobs" -> "Search mob or family"; "maps" -> "Search zone"; else -> "Search item" }, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                        placeholder = when (ui.mode) { "mobs" -> "Search mob or family"; "maps" -> "Search zone"; else -> "Search item" },
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 if (ui.mode == "mobs" || ui.mode == "maps") {
@@ -785,21 +781,19 @@ private fun WorldDropdown(world: String, onPick: (String) -> Unit) {
 @Composable
 private fun PopulationStrip(vm: MobileWatchViewModel) {
     val ui = vm.ui
+    // One line: refresh, server name, and the population at the right.
     Box(Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(CharcoalDark, PopStripTint)))) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(8.dp).background(AccentGreen, CircleShape))
-                Spacer(Modifier.width(8.dp))
-                Text(ui.world, color = AccentGold, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, maxLines = 1)
+        Row(
+            Modifier.fillMaxWidth().padding(start = 2.dp, end = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { vm.refreshPopulation() }) {
+                Icon(Icons.Filled.Refresh, "Refresh population", tint = AccentGreen)
             }
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(ui.population, color = AccentGreen, fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp, maxLines = 1, modifier = Modifier.weight(1f))
-                TextButton(
-                    onClick = { vm.refreshPopulation() },
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
-                ) { Text("Refresh", fontSize = 14.sp, maxLines = 1) }
-            }
+            Text(ui.world, color = AccentGold, fontWeight = FontWeight.SemiBold, fontSize = 15.sp,
+                maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Text(ui.population, color = AccentGreen, fontWeight = FontWeight.Medium,
+                fontSize = 14.sp, maxLines = 1)
         }
     }
 }
@@ -6010,6 +6004,15 @@ private fun ZoneReiveRow(reive: ZoneReive, showDivider: Boolean) {
 private fun ZoneDetailScreen(vm: MobileWatchViewModel) {
     val zone = vm.ui.selectedZone ?: return
     val info = vm.zoneInfo(zone.slug)
+    // The zone's music: a short taste plays when the page opens (unless switched off in
+    // Settings, or music is already playing), and it fades away when you leave the page.
+    val zoneType = info?.type ?: ""
+    val zoneCtx = LocalContext.current
+    val zoneTrack = com.balladofworms.mobilewatch.music.MusicPlayer.zoneTrack(zone.name, zone.region, zoneType)
+    DisposableEffect(zone.id) {
+        com.balladofworms.mobilewatch.music.MusicPlayer.previewZone(zone.name, zone.region, zoneType)
+        onDispose { com.balladofworms.mobilewatch.music.MusicPlayer.endPreview() }
+    }
     Scaffold(containerColor = Charcoal, topBar = { GradientTopBar(zone.name, onBack = { vm.back() }) }) { pad ->
         LazyColumn(Modifier.padding(pad).fillMaxSize()) {
             if (info != null && info.banner.isNotEmpty()) item { ZoneBanner(info.banner) }
@@ -6025,6 +6028,23 @@ private fun ZoneDetailScreen(vm: MobileWatchViewModel) {
                     else InfoRow("Weather", zone.weather, JobsBlue)
                     if (!info?.footprint.isNullOrEmpty()) InfoRow("Goblin Footprint", listOf(info!!.footprint), AccentGold)
                     if (!info?.apparatus.isNullOrEmpty()) InfoRow("Strange Apparatus", listOf(info!!.apparatus), AccentGold)
+                    if (zoneTrack != null) Row(
+                        Modifier.fillMaxWidth().clickable {
+                            if (!zoneTrack.playable) android.widget.Toast.makeText(zoneCtx,
+                                com.balladofworms.mobilewatch.music.MusicPlayer.CANT_PLAY,
+                                android.widget.Toast.LENGTH_LONG).show()
+                            else com.balladofworms.mobilewatch.music.MusicPlayer.play(zoneTrack, listOf(zoneTrack))
+                        }.padding(vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Laid out like the info rows above it; tap to play the whole track.
+                        Text("Music:", color = TextMuted, fontSize = 13.sp, maxLines = 1,
+                            modifier = Modifier.widthIn(min = 92.dp).padding(end = 6.dp))
+                        Text(zoneTrack.title + if (zoneTrack.composer.isNotBlank()) "  \u00b7  ${zoneTrack.composer}" else "",
+                            color = AccentGold, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                        Icon(Icons.Filled.PlayArrow, "Play ${zoneTrack.title}", tint = AccentGold,
+                            modifier = Modifier.size(20.dp))
+                    }
                     Spacer(Modifier.height(12.dp))
                     if (info?.nomap != true) Button(
                         onClick = { vm.openMap() },
@@ -6841,6 +6861,26 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                     PickerButton("View", defZone, listOf("all" to "All", "region" to "Region")) {
                         defZone = it; vm.setDefaultZoneView(it)
                     }
+                }
+            }
+            SectionHeader("Music")
+            SectionCard(color = Panel) {
+                var zoneMusic by remember {
+                    mutableStateOf(com.balladofworms.mobilewatch.music.MusicPlayer.zoneMusicOn())
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Zone music", color = TextPrimary, fontSize = 14.sp)
+                        Text("Play a few seconds of a zone's music when you open it in Zones. "
+                            + "Uses the music folders added in the player; never interrupts music "
+                            + "that's already playing.", color = TextMuted, fontSize = 12.sp)
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Switch(checked = zoneMusic, onCheckedChange = {
+                        zoneMusic = it
+                        com.balladofworms.mobilewatch.music.MusicPlayer.setZoneMusicOn(it)
+                    }, colors = SwitchDefaults.colors(checkedThumbColor = Charcoal,
+                        checkedTrackColor = AccentGold))
                 }
             }
             SectionHeader("Support")
