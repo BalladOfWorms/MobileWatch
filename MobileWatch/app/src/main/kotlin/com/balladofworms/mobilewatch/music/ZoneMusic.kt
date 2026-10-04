@@ -12,6 +12,30 @@ package com.balladofworms.mobilewatch.music
 // Lines that aren't places ("Battle theme", "Mission scenes") simply never match.
 
 object ZoneMusic {
+    // The zone -> music table (assets/music/zone_music.json): slug -> music file number, 0 for
+    // a zone with no music. It comes from server zone data captured from the game, so it's the
+    // first answer; the name matching below only covers zones it doesn't list.
+    @Volatile private var table: Map<String, Int>? = null
+
+    fun table(ctx: android.content.Context): Map<String, Int> = table ?: synchronized(this) {
+        table ?: runCatching {
+            val o = org.json.JSONObject(ctx.assets.open("music/zone_music.json")
+                .bufferedReader(Charsets.UTF_8).use { it.readText() }).getJSONObject("zones")
+            val m = HashMap<String, Int>()
+            for (k in o.keys()) m[k] = o.getInt(k)
+            m as Map<String, Int>
+        }.getOrDefault(emptyMap()).also { table = it }
+    }
+
+    /** The zone's music by the table: Some(track or null for silent), or None if not listed. */
+    private fun fromTable(tracks: List<MusicTrack>, slug: String, table: Map<String, Int>?): Pair<Boolean, MusicTrack?> {
+        val n = table?.get(slug) ?: return false to null
+        if (n == 0) return true to null
+        val t = tracks.filter { it.number == n && it.isBgw }
+            .sortedWith(compareBy({ if (it.cat != null) 0 else 1 }, { it.fileName }))
+            .firstOrNull() ?: tracks.firstOrNull { it.number == n }
+        return true to t
+    }
     private val notes = Regex("\\((?!s\\))[^)]*\\)")         // "(Ark Angels)" etc., but not "(S)"
 
     private fun norm(s: String) = s.lowercase()
@@ -26,15 +50,11 @@ object ZoneMusic {
     private fun places(heard: String): List<String> =
         heard.split(',').map { norm(it) }.filter { it.isNotEmpty() }
 
-    fun pick(tracks: List<MusicTrack>, zoneName: String, region: String, type: String = ""): MusicTrack? {
+    fun pick(tracks: List<MusicTrack>, zoneName: String, region: String, type: String = "",
+             slug: String = "", table: Map<String, Int>? = null): MusicTrack? {
+        val (listed, hit) = fromTable(tracks, slug, table)
+        if (listed) return hit
         val zone = norm(zoneName)
-        // Dynamis has fixed music: Disjoined One in the Divergence [D] areas, Shadow Lord in
-        // every original Dynamis area (Tavnazia included -- the tables also list it against
-        // Jeuno's Starlight Celebration, but that's the seasonal Christmas song).
-        if (zone.startsWith("dynamis-")) {
-            val want = if (zone.endsWith("[d]")) "disjoined one" else "shadow lord"
-            return tracks.filter { norm(it.title) == want }.minByOrNull { it.number ?: Int.MAX_VALUE }
-        }
         val past = zone.endsWith("(s)")
         // Region music only for outdoor and town zones (unknown type counts as outdoor) --
         // and for Dynamis - Divergence [D] areas, which share their content's music.

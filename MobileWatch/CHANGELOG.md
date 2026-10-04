@@ -1,3 +1,14 @@
+## MobileWatch v1.1.2
+
+### Changed
+
+- **Zone pages show just the track title** for the zone's music.
+- **Opening a group keeps its heading in view.** In the Bestiary and Zones lists,
+  the opened group's heading moves to the top and stays there, while everything
+  inside it scrolls in its own box underneath.
+
+---
+
 ## MobileWatch v1.1.1
 
 ### Improved
@@ -17,8 +28,10 @@
   playing in the list, and long titles slide sideways instead of being cut off.
 - **Zone music.** Opening a zone in Zones plays a few seconds of that zone's music
   from your library, fading in and out, and the zone page shows which track it is
-  with a button to play it in full. It never interrupts music that's already
-  playing, and can be switched off in Settings.
+  with a button to play it in full. Each zone's music comes from the game's own
+  zone data, so towns, fields, ships, airships, Residential Areas and the past
+  [S] areas all play what they play in game. It never interrupts music that's
+  already playing, and can be switched off in Settings.
 - **Every track plays,** including the game's newer music (Abyssea onwards),
   which is stored in a different format. Abyssea, the airships and every
   Dynamis area now have their zone music.
@@ -34,6 +47,7 @@
 
 ### Fixed
 
+- **The Divine and The Serpentine Labyrinth** now have the right names.
 - **Grav'iton and Revenant Maiden are listed once.** Each appears a single time
   even when both of the game's copies are in your library.
 

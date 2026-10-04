@@ -123,14 +123,14 @@ object MusicPlayer {
     }
 
     /** The library track that's this zone's music, or null (see ZoneMusic for the matching). */
-    fun zoneTrack(zoneName: String, region: String, type: String = ""): MusicTrack? =
-        ZoneMusic.pick(tracks, zoneName, region, type)
+    fun zoneTrack(zoneName: String, region: String, type: String = "", slug: String = ""): MusicTrack? =
+        ZoneMusic.pick(tracks, zoneName, region, type, slug, if (started) ZoneMusic.table(app) else null)
 
-    fun previewZone(zoneName: String, region: String, type: String = "") {
+    fun previewZone(zoneName: String, region: String, type: String = "", slug: String = "") {
         if (!started || !zoneMusicOn()) return
         val am = app.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         if (playing || loading || am.isMusicActive) return
-        val t = zoneTrack(zoneName, region, type)?.takeIf { it.playable } ?: return
+        val t = zoneTrack(zoneName, region, type, slug)?.takeIf { it.playable } ?: return
         endPreview(fade = false)
         val token = ++previewToken
         loader.execute {

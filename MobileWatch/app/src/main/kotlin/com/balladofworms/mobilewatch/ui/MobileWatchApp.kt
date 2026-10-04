@@ -13,6 +13,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -275,6 +276,49 @@ private fun contentRank(mob: Mob, group: String, section: String): Int {
 private fun sectionPriority(group: String, section: String): Int = when {
     group == "Odyssey" && section.equals("Sheol Gaol", ignoreCase = true) -> 0
     else -> 1
+}
+
+/**
+ * A grouped (accordion) list where the open group's contents scroll inside their own box: the
+ * group's header is brought to the top of the list and stays put, and the box beneath it fills
+ * the rest of the screen. The other groups' headers carry on below the box, reached by
+ * scrolling the outer list. [openIdx] is the open group's position among the groups (-1 if
+ * none) -- each group is one header item, plus the open group's box.
+ */
+@Composable
+private fun GroupBoxList(openIdx: Int, content: androidx.compose.foundation.lazy.LazyListScope.(boxMax: androidx.compose.ui.unit.Dp) -> Unit) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val boxMax = (maxHeight - 44.dp).coerceAtLeast(160.dp)
+        val state = androidx.compose.foundation.lazy.rememberLazyListState()
+        LaunchedEffect(openIdx) { if (openIdx >= 0) state.animateScrollToItem(openIdx) }
+        LazyColumn(Modifier.fillMaxSize(), state = state) { content(boxMax) }
+    }
+}
+
+/**
+ * Keeps a scroll inside the box: whatever the box doesn't use at its top or bottom edge (and
+ * any leftover fling) is swallowed here instead of being passed on to the outer list, so the
+ * heading above never moves while you scroll the box.
+ */
+private val KeepScrollInBox = object : androidx.compose.ui.input.nestedscroll.NestedScrollConnection {
+    override fun onPostScroll(consumed: androidx.compose.ui.geometry.Offset,
+                              available: androidx.compose.ui.geometry.Offset,
+                              source: androidx.compose.ui.input.nestedscroll.NestedScrollSource) = available
+    override suspend fun onPostFling(consumed: androidx.compose.ui.unit.Velocity,
+                                     available: androidx.compose.ui.unit.Velocity) = available
+}
+
+/** The open group's contents, in a box of their own that scrolls separately. */
+private fun androidx.compose.foundation.lazy.LazyListScope.groupBox(
+    key: String, boxMax: androidx.compose.ui.unit.Dp,
+    content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit
+) {
+    item(key = "$key#box") {
+        LazyColumn(
+            Modifier.fillMaxWidth().heightIn(max = boxMax)
+                .nestedScroll(KeepScrollInBox)
+        ) { content() }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -590,7 +634,15 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                         ordered
                     }
                 }
-                LazyColumn(Modifier.fillMaxSize()) {
+                // The open group's contents scroll inside their own box under its header, which
+                // is brought to the top and stays there (see GroupBoxList).
+                val openIdx = when {
+                    contentNested != null -> contentNested.keys.indexOfFirst { groupExpanded["content:$it"] == true }
+                    zoneNested != null -> zoneNested.keys.indexOfFirst { groupExpanded["zone:$it"] == true }
+                    nested != null -> nested.keys.indexOfFirst { groupExpanded["eco:$it"] == true }
+                    else -> -1
+                }
+                GroupBoxList(openIdx) { boxMax ->
                     if (contentNested != null) {
                         contentNested.forEach { (ctn, famMap) ->
                             val cKey = "content:$ctn"
@@ -602,7 +654,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                                     else { groupExpanded.keys.filter { it.startsWith("content:") }.forEach { groupExpanded[it] = false }; groupExpanded[cKey] = true }
                                 }
                             }
-                            if (cOpen) {
+                            if (cOpen) groupBox(cKey, boxMax) {
                                 famMap.forEach { (sub, subMobs) ->
                                     if (sub.isBlank()) {
                                         // flat layout (Unity Mobs): no sub-header, rows are already ordered
@@ -644,7 +696,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                                     else { groupExpanded.keys.filter { it.startsWith("zone:") }.forEach { groupExpanded[it] = false }; groupExpanded[zKey] = true }
                                 }
                             }
-                            if (zOpen) {
+                            if (zOpen) groupBox(zKey, boxMax) {
                                 famMap.forEach { (fam, famMobs) ->
                                     val fKey = "zfam:$zone:$fam"
                                     val fOpen = groupExpanded[fKey] == true
@@ -668,7 +720,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                                     else { groupExpanded.keys.filter { it.startsWith("eco:") }.forEach { groupExpanded[it] = false }; groupExpanded[ecoKey] = true }
                                 }
                             }
-                            if (ecoOpen) {
+                            if (ecoOpen) groupBox(ecoKey, boxMax) {
                                 typeMap.forEach { (type, typeMobs) ->
                                     val typeKey = "type:$eco:$type"
                                     val typeOpen = groupExpanded[typeKey] == true
@@ -723,12 +775,13 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                 val zoneGroups = remember(zoneList, ui.zoneView) {
                     if (ui.zoneView == "region") zoneList.groupBy { vm.zoneRegion(it) }.toSortedMap() else null
                 }
-                LazyColumn(Modifier.fillMaxSize()) {
+                val openIdx = zoneGroups?.keys?.indexOfFirst { groupExpanded[it] == true } ?: -1
+                GroupBoxList(openIdx) { boxMax ->
                     if (zoneGroups != null) {
                         zoneGroups.forEach { (reg, list) ->
                             val open = groupExpanded[reg] == true
                             item(key = "reg_$reg") { GroupHeader(reg, list.size, open) { if (open) groupExpanded[reg] = false else { groupExpanded.clear(); groupExpanded[reg] = true } } }
-                            if (open) items(list, key = { it.id }) { zone -> ZoneRow(vm, zone) }
+                            if (open) groupBox("reg_$reg", boxMax) { items(list, key = { it.id }) { zone -> ZoneRow(vm, zone) } }
                         }
                     } else {
                         items(zoneList, key = { it.id }) { zone -> ZoneRow(vm, zone) }
@@ -6008,9 +6061,9 @@ private fun ZoneDetailScreen(vm: MobileWatchViewModel) {
     // Settings, or music is already playing), and it fades away when you leave the page.
     val zoneType = info?.type ?: ""
     val zoneCtx = LocalContext.current
-    val zoneTrack = com.balladofworms.mobilewatch.music.MusicPlayer.zoneTrack(zone.name, zone.region, zoneType)
+    val zoneTrack = com.balladofworms.mobilewatch.music.MusicPlayer.zoneTrack(zone.name, zone.region, zoneType, zone.slug)
     DisposableEffect(zone.id) {
-        com.balladofworms.mobilewatch.music.MusicPlayer.previewZone(zone.name, zone.region, zoneType)
+        com.balladofworms.mobilewatch.music.MusicPlayer.previewZone(zone.name, zone.region, zoneType, zone.slug)
         onDispose { com.balladofworms.mobilewatch.music.MusicPlayer.endPreview() }
     }
     Scaffold(containerColor = Charcoal, topBar = { GradientTopBar(zone.name, onBack = { vm.back() }) }) { pad ->
@@ -6040,7 +6093,7 @@ private fun ZoneDetailScreen(vm: MobileWatchViewModel) {
                         // Laid out like the info rows above it; tap to play the whole track.
                         Text("Music:", color = TextMuted, fontSize = 13.sp, maxLines = 1,
                             modifier = Modifier.widthIn(min = 92.dp).padding(end = 6.dp))
-                        Text(zoneTrack.title + if (zoneTrack.composer.isNotBlank()) "  \u00b7  ${zoneTrack.composer}" else "",
+                        Text(zoneTrack.title,
                             color = AccentGold, fontSize = 13.sp, modifier = Modifier.weight(1f))
                         Icon(Icons.Filled.PlayArrow, "Play ${zoneTrack.title}", tint = AccentGold,
                             modifier = Modifier.size(20.dp))
