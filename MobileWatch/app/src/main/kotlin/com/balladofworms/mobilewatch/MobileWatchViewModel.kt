@@ -394,6 +394,28 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Auction house history for one item, single or stack, on the world picked at the top:
+     *  the last sales (newest first) and how many are up for sale. Asked of the search server
+     *  straight from the phone, as the Items tab does; kept for two minutes. null: no answer. */
+    data class AhHistory(val sales: List<SaleRow>, val onSale: Int?, val world: String)
+    private val ahHistCache = HashMap<Triple<String, Int, Boolean>, Pair<Long, AhHistory>>()
+
+    suspend fun ahHistory(itemId: Int, stack: Boolean): AhHistory? {
+        val world = ui.world
+        val key = Triple(world, itemId, stack)
+        ahHistCache[key]?.let { (t, h) -> if (System.currentTimeMillis() - t < 120_000) return h }
+        val h = host() ?: return null
+        val got = withContext(Dispatchers.IO) {
+            val hist = runCatching { SearchEngine.queryHistory(h, itemId, stack) }.getOrNull()
+                ?.takeIf { it.ok } ?: return@withContext null
+            val counts = runCatching { SearchEngine.queryCategoryCounts(h, hist.category) }.getOrNull()?.get(itemId)
+            AhHistory(hist.sales.map { SaleRow(it.price, it.date, it.seller, it.buyer, stack) }.sortedByDescending { it.date },
+                counts?.let { if (stack) it.second else it.first }, world)
+        } ?: return null
+        ahHistCache[key] = System.currentTimeMillis() to got
+        return got
+    }
+
     private fun act(vararg kv: Pair<String, Any>) = org.json.JSONObject().apply { kv.forEach { (k, v) -> put(k, v) } }
 
     // Buy

@@ -8046,13 +8046,13 @@ private fun MarketSell(vm: MobileWatchViewModel, m: Market?) {
     }
     listing?.let { mode ->
         val src = if (mode == ListFor.AH) m?.ahInv.orEmpty() else m?.bazaarInv.orEmpty()
-        MarketListDialog(mode, src, onDismiss = { listing = null }) { item, single, price ->
+        MarketListDialog(vm, mode, src, onDismiss = { listing = null }) { item, single, price ->
             listing = null
             if (mode == ListFor.AH) vm.sellOnAh(item.id, single, price) else vm.setBazaar(item.id, price)
         }
     }
     editing?.let { b ->
-        MarketPriceDialog("${b.name} in your bazaar", b.price) { price ->
+        MarketPriceDialog(vm, b.id, "${b.name} in your bazaar", b.price) { price ->
             editing = null
             if (price != null && price > 0 && price != b.price) vm.setBazaar(b.id, price)
         }
@@ -8116,7 +8116,7 @@ private fun MarketBuy(vm: MobileWatchViewModel, m: Market?) {
             "the step until it wins or reaches the most you'll pay.")
     }
     adding?.let { r ->
-        BuyDialog(r, onDismiss = { adding = null }) { qty, start, max, inc ->
+        BuyDialog(vm, r, onDismiss = { adding = null }) { qty, start, max, inc ->
             adding = null
             vm.queueBuy(r.id, r.stack, qty, start, max, inc)
         }
@@ -8124,14 +8124,14 @@ private fun MarketBuy(vm: MobileWatchViewModel, m: Market?) {
 }
 
 @Composable
-private fun BuyDialog(r: BuyRow, onDismiss: () -> Unit, onAdd: (Int, Long, Long, Long) -> Unit) {
+private fun BuyDialog(vm: MobileWatchViewModel, r: BuyRow, onDismiss: () -> Unit, onAdd: (Int, Long, Long, Long) -> Unit) {
     var qty by remember { mutableStateOf("1") }
     var start by remember { mutableStateOf("1000") }
     var max by remember { mutableStateOf("5000") }
     var inc by remember { mutableStateOf("500") }
     androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
-        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(14.dp)) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().heightIn(max = 640.dp)) {
+            Column(Modifier.padding(14.dp).verticalScroll(rememberScrollState())) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     ItemIcon(r.id, 26.dp, Modifier.padding(end = 8.dp))
                     Text(r.name, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
@@ -8149,6 +8149,36 @@ private fun BuyDialog(r: BuyRow, onDismiss: () -> Unit, onAdd: (Int, Long, Long,
                 val st = inc.toLongOrNull() ?: 0
                 Button(onClick = { onAdd(q, s, mx, st) }, enabled = q > 0 && mx > 0 && s <= mx,
                     modifier = Modifier.padding(top = 12.dp).fillMaxWidth()) { Text("Add to queue") }
+                AhHistoryBlock(vm, r.id, r.stack)
+            }
+        }
+    }
+}
+
+/** Recent auction house sales for an item, single or stack, with how many are up now. */
+@Composable
+private fun AhHistoryBlock(vm: MobileWatchViewModel, itemId: Int, stack: Boolean) {
+    // first: the answer is in (null when the search server gave none)
+    val h by produceState<Pair<Boolean, MobileWatchViewModel.AhHistory?>>(false to null, itemId, stack, vm.ui.world) {
+        value = true to vm.ahHistory(itemId, stack)
+    }
+    val asked = h.first
+    Column(Modifier.fillMaxWidth().padding(top = 12.dp)) {
+        val x = h.second
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Sales history" + if (stack) " (stacks)" else "", color = HeaderL1, fontWeight = FontWeight.Bold,
+                fontSize = 13.sp, modifier = Modifier.weight(1f))
+            x?.let { Text(it.world + (it.onSale?.let { n -> "  ·  $n up" } ?: ""), color = TextMuted, fontSize = 12.sp) }
+        }
+        when {
+            x == null && !asked -> Text("Asking the auction house…", color = TextMuted, fontSize = 12.sp)
+            x == null -> Text("No answer from ${vm.ui.world}.", color = TextMuted, fontSize = 12.sp)
+            x.sales.isEmpty() -> Text("No sales on record.", color = TextMuted, fontSize = 12.sp)
+            else -> {
+                val prices = x.sales.map { it.price }.sorted()
+                Text("Median ${"%,d".format(prices[prices.size / 2])} g  ·  low ${"%,d".format(prices.first())}  ·  high ${"%,d".format(prices.last())}",
+                    color = TextSoft, fontSize = 12.sp, modifier = Modifier.padding(top = 2.dp))
+                x.sales.take(10).forEach { SaleRowView(it) }
             }
         }
     }
@@ -8280,7 +8310,7 @@ private fun MarketPickDialog(title: String, items: List<MarketItem>, onDismiss: 
 /** Pick something to list, then single or stack (AH only) and a price. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MarketListDialog(mode: ListFor, items: List<MarketItem>, onDismiss: () -> Unit,
+private fun MarketListDialog(vm: MobileWatchViewModel, mode: ListFor, items: List<MarketItem>, onDismiss: () -> Unit,
                              onList: (MarketItem, Boolean, Long) -> Unit) {
     var pick by remember { mutableStateOf<MarketItem?>(null) }
     var single by remember { mutableStateOf(true) }
@@ -8292,8 +8322,8 @@ private fun MarketListDialog(mode: ListFor, items: List<MarketItem>, onDismiss: 
         return
     }
     androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
-        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(14.dp)) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().heightIn(max = 640.dp)) {
+            Column(Modifier.padding(14.dp).verticalScroll(rememberScrollState())) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     ItemIcon(p.id, 26.dp, Modifier.padding(end = 8.dp))
                     Text(p.name + if (p.count > 1) " (you have ${p.count})" else "", color = TextPrimary,
@@ -8318,6 +8348,8 @@ private fun MarketListDialog(mode: ListFor, items: List<MarketItem>, onDismiss: 
                     modifier = Modifier.padding(top = 12.dp).fillMaxWidth()) {
                     Text(if (mode == ListFor.AH) "List" else "Put in bazaar")
                 }
+                // What it has been going for: the stack history when listing a stack.
+                AhHistoryBlock(vm, p.id, mode == ListFor.AH && !single && p.stack > 1)
             }
         }
     }
@@ -8325,11 +8357,11 @@ private fun MarketListDialog(mode: ListFor, items: List<MarketItem>, onDismiss: 
 
 /** A new price for something already in the bazaar; null on cancel. */
 @Composable
-private fun MarketPriceDialog(title: String, current: Long, onDone: (Long?) -> Unit) {
+private fun MarketPriceDialog(vm: MobileWatchViewModel, itemId: Int, title: String, current: Long, onDone: (Long?) -> Unit) {
     var price by remember { mutableStateOf(current.toString()) }
     androidx.compose.ui.window.Dialog(onDismissRequest = { onDone(null) }) {
-        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(14.dp)) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().heightIn(max = 640.dp)) {
+            Column(Modifier.padding(14.dp).verticalScroll(rememberScrollState())) {
                 Text(title, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 OutlinedTextField(value = price, onValueChange = { v -> price = v.filter { it.isDigit() }.take(9) },
                     label = { Text("Price each (gil)") }, singleLine = true,
@@ -8339,6 +8371,7 @@ private fun MarketPriceDialog(title: String, current: Long, onDone: (Long?) -> U
                     TextButton(onClick = { onDone(null) }) { Text("Cancel") }
                     Button(onClick = { onDone(price.toLongOrNull()) }, enabled = (price.toLongOrNull() ?: 0) > 0) { Text("Set") }
                 }
+                AhHistoryBlock(vm, itemId, false)
             }
         }
     }
