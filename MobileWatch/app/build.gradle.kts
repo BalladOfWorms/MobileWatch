@@ -97,5 +97,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Lua interpreter (pure Java) for reading GearSwap job files on the phone: Character tab.
+    implementation("org.luaj:luaj-jse:3.0.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

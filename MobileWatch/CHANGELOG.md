@@ -1,5 +1,12 @@
 ## MobileWatch v1.1.2
 
+### New
+
+- **Android Auto.** The music player appears in Android Auto: the car screen
+  shows the track, its details and artwork, its controls work, and you can browse
+  your favourites, playlists, expansions or all tracks, or ask for a track by
+  voice. Other car stereos and watches now show the track's details too.
+
 ### Changed
 
 - **Zone pages show just the track title** for the zone's music.

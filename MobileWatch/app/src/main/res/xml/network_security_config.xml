@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Character tab talks to OmniWatch on your own PC, at whatever address that PC has on
+     your network or on Tailscale, over plain HTTP (it is a small local server, with no
+     certificate). Android blocks plain HTTP unless an app allows it, and a home address can't
+     be listed ahead of time, so it is allowed here. Every request still carries the pairing
+     code, and everything else the app fetches is HTTPS as before. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

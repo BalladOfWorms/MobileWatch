@@ -94,7 +94,16 @@ object MusicPlayer {
         }
         session = MediaSession(app, "MobileWatch").apply {
             setCallback(object : MediaSession.Callback() {
-                override fun onPlay() { if (!playing) togglePause() }
+                override fun onPlay() {
+                    if (current == null) playSomething() else if (!playing) togglePause()
+                }
+                // Android Auto: a track picked from its browser, or asked for by voice.
+                override fun onPlayFromMediaId(mediaId: String?, extras: android.os.Bundle?) {
+                    playMediaId(mediaId ?: return)
+                }
+                override fun onPlayFromSearch(query: String?, extras: android.os.Bundle?) {
+                    playSearch(query.orEmpty())
+                }
                 override fun onPause() { if (playing) togglePause() }
                 override fun onSkipToNext() = next()
                 override fun onSkipToPrevious() = previous()
@@ -179,10 +188,80 @@ object MusicPlayer {
         main.post(r)
     }
 
+    // ── Android Auto / media browsers ────────────────────────────────
+    /** Artwork for cars, watches and the lock screen: the MobileWatch logo, scaled down. */
+    val artwork: android.graphics.Bitmap? by lazy {
+        runCatching {
+            val res = app.resources
+            val id = com.balladofworms.mobilewatch.R.drawable.mobilewatch_logo
+            val o = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            android.graphics.BitmapFactory.decodeResource(res, id, o)
+            var sample = 1
+            while (o.outWidth / (sample * 2) >= 320) sample *= 2
+            android.graphics.BitmapFactory.decodeResource(res, id,
+                android.graphics.BitmapFactory.Options().apply { inSampleSize = sample })
+        }.getOrNull()
+    }
+
+    /** The library for a browser that may ask before the app has loaded it (off the main thread). */
+    fun libraryForBrowsing(ctx: Context): List<MusicTrack> {
+        init(ctx)
+        val have = tracks
+        val all = if (have.isNotEmpty()) have else MusicLibrary.visible(app, MusicLibrary.cached(app))
+        return all.filter { it.playable }.sortedWith(compareBy({ it.title.lowercase() }, { it.fileName }))
+    }
+
+    /** The tracks under one of the browser's folders, in the order they're shown. */
+    fun listFor(parentId: String, all: List<MusicTrack>): List<MusicTrack> = when {
+        parentId == MusicBrowserService.ALL -> all
+        parentId == MusicBrowserService.FAVS -> all.filter { isFav(it) }
+        parentId.startsWith(MusicBrowserService.PLAYLIST) -> {
+            val byKey = all.associateBy { MusicLibrary.favKey(it) }
+            playlists[parentId.removePrefix(MusicBrowserService.PLAYLIST)].orEmpty().mapNotNull { byKey[it] }
+        }
+        parentId.startsWith(MusicBrowserService.EXPANSION) -> {
+            val exp = parentId.removePrefix(MusicBrowserService.EXPANSION)
+            all.filter { it.expansion.ifBlank { MusicBrowserService.OTHER } == exp }
+        }
+        else -> emptyList()
+    }
+
+    /** A playable item's id: the folder it was picked from, then the track. */
+    fun mediaId(parentId: String, t: MusicTrack) = "$parentId|${t.uri}"
+
+    private fun playMediaId(id: String) {
+        val parent = id.substringBefore('|')
+        val uri = id.substringAfter('|')
+        val list = listFor(parent, libraryForBrowsing(app))
+        val t = list.firstOrNull { it.uri == uri } ?: tracks.firstOrNull { it.uri == uri } ?: return
+        play(t, list.ifEmpty { listOf(t) })
+    }
+
+    /** "Play Ronfaure on MobileWatch": the best title match; nothing said -> favourites/all. */
+    private fun playSearch(query: String) {
+        val all = libraryForBrowsing(app)
+        val q = query.trim().lowercase()
+        if (q.isEmpty()) { playSomething(); return }
+        val hits = all.filter { it.title.lowercase() == q }.ifEmpty {
+            all.filter { it.title.lowercase().contains(q) } }.ifEmpty {
+            all.filter { it.expansion.lowercase().contains(q) || it.composer.lowercase().contains(q) } }
+        if (hits.isEmpty()) { message = "Nothing called \"$query\" in your music"; return }
+        play(hits.first(), hits)
+    }
+
+    /** Asked to play with nothing chosen: favourites if there are any, else everything. */
+    private fun playSomething() {
+        val all = libraryForBrowsing(app)
+        val pool = all.filter { isFav(it) }.ifEmpty { all }
+        if (pool.isEmpty()) return
+        play(if (shuffle) pool.random() else pool.first(), pool)
+    }
+
     // ── notification / lock screen ───────────────────────────────────
     private val ACTIONS = PlaybackState.ACTION_PLAY or PlaybackState.ACTION_PAUSE or
         PlaybackState.ACTION_PLAY_PAUSE or PlaybackState.ACTION_SKIP_TO_NEXT or
-        PlaybackState.ACTION_SKIP_TO_PREVIOUS or PlaybackState.ACTION_SEEK_TO or PlaybackState.ACTION_STOP
+        PlaybackState.ACTION_SKIP_TO_PREVIOUS or PlaybackState.ACTION_SEEK_TO or PlaybackState.ACTION_STOP or
+        PlaybackState.ACTION_PLAY_FROM_MEDIA_ID or PlaybackState.ACTION_PLAY_FROM_SEARCH
 
     private fun pushState() {
         val s = session ?: return
@@ -199,12 +278,24 @@ object MusicPlayer {
         val s = session ?: return
         val t = current
         if (t != null && t.uri != publishedUri) {
-            s.setMetadata(MediaMetadata.Builder()
+            // Everything a car screen, watch or lock screen might read -- different makers
+            // read different fields, so they're all filled.
+            val sub = listOf(t.expansion, t.composer).filter { it.isNotBlank() }.joinToString(" \u00b7 ")
+            val b = MediaMetadata.Builder()
+                .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, t.uri)
                 .putString(MediaMetadata.METADATA_KEY_TITLE, t.title)
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, t.title)
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, sub)
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, t.composer.ifBlank { t.expansion })
-                .putString(MediaMetadata.METADATA_KEY_ALBUM, t.expansion)
+                .putString(MediaMetadata.METADATA_KEY_ALBUM, t.expansion.ifBlank { "FINAL FANTASY XI" })
+                .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST, "FINAL FANTASY XI")
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, durationMs())
-                .build())
+            artwork?.let {
+                b.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, it)
+                b.putBitmap(MediaMetadata.METADATA_KEY_ART, it)
+                b.putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, it)
+            }
+            s.setMetadata(b.build())
             publishedUri = t.uri
         }
         pushState()

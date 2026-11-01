@@ -69,6 +69,12 @@ player for FINAL FANTASY XI's soundtrack, built from the desktop **OmniPlayer**.
   front — with **controls in the notification and on the lock screen** (previous,
   play/pause, next, seek, close). Headset and Bluetooth buttons work too. Tapping the
   notification opens the player.
+- **Android Auto:** the player shows up in Android Auto with the track, its
+  details and artwork, working controls, and a library to browse (favourites,
+  playlists, expansions, all tracks) or search by voice. Because MobileWatch isn't
+  installed from the Play Store, Android Auto needs one setting first: open Android
+  Auto's settings, tap **Version** ten times to unlock developer settings, then in
+  the ⋮ menu choose **Developer settings** and turn on **Unknown sources**.
 - Pauses when headphones are unplugged or a call comes in; closing the notification,
   backing out of MobileWatch, or swiping it away in Recents stops the music.
 

@@ -17,6 +17,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         MusicPlayer.init(this)
         openMusicIfAsked(intent)
+        openTellsIfAsked(intent)
+        TellAlerts.start(this)
         setContent {
             MobileWatchTheme { MobileWatchApp() }
         }
@@ -26,7 +28,19 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         openMusicIfAsked(intent)
+        openTellsIfAsked(intent)
     }
+
+    // Tapping a tell alert opens the Chat tab on Tell.
+    private fun openTellsIfAsked(i: Intent?) {
+        if (i?.getBooleanExtra(TellAlerts.EXTRA_OPEN_TELLS, false) == true) {
+            vm.openTells()
+            i.removeExtra(TellAlerts.EXTRA_OPEN_TELLS)
+        }
+    }
+
+    override fun onResume() { super.onResume(); TellAlerts.appVisible = true; TellAlerts.start(this) }
+    override fun onPause() { TellAlerts.appVisible = false; super.onPause() }
 
     private fun openMusicIfAsked(i: Intent?) {
         if (i?.getBooleanExtra(MusicService.EXTRA_OPEN_MUSIC, false) == true) {

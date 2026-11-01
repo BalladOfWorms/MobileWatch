@@ -4,10 +4,15 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -16,8 +21,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,9 +38,11 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.listSaver
@@ -41,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
@@ -151,6 +164,8 @@ fun MobileWatchApp(vm: MobileWatchViewModel = viewModel()) {
         ui.mode == "hobbies" && ui.selectedHobby == "digging" -> holder.Page("hobby:digging") { BackHandler { vm.clearHobby() }; DiggingScreen(vm) }
         ui.mode == "hobbies" && ui.selectedHobby in CraftKeys && ui.selectedRecipe != null -> holder.Page("recipe:${ui.selectedHobby}:${ui.selectedRecipe?.id}") { BackHandler { vm.clearRecipe() }; RecipeDetailScreen(vm) }
         ui.mode == "hobbies" && ui.selectedHobby in CraftKeys -> holder.Page("hobby:${ui.selectedHobby}") { BackHandler { vm.clearHobby() }; CraftScreen(vm, ui.selectedHobby!!) }
+        ui.mode == "missions" && ui.selectedMissionCat != null ->
+            holder.Page("missioncat:${ui.selectedMissionCat}") { BackHandler { vm.clearMissionCat() }; MissionCatScreen(vm) }
         ui.mode == "quests" && ui.selectedQuestArea != null ->
             holder.Page("questarea:${ui.selectedQuestArea}") { BackHandler { vm.clearQuestArea() }; QuestAreaScreen(vm) }
         ui.mode == "trusts" && ui.selectedTrust != null ->
@@ -176,6 +191,10 @@ fun MobileWatchApp(vm: MobileWatchViewModel = viewModel()) {
                 else ContentTypeScreen(vm)
             }
         ui.mode == "items" && ui.selected != null -> holder.Page("item:${ui.selected?.id}") { BackHandler { vm.back() }; DetailScreen(vm) }
+        ui.mode == "character" && vm.char.setList != null ->
+            holder.Page("charsets:${vm.charJob()}") { BackHandler { vm.closeSetList() }; CharSetListScreen(vm) }
+        ui.mode == "character" && vm.char.slot != null ->
+            holder.Page("charslot:${vm.char.slot}:${vm.charJob()}") { BackHandler { vm.closeCharSlot() }; CharSlotScreen(vm) }
         else -> holder.Page("search", ui.mode) { SearchScreen(vm) }   // one key, one scroll state per tab; ui.mode still mints a new visit
     }
 }
@@ -431,9 +450,9 @@ private fun ZoneRow(vm: MobileWatchViewModel, zone: Zone) {
 // The top menu, in order. The pill row renders it and a horizontal swipe on the body steps
 // through the same list, so the gesture and the menu can never disagree about what comes next.
 private val MODES = listOf(
-    "items" to "Items", "events" to "Events", "jobs" to "Jobs", "mobs" to "Bestiary",
-    "maps" to "Zones", "content" to "Content", "quests" to "Quests", "hobbies" to "Hobbies", "trusts" to "Trusts",
-    "chains" to "Chains"
+    "character" to "Character", "chat" to "Chat", "market" to "Marketplace", "items" to "Items", "events" to "Events", "jobs" to "Jobs", "mobs" to "Bestiary",
+    "maps" to "Zones", "content" to "Content", "missions" to "Missions", "quests" to "Quests", "hobbies" to "Hobbies",
+    "trusts" to "Trusts", "mounts" to "Mounts", "chains" to "Chains"
 )
 
 @Composable
@@ -453,7 +472,8 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
     Scaffold(
         containerColor = Charcoal,
         topBar = { GradientTopBar("MobileWatch", logoRes = R.drawable.mobilewatch_logo, onLogoClick = { vm.openSettings() }, middle = { Row(verticalAlignment = Alignment.CenterVertically) { MusicHeaderButton(onClick = { vm.openMusic() }); VanaClockButton() } }, actions = { WorldDropdown(ui.world, vm::setWorld) }) },
-        bottomBar = { if (items) PopulationStrip(vm) }
+        // The world's population sits under the Marketplace, with your gil.
+        bottomBar = { if (ui.mode == "market") MarketStrip(vm) }
     ) { pad ->
         val tabScroll = rememberScrollState()
         val modeIndex = MODES.indexOfFirst { it.first == ui.mode }
@@ -500,7 +520,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                     }
                 }
             }
-            if (ui.mode != "chains" && ui.mode != "events" && ui.mode != "jobs" && ui.mode != "hobbies" && ui.mode != "content" && ui.mode != "quests" && ui.mode != "trusts") {
+            if (ui.mode != "chains" && ui.mode != "events" && ui.mode != "jobs" && ui.mode != "hobbies" && ui.mode != "content" && ui.mode != "quests" && ui.mode != "trusts" && ui.mode != "character" && ui.mode != "chat" && ui.mode != "market" && ui.mode != "missions" && ui.mode != "mounts") {
                 Row(
                     Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -755,6 +775,12 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                         items(mobList, key = { it.key }) { mob -> MobRow(vm, mob) }
                     }
                 }
+            } else if (ui.mode == "character") {
+                CharacterContent(vm)
+            } else if (ui.mode == "chat") {
+                ChatContent(vm)
+            } else if (ui.mode == "market") {
+                MarketContent(vm)
             } else if (ui.mode == "jobs") {
                 JobListContent(vm)
             } else if (ui.mode == "events") {
@@ -769,6 +795,10 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                 ContentTabContent(vm)
             } else if (ui.mode == "quests") {
                 QuestsContent(vm)
+            } else if (ui.mode == "missions") {
+                MissionsContent(vm)
+            } else if (ui.mode == "mounts") {
+                MountsContent(vm)
             } else if (ui.mode == "maps") {
                 val zoneList = if (ui.zoneFilter == "all") ui.zoneResults
                 else ui.zoneResults.filter { vm.zoneType(it).equals(ui.zoneFilter, true) }
@@ -1019,7 +1049,7 @@ private fun ItemIcon(id: Int, size: Dp, modifier: Modifier = Modifier, probe: Bo
  * this line appears as soon as those two fields are added to the bundled JSON.
  */
 @Composable
-private fun ItemHelpBox(item: Item, modifier: Modifier = Modifier) {
+private fun ItemHelpBox(item: Item, modifier: Modifier = Modifier, augments: List<String> = emptyList()) {
     val jobs = FfxiDecode.jobs(item.jobsMask)
     val jobLine = when {
         jobs.isEmpty() -> ""
@@ -1037,6 +1067,14 @@ private fun ItemHelpBox(item: Item, modifier: Modifier = Modifier) {
                     Spacer(Modifier.height(4.dp))
                     for (line in item.desc.split("\n")) {
                         DescLine(line, TextSoft)
+                    }
+                }
+                // A particular copy's augments (Character tab), under the description as in game.
+                if (augments.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    for (a in augments) {
+                        Text(a, color = AccentGreen, fontSize = 13.sp,
+                            fontFamily = FontFamily.Monospace, lineHeight = 17.sp)
                     }
                 }
                 if (jobLine.isNotEmpty()) {
@@ -1440,6 +1478,23 @@ private fun PhysRow(phys: Map<String, Double>) {
         Text("Physical:", color = TextMuted, fontSize = 13.sp, maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 92.dp))
         Text(txt, color = TextSoft, fontSize = 13.sp)
     }
+}
+
+/** A Settings section: its title, folded until tapped. Every section starts folded each time
+ *  Settings opens; [note] is a short summary shown beside the title. */
+@Composable
+private fun FoldSection(title: String, note: String? = null, content: @Composable () -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Spacer(Modifier.height(14.dp))
+    Row(Modifier.fillMaxWidth().clickable { open = !open }.padding(vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(title, color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 14.sp, modifier = Modifier.weight(1f))
+        note?.let { Text(it, color = TextMuted, fontSize = 12.sp) }
+        Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+            if (open) "Hide $title" else "Show $title", tint = TextMuted)
+    }
+    Spacer(Modifier.height(2.dp))
+    if (open) content()
 }
 
 @Composable
@@ -2052,6 +2107,18 @@ private fun QuestsContent(vm: MobileWatchViewModel) {
     // area you have ticked, so the tab doubles as a progress summary.
     val areas = vm.questAreas()
     LazyColumn(Modifier.fillMaxSize()) {
+        // Paired with OmniWatch: share ticks with its checklist, both ways.
+        if (vm.questLinked()) item(key = "q_sync") {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Text(vm.questSyncMsg ?: "Share ticks with OmniWatch's checklist.", color = TextMuted,
+                    fontSize = 12.sp, modifier = Modifier.weight(1f))
+                OutlinedButton(onClick = { vm.syncQuests() }, enabled = !vm.questSyncing,
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)) {
+                    Text(if (vm.questSyncing) "Syncing\u2026" else "Sync", fontSize = 12.sp)
+                }
+            }
+        }
         items(areas, key = { it.key }) { area ->
             TopLevelRow(
                 area.label,
@@ -6609,6 +6676,9 @@ private fun TrustRow(vm: MobileWatchViewModel, t: Trust) {
             Text(t.name, color = TextSoft, fontWeight = FontWeight.Medium, fontSize = 16.sp)
             if (t.job.isNotBlank()) Text(t.job, color = TextMuted, fontSize = 11.sp)
         }
+        // Have it? Ticked by hand, or by Sync from OmniWatch's read of your spell list.
+        Checkbox(checked = vm.trustOwned(t), onCheckedChange = { vm.toggleTrust(t) },
+            colors = CheckboxDefaults.colors(checkedColor = AccentGreen, uncheckedColor = TextMuted, checkmarkColor = Charcoal))
     }
     HorizontalDivider(color = CharcoalDark)
 }
@@ -6630,6 +6700,7 @@ private fun TrustsContent(vm: MobileWatchViewModel) {
     LazyColumn(Modifier.fillMaxSize()) {
         // The general reference sections sit above the roster, all collapsed. They are pure
         // data (trusts.json "info"), so another section needs no Kotlin.
+        item(key = "t_sync") { ClSyncRow(vm, "trusts") }
         if (info.isNotEmpty()) item(key = "tinfo") {
             Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 info.forEach { sec -> TrustBulletSection(sec.title, sec.lines) }
@@ -6643,6 +6714,10 @@ private fun TrustsContent(vm: MobileWatchViewModel) {
             SectionToggleRow("Alter Egos", rosterOpen.value, vm.trustCount()) {
                 rosterOpen.value = !rosterOpen.value
             }
+        }
+        if (rosterOpen.value) item(key = "t_have") {
+            Text("${vm.trustOwnedCount()} / ${vm.trustCount()} trusts", color = TextSoft, fontSize = 13.sp,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp))
         }
         if (rosterOpen.value) roles.forEach { role ->
             val list = vm.trustsOf(role)
@@ -6896,80 +6971,103 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                     Text("Version $version", color = TextMuted, fontSize = 13.sp)
                 }
             }
-            SectionHeader("Defaults")
-            SectionCard(color = Panel) {
-                Text("Default view when opening each search tab.", color = TextSoft, fontSize = 13.sp)
-                Spacer(Modifier.height(10.dp))
-                var defMob by remember { mutableStateOf(vm.defaultMobView()) }
-                var defZone by remember { mutableStateOf(vm.defaultZoneView()) }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Bestiary", color = TextMuted, fontSize = 13.sp, maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 60.dp))
-                    PickerButton("View", defMob, listOf("all" to "All", "family" to "Family", "zone" to "Zone", "content" to "Content")) {
-                        defMob = it; vm.setDefaultMobView(it)
+            SettingsGroup("OmniWatch")
+            FoldSection("Connection") {
+                CharLinkSettings(vm)
+            }
+            FoldSection("Chat") {
+                ChatSettings(vm)
+            }
+            FoldSection("Gear luas") {
+                GearLuaSettings(vm)
+            }
+            SettingsGroup("MobileWatch")
+            FoldSection("Defaults") {
+                SectionCard(color = Panel) {
+                    Text("Default view when opening each search tab.", color = TextSoft, fontSize = 13.sp)
+                    Spacer(Modifier.height(10.dp))
+                    var defMob by remember { mutableStateOf(vm.defaultMobView()) }
+                    var defZone by remember { mutableStateOf(vm.defaultZoneView()) }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Bestiary", color = TextMuted, fontSize = 13.sp, maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 60.dp))
+                        PickerButton("View", defMob, listOf("all" to "All", "family" to "Family", "zone" to "Zone", "content" to "Content")) {
+                            defMob = it; vm.setDefaultMobView(it)
+                        }
                     }
-                }
-                Spacer(Modifier.height(6.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Zones", color = TextMuted, fontSize = 13.sp, maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 60.dp))
-                    PickerButton("View", defZone, listOf("all" to "All", "region" to "Region")) {
-                        defZone = it; vm.setDefaultZoneView(it)
+                    Spacer(Modifier.height(6.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Zones", color = TextMuted, fontSize = 13.sp, maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 60.dp))
+                        PickerButton("View", defZone, listOf("all" to "All", "region" to "Region")) {
+                            defZone = it; vm.setDefaultZoneView(it)
+                        }
                     }
                 }
             }
-            SectionHeader("Music")
-            SectionCard(color = Panel) {
-                var zoneMusic by remember {
-                    mutableStateOf(com.balladofworms.mobilewatch.music.MusicPlayer.zoneMusicOn())
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Zone music", color = TextPrimary, fontSize = 14.sp)
-                        Text("Play a few seconds of a zone's music when you open it in Zones. "
-                            + "Uses the music folders added in the player; never interrupts music "
-                            + "that's already playing.", color = TextMuted, fontSize = 12.sp)
+            FoldSection("Music") {
+                SectionCard(color = Panel) {
+                    var zoneMusic by remember {
+                        mutableStateOf(com.balladofworms.mobilewatch.music.MusicPlayer.zoneMusicOn())
                     }
-                    Spacer(Modifier.width(10.dp))
-                    Switch(checked = zoneMusic, onCheckedChange = {
-                        zoneMusic = it
-                        com.balladofworms.mobilewatch.music.MusicPlayer.setZoneMusicOn(it)
-                    }, colors = SwitchDefaults.colors(checkedThumbColor = Charcoal,
-                        checkedTrackColor = AccentGold))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text("Zone music", color = TextPrimary, fontSize = 14.sp)
+                            Text("Play a few seconds of a zone's music when you open it in Zones. "
+                                + "Uses the music folders added in the player; never interrupts music "
+                                + "that's already playing.", color = TextMuted, fontSize = 12.sp)
+                        }
+                        Spacer(Modifier.width(10.dp))
+                        Switch(checked = zoneMusic, onCheckedChange = {
+                            zoneMusic = it
+                            com.balladofworms.mobilewatch.music.MusicPlayer.setZoneMusicOn(it)
+                        }, colors = SwitchDefaults.colors(checkedThumbColor = Charcoal,
+                            checkedTrackColor = AccentGold))
+                    }
                 }
             }
-            SectionHeader("Support")
-            SectionCard(color = Panel) {
-                Text("If MobileWatch is useful to you, you can support development.",
-                    color = TextSoft, fontSize = 13.sp)
-                Spacer(Modifier.height(10.dp))
-                Button(
-                    onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DONATE_URL))) } },
-                    colors = ButtonDefaults.buttonColors(containerColor = AccentGold, contentColor = Charcoal)
-                ) { Text("\u2615  Support on Ko-fi", fontWeight = FontWeight.SemiBold) }
+            FoldSection("Support") {
+                SectionCard(color = Panel) {
+                    Text("If MobileWatch is useful to you, you can support development.",
+                        color = TextSoft, fontSize = 13.sp)
+                    Spacer(Modifier.height(10.dp))
+                    Button(
+                        onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DONATE_URL))) } },
+                        colors = ButtonDefaults.buttonColors(containerColor = AccentGold, contentColor = Charcoal)
+                    ) { Text("\u2615  Support on Ko-fi", fontWeight = FontWeight.SemiBold) }
+                }
             }
-            SectionHeader("About")
-            SectionCard(color = Panel) {
-                Text("A Final Fantasy XI companion, built offline-first \u2014 everything but auction "
-                    + "house prices and the live event feed works with no connection.",
-                    color = TextSoft, fontSize = 13.sp)
-                Spacer(Modifier.height(8.dp))
-                AboutLine("Items", "Auction house prices by world, with sale history.")
-                AboutLine("Events", "Live in-game campaigns and seasonal events.")
-                AboutLine("Jobs", "All 22 jobs \u2014 traits, abilities, spells, pets and Corsair rolls.")
-                AboutLine("Bestiary", "Every monster in the game, browsable by family, by zone or by "
-                    + "content, with resistances, TP moves, spells, drops and notes.")
-                AboutLine("Zones", "All 294 zones \u2014 maps, travel, battlefields, quests, NMs and mobs.")
-                AboutLine("Content", "Endgame by activity, starting with Dynamis and Dynamis Divergence.")
-                AboutLine("Hobbies", "Fishing, all nine crafts, Synergy, gardening, and the gathering "
-                    + "and chocobo hobbies.")
-                AboutLine("Trusts", "All 122 alter egos by role.")
-                AboutLine("Chains", "Skillchains and the full weapon skill reference.")
-                AboutLine("Music", "The \u266a button in the header: FFXI's soundtrack from your own game files, " +
-                    "looped the way the game loops it. No music is included.")
-                Spacer(Modifier.height(10.dp))
-                Text("Data is compiled by hand from BG-wiki and checked against the game. If something "
-                    + "looks wrong, it probably is \u2014 tell me and it gets fixed.",
-                    color = TextMuted, fontSize = 12.sp)
-                Text("by BalladOfWorms", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+            FoldSection("About") {
+                SectionCard(color = Panel) {
+                    Text("A Final Fantasy XI companion, built offline-first \u2014 everything but auction "
+                        + "house prices, the live event feed and the OmniWatch link works with no connection.",
+                        color = TextSoft, fontSize = 13.sp)
+                    Spacer(Modifier.height(8.dp))
+                    AboutLine("Character", "Your GearSwap sets, gear and stats like OmniWatch's, matched to your "
+                        + "bags when paired.")
+                    AboutLine("Chat", "Tells, shouts, yells and linkshells: reply from the phone, alerts for tells "
+                        + "and disconnects.")
+                    AboutLine("Marketplace", "Your auction house listings and bazaar: list, take back, reprice.")
+                    AboutLine("Items", "Auction house prices by world, with sale history.")
+                    AboutLine("Events", "Live campaigns and seasonal events.")
+                    AboutLine("Jobs", "All 22 jobs: traits, abilities, spells, pets and rolls.")
+                    AboutLine("Bestiary", "Every monster by family, zone or content: resistances, TP moves, "
+                        + "drops and notes.")
+                    AboutLine("Zones", "All 294 zones: maps, travel, battlefields, quests and NMs.")
+                    AboutLine("Content", "Endgame by activity, starting with Dynamis.")
+                    AboutLine("Hobbies", "Fishing, crafts, Synergy, gardening and the gathering hobbies.")
+                    AboutLine("Missions", "Every mission line, to tick off.")
+                    AboutLine("Quests", "The whole quest log by area, to tick off.")
+                    AboutLine("Trusts", "All 122 alter egos by role, ticked when you have them.")
+                    AboutLine("Mounts", "Every mount, to tick off.")
+                    AboutLine("Chains", "Skillchains and the weapon skill reference.")
+                    AboutLine("Music", "The \u266a button: FFXI's soundtrack from your own game files.")
+                    Text("Missions, quests, mounts and trusts sync with OmniWatch's checklist.",
+                        color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
+                    Spacer(Modifier.height(10.dp))
+                    Text("Data is compiled by hand from BG-wiki and checked against the game. If something "
+                        + "looks wrong, it probably is \u2014 tell me and it gets fixed.",
+                        color = TextMuted, fontSize = 12.sp)
+                    Text("by BalladOfWorms", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+                }
             }
             Spacer(Modifier.height(24.dp))
         }
@@ -6979,8 +7077,9 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
 @Composable
 private fun AboutLine(tab: String, what: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+        // A column for the names, always with a gap before the text, even for a long name.
         Text(tab, color = AccentGold, fontSize = 12.sp, fontWeight = FontWeight.SemiBold,
-            maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 72.dp))
+            maxLines = 1, softWrap = false, modifier = Modifier.widthIn(min = 84.dp).padding(end = 10.dp))
         Text(what, color = TextSoft, fontSize = 12.sp, modifier = Modifier.weight(1f))
     }
 }
@@ -7218,3 +7317,1844 @@ private fun SpellDetailScreen(vm: MobileWatchViewModel) {
     }
 }
 
+// ==========================  CHARACTER TAB  ================================
+// The top row picks the main job, the second its support job. The grid shows a gear set read
+// from that job's GearSwap luas (Settings > Gear luas), sets.idle to start with; the Set button
+// lists every set the luas build. With OmniWatch paired, each piece is matched to the copy in
+// your bags, pieces you don't have are outlined red, and tapping a square lists everything you
+// own that fits it so you can try something else (outlined gold).
+
+@Composable
+private fun CharacterContent(vm: MobileWatchViewModel) {
+    val c = vm.char
+    if (!c.linked && !vm.hasLuas()) {
+        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+            Spacer(Modifier.height(10.dp))
+            Text("Gear sets from your luas", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            Text("Pick the folder holding your GearSwap luas in Settings and tick the ones to use. " +
+                "Pair OmniWatch there too and every piece is matched to your bags.",
+                color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+            Button(onClick = { vm.openSettings() }) { Text("Open Settings") }
+        }
+        return
+    }
+    val job = vm.charJob()
+    val sub = job?.let { vm.charSub(it) } ?: ""
+    LaunchedEffect(job, sub, c.luaNames) { job?.let { vm.ensureSets(it) } }
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+        item(key = "char_head") {
+            Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Box(Modifier.weight(1f)) {
+                    if (c.characters.size > 1)
+                        CompactDropdown(c.selected ?: c.characters.first(),
+                            c.characters.map { Triple(it, it, false) }, bold = true) { vm.selectCharacter(it) }
+                    else
+                        Text(c.selected ?: "", color = AccentGold, fontWeight = FontWeight.Bold, fontSize = 16.sp,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                if (job != null) {
+                    val snap = c.snap
+                    CompactDropdown(job, vm.charMainJobs().map { (j, lv) ->
+                        Triple(j, if (lv > 0) "$j  $lv" else j, j == snap?.mainJob) }) { vm.selectCharJob(it) }
+                    CompactDropdown(sub.ifEmpty { "Sub" },
+                        listOf(Triple("", "None", false)) + vm.charSubJobs(job).map { (j, lv) ->
+                            Triple(j, if (lv > 0) "$j  $lv" else j, snap != null && snap.mainJob == job && j == snap.subJob) },
+                        prefix = "/") { vm.selectCharSub(job, it) }
+                }
+                if (c.loading || c.setsLoading)
+                    CircularProgressIndicator(color = AccentGreen, strokeWidth = 2.dp,
+                        modifier = Modifier.padding(12.dp).size(20.dp))
+                else
+                    IconButton(onClick = { vm.refreshCharacter() }) {
+                        Icon(Icons.Filled.Refresh, "Refresh", tint = TextMuted)
+                    }
+            }
+            c.error?.let {
+                Text(it, color = if (c.offline) TextMuted else AccentRed, fontSize = 12.sp,
+                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp))
+            }
+        }
+        if (job == null) {
+            item(key = "char_nojob") {
+                Text("No jobs yet. Tick a lua in Settings, or pair OmniWatch.", color = TextMuted,
+                    fontSize = 13.sp, modifier = Modifier.padding(vertical = 16.dp))
+            }
+        } else {
+            item(key = "char_set") { CharSetButtons(vm, job) }
+            item(key = "char_grid") { CharGearGrid(vm, job) }
+            item(key = "char_buffs") { Spacer(Modifier.height(10.dp)); CharBuffPanel(vm) }
+            item(key = "char_stats") { Spacer(Modifier.height(10.dp)); CharStatsPanel(vm, job) }
+            item(key = "char_inv") { Spacer(Modifier.height(10.dp)); CharInventoryPanel(vm) }
+        }
+        item(key = "char_end") { Spacer(Modifier.height(24.dp)) }
+    }
+}
+
+/** A small dropdown that shows just its value ("WHM ▾"); the menu lists (value, label, gold). */
+@Composable
+private fun CompactDropdown(current: String, options: List<Triple<String, String, Boolean>>,
+                            prefix: String = "", bold: Boolean = false, onSelect: (String) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        Surface(color = Panel, shape = RoundedCornerShape(8.dp), modifier = Modifier.clickable { open = true }) {
+            Row(Modifier.padding(start = 10.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Text(prefix + current, color = if (bold) AccentGold else TextPrimary, fontSize = if (bold) 15.sp else 13.sp,
+                    fontWeight = if (bold) FontWeight.Bold else FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Icon(Icons.Filled.ArrowDropDown, null, tint = TextMuted, modifier = Modifier.size(18.dp))
+            }
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            options.forEach { (value, label, gold) ->
+                DropdownMenuItem(
+                    text = { Text(label, color = if (gold) AccentGold else TextPrimary,
+                        fontWeight = if (value == current) FontWeight.Bold else FontWeight.Normal) },
+                    onClick = { onSelect(value); open = false })
+            }
+        }
+    }
+}
+
+/** Weapons on top, the gear set under it. Each is picked on its own and neither clears the other. */
+@Composable
+private fun CharSetButtons(vm: MobileWatchViewModel, job: String) {
+    val res = vm.charSets(job)
+    Column(Modifier.fillMaxWidth().padding(top = 6.dp, bottom = 6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        when {
+            res == null -> Text("Reading $job luas…", color = TextMuted, fontSize = 12.sp)
+            res.sets.isEmpty() && res.warnings.isEmpty() ->
+                Text("No lua for $job. Tick one in Settings > Gear luas.", color = TextMuted, fontSize = 12.sp)
+            else -> {
+                val weapons = vm.weaponSets(job)
+                SetPickRow("Weapons",
+                    vm.chosenWeaponPath(job)?.let { vm.shortSetName(it) } ?: "None",
+                    weapons.size, enabled = weapons.isNotEmpty()) { vm.openSetList("weapons") }
+                SetPickRow("Set", vm.chosenSetPath(job)?.removePrefix("sets.") ?: "Pick a set",
+                    vm.gearSets(job).size) { vm.openSetList("gear") }
+            }
+        }
+        res?.warnings?.firstOrNull()?.let {
+            Text("A lua had a problem: $it", color = AccentRed, fontSize = 11.sp, maxLines = 2,
+                overflow = TextOverflow.Ellipsis)
+        }
+    }
+}
+
+@Composable
+private fun SetPickRow(label: String, value: String, count: Int, enabled: Boolean = true, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(10.dp)
+    // The label column is as wide as "Weapons" at whatever font size the phone uses (an invisible
+    // copy holds the width), so it never wraps or clips and both rows' values line up after a gap.
+    Row(Modifier.fillMaxWidth().clip(shape).border(1.dp, if (enabled) TextMuted.copy(alpha = 0.6f) else CharcoalDark, shape)
+            .clickable(enabled = enabled) { onClick() }.padding(start = 12.dp, end = 4.dp, top = 5.dp, bottom = 5.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.padding(end = 12.dp)) {
+            Text("Weapons", color = Color.Transparent, fontSize = 11.sp, maxLines = 1, softWrap = false)
+            Text(label, color = TextMuted, fontSize = 11.sp, maxLines = 1, softWrap = false)
+        }
+        Text(value, color = if (enabled) TextSoft else TextMuted, fontSize = 13.sp, maxLines = 1,
+            overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        Text("$count", color = TextMuted, fontSize = 11.sp, modifier = Modifier.padding(start = 6.dp))
+        Icon(Icons.Filled.ArrowDropDown, null, tint = TextMuted, modifier = Modifier.size(20.dp))
+    }
+}
+
+@Composable
+private fun CharGearGrid(vm: MobileWatchViewModel, job: String) {
+    val c = vm.char
+    val pieces = remember(c.setsVersion, c.snap, c.chosen, c.chosenWeapons, job, vm.charSub(job)) { vm.chosenPieces(job) }
+    val haveBags = c.snap != null
+    val pinItems = c.pinned[job]?.items
+    val nowItems = remember(pieces, c.picks, pinItems) { if (pinItems == null) emptyMap() else vm.gridItemIds(job) }
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        GearSlots.GRID.chunked(4).forEach { row ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                row.forEach { slot ->
+                    val p = vm.effectivePiece(job, slot.key, pieces)
+                    GearCell(slot, p, vm.isPicked(job, slot.key), missing = haveBags && p != null && !p.empty && p.owned == null,
+                        changed = pinItems != null && pinItems[slot.key] != nowItems[slot.key],
+                        modifier = Modifier.weight(1f)) { vm.openCharSlot(slot.key) }
+                }
+            }
+        }
+        val missing = if (haveBags) GearSlots.GRID.count { s ->
+            vm.effectivePiece(job, s.key, pieces)?.let { !it.empty && it.owned == null } == true } else 0
+        if (missing > 0)
+            Text("Outlined red: not in your bags.", color = TextMuted, fontSize = 12.sp)
+        if (vm.hasPicks(job)) {
+            Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("Outlined gold: changed from the set.", color = TextMuted, fontSize = 12.sp,
+                    modifier = Modifier.weight(1f))
+                OutlinedButton(onClick = { vm.resetPicks(job) },
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)) {
+                    Text("Back to set", fontSize = 12.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GearCell(slot: GearSlots.Slot, piece: Piece?, picked: Boolean, missing: Boolean,
+                     changed: Boolean = false, modifier: Modifier, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(8.dp)
+    val outline = when { picked -> AccentGold; missing -> AccentRed; else -> null }
+    // A piece picked from gear you don't have shows both: gold outside, red inside.
+    val inner = if (picked && missing) AccentRed else null
+    Surface(color = Panel, shape = shape,
+        modifier = modifier.aspectRatio(1f)
+            .then(if (outline != null) Modifier.border(1.5.dp, outline, shape) else Modifier)
+            .then(if (inner != null) Modifier.padding(2.5.dp).border(1.dp, inner, RoundedCornerShape(6.dp)) else Modifier)
+            .clickable { onClick() }) {
+      Box(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().padding(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            when {
+                piece == null -> Text(slot.label, color = TextMuted.copy(alpha = 0.6f), fontSize = 11.sp)
+                piece.empty -> Text("Empty", color = TextMuted, fontSize = 11.sp)
+                else -> {
+                    piece.item?.let { ItemIcon(it.id, 30.dp) }
+                    Text(piece.item?.name ?: piece.name, color = if (piece.item == null) AccentRed else TextSoft,
+                        fontSize = 10.sp, lineHeight = 12.sp, maxLines = 2,
+                        overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+                }
+            }
+        }
+        // Compare is on and this slot no longer holds what it did when it was pressed.
+        if (changed) Box(Modifier.align(Alignment.TopEnd).padding(5.dp).size(7.dp)
+            .background(Color(0xFF64B5F6), RoundedCornerShape(50)))
+      }
+    }
+}
+
+/** The weapon sets, or every gear set, in one alphabetical list. */
+@Composable
+private fun CharSetListScreen(vm: MobileWatchViewModel) {
+    val job = vm.charJob() ?: return
+    val weapons = vm.char.setList == "weapons"
+    val sets = if (weapons) vm.weaponSets(job) else vm.gearSets(job)
+    val current = if (weapons) vm.chosenWeaponPath(job) else vm.chosenSetPath(job)
+    var query by rememberSaveable { mutableStateOf("") }
+    // One alphabetical list, by the name as shown.
+    fun shownName(path: String) = if (weapons) vm.shortSetName(path) else path.removePrefix("sets.")
+    val shown = remember(sets, query, weapons) {
+        val q = query.trim().lowercase()
+        (if (q.isEmpty()) sets else sets.filter { it.path.lowercase().contains(q) })
+            .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { shownName(it.path) })
+    }
+    Scaffold(
+        containerColor = Charcoal,
+        topBar = { GradientTopBar(if (weapons) "$job weapons" else "$job sets", onBack = { vm.closeSetList() }) }
+    ) { pad ->
+        Column(Modifier.padding(pad).fillMaxSize()) {
+            CompactSearchField(value = query, onValueChange = { query = it },
+                placeholder = if (weapons) "Search weapons" else "Search sets",
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp))
+            LazyColumn(Modifier.fillMaxSize()) {
+                if (weapons) item(key = "w_none") {
+                    SetListRow("None", "The set's own weapons", current == null) { vm.chooseWeapons(job, null) }
+                }
+                items(shown, key = { "s_${it.path}" }) { s ->
+                    SetListRow(shownName(s.path), "${s.slots.size}", s.path == current) {
+                        if (weapons) vm.chooseWeapons(job, s.path) else vm.chooseSet(job, s.path)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SetListRow(name: String, note: String, current: Boolean, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().clickable { onClick() }.padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(name, color = Color.White, fontSize = 13.sp,
+            fontWeight = if (current) FontWeight.Bold else FontWeight.Normal, modifier = Modifier.weight(1f))
+        if (current) Text("✓", color = Color.White, fontSize = 13.sp, modifier = Modifier.padding(end = 8.dp))
+        Text(note, color = TextMuted, fontSize = 11.sp)
+    }
+    HorizontalDivider(color = CharcoalDark)
+}
+
+/** One slot, one job: everything owned that fits, then every other piece the job can wear
+ *  there. Tap a piece to put it in the square; the arrow opens its card. */
+@Composable
+private fun CharSlotScreen(vm: MobileWatchViewModel) {
+    val c = vm.char
+    val slot = c.slot?.let { GearSlots.slot(it) } ?: return
+    val job = vm.charJob() ?: return
+    val pieces = remember(c.setsVersion, c.snap, c.chosen, c.chosenWeapons, job) { vm.chosenPieces(job) }
+    val rows = remember(c.snap, c.picks, c.setsVersion, c.chosen, c.chosenWeapons, job, slot.key) { vm.ownedForSlot(job, slot.key) }
+    // What's in the square now: every row shows what it would change against this.
+    val nowStats = remember(c.snap, c.picks, c.setsVersion, c.chosen, c.chosenWeapons, job, slot.key) { vm.slotNowStats(job, slot.key) }
+    val catalog = remember(c.snap, c.picks, c.setsVersion, c.chosen, c.chosenWeapons, job, slot.key) { vm.catalogForSlot(job, slot.key) }
+    var query by rememberSaveable(job, slot.key) { mutableStateOf("") }
+    val q = query.trim().lowercase()
+    val shownRows = remember(rows, q) { if (q.isEmpty()) rows else rows.filter { vm.label(it.item).lowercase().contains(q) } }
+    val shownCat = remember(catalog, q) { if (q.isEmpty()) catalog else catalog.filter { vm.label(it.item).lowercase().contains(q) } }
+    val setPiece = pieces[slot.key]
+    Scaffold(
+        containerColor = Charcoal,
+        topBar = { GradientTopBar("${slot.label}  ·  $job", onBack = { vm.closeCharSlot() }) }
+    ) { pad ->
+        Column(Modifier.padding(pad).fillMaxSize()) {
+            CompactSearchField(value = query, onValueChange = { query = it }, placeholder = "Search gear",
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp))
+            LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+                // A piece the set names that the item data doesn't know still gets a line here.
+                if (setPiece != null && !setPiece.empty && setPiece.owned == null && setPiece.item == null && q.isEmpty()) item(key = "slot_unknown") {
+                    Spacer(Modifier.height(8.dp))
+                    Text("In the set", color = TextMuted, fontSize = 12.sp)
+                    Text(setPiece.name, color = AccentRed, fontSize = 14.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
+                item(key = "h_owned") { SlotSectionHeader("Your gear", if (c.snap == null) null else "${shownRows.size}") }
+                if (c.snap == null) item(key = "slot_nobags") {
+                    Text("Pair OmniWatch in Settings to see your own gear here.", color = TextMuted,
+                        fontSize = 13.sp, modifier = Modifier.padding(vertical = 10.dp))
+                } else if (shownRows.isEmpty()) item(key = "slot_none") {
+                    Text(if (q.isEmpty()) "Nothing you own fits $job in this slot." else "No match in your gear.",
+                        color = TextMuted, fontSize = 13.sp, modifier = Modifier.padding(vertical = 10.dp))
+                }
+                items(shownRows, key = { "o:${it.owned.bag}:${it.owned.idx}" }) { r -> OwnedGearRow(vm, r, nowStats) }
+                item(key = "h_all") { SlotSectionHeader(if (c.snap == null) "All gear" else "Not in your bags", "${shownCat.size}") }
+                if (shownCat.isEmpty()) item(key = "cat_none") {
+                    Text(if (q.isEmpty()) "Nothing else fits $job in this slot." else "No match.",
+                        color = TextMuted, fontSize = 13.sp, modifier = Modifier.padding(vertical = 10.dp))
+                }
+                items(shownCat, key = { "c:${it.item.id}" }) { r -> CatalogGearRow(vm, r, nowStats) }
+                item(key = "slot_end") { Spacer(Modifier.height(24.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SlotSectionHeader(title: String, count: String?) {
+    Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(title, color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.weight(1f))
+        count?.let { Text(it, color = TextMuted, fontSize = 11.sp) }
+    }
+    HorizontalDivider(color = CharcoalDark)
+}
+
+/** An item you don't have: same look as your own gear, without a bag. */
+@Composable
+private fun CatalogGearRow(vm: MobileWatchViewModel, r: CatalogRow, now: GearStats.Parsed?) {
+    var open by remember(r.item.id) { mutableStateOf(false) }
+    val lvTag = when {
+        r.item.ilevel > 0 -> "iLv ${r.item.ilevel}"
+        r.item.level > 0 -> "Lv ${r.item.level}"
+        else -> null
+    }
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier.fillMaxWidth().clickable { vm.pickCatalog(r) }.padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ItemIcon(r.item.id, 28.dp, Modifier.padding(end = 10.dp))
+            Column(Modifier.weight(1f)) {
+                Text(vm.label(r.item),
+                    color = when { r.selected -> AccentGold; r.levelOk -> TextSoft; else -> TextMuted },
+                    fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                lvTag?.let { Text(it, color = TextMuted, fontSize = 11.sp, maxLines = 1) }
+                if (!r.selected) StatDiffLine(now, GearStats.of(r.item, emptyList()))
+            }
+            if (r.inSet) Text("In set", color = AccentGreen, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp))
+            IconButton(onClick = { open = !open }, modifier = Modifier.size(36.dp)) {
+                Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                    if (open) "Hide details" else "Show details", tint = TextMuted)
+            }
+        }
+        if (open) {
+            ItemHelpBox(r.item)
+            Spacer(Modifier.height(8.dp))
+        }
+    }
+    HorizontalDivider(color = CharcoalDark)
+}
+
+@Composable
+private fun OwnedGearRow(vm: MobileWatchViewModel, r: OwnedRow, now: GearStats.Parsed?) {
+    var open by remember(r.owned.bag, r.owned.idx) { mutableStateOf(r.selected) }
+    val lvTag = when {
+        r.item.ilevel > 0 -> "iLv ${r.item.ilevel}"
+        r.item.level > 0 -> "Lv ${r.item.level}"
+        else -> null
+    }
+    // The first augment line tells copies of the same item apart (six capes, one name).
+    val augTag = r.owned.augs.firstOrNull()?.let { first ->
+        if (r.owned.augs.size > 1) "$first +${r.owned.augs.size - 1}" else first
+    }
+    // A copy already filling the other ring / earring square can't go here too.
+    val canPick = r.elsewhere == null
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier.fillMaxWidth()
+                .clickable { if (canPick) vm.pickGear(r) else open = !open }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ItemIcon(r.item.id, 28.dp, Modifier.padding(end = 10.dp))
+            Column(Modifier.weight(1f)) {
+                Text(vm.label(r.item),
+                    color = when { r.selected -> AccentGold; r.levelOk && canPick -> TextSoft; else -> TextMuted },
+                    fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    buildAnnotatedString {
+                        listOfNotNull(lvTag, augTag).forEach { t ->
+                            withStyle(SpanStyle(color = TextMuted)) { append(t); append("  ·  ") }
+                        }
+                        // Storage bags (safe, locker, satchel...) need a trip before you can equip.
+                        withStyle(SpanStyle(color = if (r.equippable) TextMuted else AccentGold)) {
+                            append(vm.bagName(r.owned.bag))
+                        }
+                    },
+                    fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis
+                )
+                if (!r.selected) StatDiffLine(now, GearStats.of(r.item, r.owned.augs))
+            }
+            Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 8.dp)) {
+                if (r.inSet) Text("In set", color = AccentGreen, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                r.elsewhere?.let { Text("In $it", color = TextMuted, fontSize = 11.sp) }
+            }
+            IconButton(onClick = { open = !open }, modifier = Modifier.size(36.dp)) {
+                Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                    if (open) "Hide details" else "Show details", tint = TextMuted)
+            }
+        }
+        if (open) {
+            ItemHelpBox(r.item, augments = r.owned.augs)
+            Spacer(Modifier.height(8.dp))
+        }
+    }
+    HorizontalDivider(color = CharcoalDark)
+}
+
+/** Settings > Gear luas: the folder your luas live in, and which of them to use. */
+@Composable
+private fun GearLuaSettings(vm: MobileWatchViewModel) {
+    var label by remember { mutableStateOf(vm.luaFolderLabel()) }
+    var files by remember { mutableStateOf<List<GearLuas.Entry>?>(null) }
+    var used by remember { mutableStateOf(vm.luaSelected()) }
+    var reload by remember { mutableStateOf(0) }
+    val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) { vm.setLuaFolder(uri); label = vm.luaFolderLabel(); reload++ }
+    }
+    LaunchedEffect(reload) { files = withContext(Dispatchers.IO) { vm.luaFolderFiles() } }
+    // The section itself folds (Settings > Gear luas); the first line says how many are in use.
+    SectionCard(color = Panel) {
+        Text(when {
+                label == null -> "No folder chosen"
+                else -> "${used.size} lua${if (used.size == 1) "" else "s"} in use" +
+                    (files?.let { " of ${it.size}" } ?: "")
+            }, color = TextPrimary, fontSize = 14.sp)
+        Spacer(Modifier.height(6.dp))
+        Text("The Character tab reads its gear sets from your GearSwap luas. Pick the folder they're in " +
+            "and tick the ones to use; they're kept on the phone and refreshed from the folder each time " +
+            "you open the tab. Files with no job in the name (globals, items) are loaded for every job.",
+            color = TextSoft, fontSize = 13.sp)
+        Spacer(Modifier.height(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(label ?: "No folder chosen", color = if (label == null) TextMuted else TextPrimary,
+                fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            OutlinedButton(onClick = { pick.launch(null) }) { Text(if (label == null) "Choose folder" else "Change", fontSize = 12.sp) }
+        }
+        val list = files
+        when {
+            label == null -> {}
+            list == null -> Text("Can't read that folder. Choose it again.", color = AccentRed, fontSize = 12.sp,
+                modifier = Modifier.padding(top = 8.dp))
+            list.isEmpty() -> Text("No .lua files in that folder.", color = TextMuted, fontSize = 12.sp,
+                modifier = Modifier.padding(top = 8.dp))
+            else -> Column(Modifier.padding(top = 6.dp)) {
+                list.forEach { e ->
+                    val on = e.name in used
+                    Row(Modifier.fillMaxWidth().clickable {
+                        used = if (on) used - e.name else used + e.name
+                        vm.setLuaUsed(e.name, !on)
+                    }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(checked = on, onCheckedChange = null)
+                        Text(e.name, color = TextSoft, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                        Text(LuaGear.jobOf(e.name) ?: "all jobs", color = TextMuted, fontSize = 11.sp)
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Settings > OmniWatch: pair with OmniWatch on the PC, change the link, or disconnect. */
+@Composable
+private fun CharLinkSettings(vm: MobileWatchViewModel) {
+    val c = vm.char
+    var addr by rememberSaveable { mutableStateOf(c.address) }
+    var code by rememberSaveable { mutableStateOf("") }
+    var armed by remember { mutableStateOf(false) }
+    SectionCard(color = Panel) {
+        Text(
+            if (c.linked) "Paired with OmniWatch at ${c.address}."
+            else "Pair with OmniWatch on your PC and the Character tab matches every piece to your bags. " +
+                "In OmniWatch, open Settings and press OPEN on MobileWatch (just above Exit), then enter one of its addresses and the code here.",
+            color = TextSoft, fontSize = 13.sp)
+        Spacer(Modifier.height(10.dp))
+        OutlinedTextField(
+            value = addr, onValueChange = { addr = it },
+            label = { Text("Address") }, placeholder = { Text("192.168.1.20:47321") },
+            singleLine = true, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next)
+        )
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
+            value = code, onValueChange = { code = it.take(12) },
+            label = { Text("Code") }, placeholder = { Text("ABCD-EFGH") },
+            singleLine = true, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters,
+                imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { vm.connectCharacter(addr, code) })
+        )
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { armed = false; vm.connectCharacter(addr, code) }, enabled = !c.loading) {
+                Text(when { c.loading -> "Connecting…"; c.linked -> "Update"; else -> "Connect" })
+            }
+            // Two taps: this forgets the code and the saved bags (the luas stay).
+            if (c.linked)
+                OutlinedButton(onClick = { if (armed) { armed = false; vm.disconnectCharacter() } else armed = true }) {
+                    Text(if (armed) "Tap again" else "Disconnect", color = AccentRed)
+                }
+        }
+        c.error?.let { if (!c.offline) Text(it, color = AccentRed, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp)) }
+        Text("Away from home, use the address starting 100. (Tailscale), with Tailscale on the phone too.",
+            color = TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 10.dp))
+        if (c.linked) JobSyncRow(vm)
+    }
+}
+
+/** Sync jobs: OmniWatch changes through every job in game and saves each one's stats. */
+@Composable
+private fun JobSyncRow(vm: MobileWatchViewModel) {
+    LaunchedEffect(Unit) { vm.checkJobSync() }
+    val s = vm.jobSync
+    HorizontalDivider(color = CharcoalDark, modifier = Modifier.padding(vertical = 10.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text("Sync jobs", color = TextPrimary, fontSize = 14.sp)
+            Text("Changes through every job in game to save its stats, then back to the one you're on.",
+                color = TextMuted, fontSize = 12.sp)
+            Text("Must be in Mog House.", color = TextMuted, fontSize = 11.sp)
+        }
+        Spacer(Modifier.width(10.dp))
+        if (s?.busy == true)
+            OutlinedButton(onClick = { vm.cancelJobSync() }) { Text("Cancel", fontSize = 12.sp) }
+        else
+            Button(onClick = { vm.startJobSync() }) { Text("Sync", fontSize = 12.sp) }
+    }
+    val line: Pair<String, Color>? = when {
+        vm.jobSyncError != null -> vm.jobSyncError!! to AccentRed
+        s == null -> null
+        s.state == "starting" -> "Starting…" to TextSoft
+        s.state == "running" -> ("Syncing ${minOf(s.done + 1, maxOf(s.total, 1))} / ${s.total}" +
+            (if (s.job.isNotEmpty()) ": ${s.job}" else "")) to TextSoft
+        s.state == "done" -> "Synced ${s.saved.size} job${if (s.saved.size == 1) "" else "s"}." to AccentGreen
+        s.state == "cancelled" -> "Stopped. ${s.saved.size} saved." to TextSoft
+        s.state == "error" -> s.error.ifBlank { "Something went wrong." } to AccentRed
+        else -> null
+    }
+    line?.let { (t, col) -> Text(t, color = col, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp)) }
+    if (s != null && !s.busy && s.skipped.isNotEmpty())
+        Text("Skipped: " + s.skipped.joinToString(", "), color = TextMuted, fontSize = 11.sp,
+            modifier = Modifier.padding(top = 2.dp))
+    if (s?.busy == true)
+        LinearProgressIndicator(progress = { if (s.total > 0) s.done.toFloat() / s.total else 0f },
+            color = AccentGreen, trackColor = CharcoalDark,
+            modifier = Modifier.fillMaxWidth().padding(top = 6.dp))
+}
+
+// ============================  MARKETPLACE TAB  ============================
+// OmniWatch's auction house window on the phone: Buy (search, a queue of bids), Sell (your auction
+// house slots and your bazaar) and Delivery (the delivery box). Everything goes through OmniWatch to
+// the game, so the character has to be in a town with an auction house, except bazaar prices, which
+// can be set anywhere. OmniWatch's messages collect in the log at the bottom.
+
+private fun gil(v: Long) = "%,d".format(v)
+
+private fun leftText(secs: Long): String {
+    val d = secs / 86400; val h = (secs % 86400) / 3600; val m = (secs % 3600) / 60
+    return when { d > 0 -> "${d}d ${h}h"; h > 0 -> "${h}h ${m}m"; else -> "${m}m" }
+}
+
+/** What the listing dialog is for: the AH (single or stack) or the bazaar (a price per item). */
+private enum class ListFor { AH, BAZAAR }
+
+private val MARKET_TABS = listOf("buy" to "Buy", "sell" to "Sell", "delivery" to "Delivery")
+
+@Composable
+private fun MarketContent(vm: MobileWatchViewModel) {
+    if (!vm.char.linked) {
+        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+            Spacer(Modifier.height(10.dp))
+            Text("Marketplace from OmniWatch", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            Text("Buy and sell on the auction house, run your bazaar and use the delivery box through " +
+                "OmniWatch on your PC while the game is running. Pair the two in Settings.",
+                color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+            Button(onClick = { vm.openSettings() }) { Text("Open Settings") }
+        }
+        return
+    }
+    var tab by rememberSaveable { mutableStateOf("sell") }
+    // Keep it current while the tab is open: bids landing, sales, a parcel arriving.
+    LaunchedEffect(Unit) {
+        while (true) { vm.loadMarket(); kotlinx.coroutines.delay(3000) }
+    }
+    // The delivery box is opened in game while its tab is showing, and shut when it isn't.
+    DisposableEffect(tab) {
+        if (tab == "delivery") vm.openBox(vm.market?.box?.box ?: "in")
+        onDispose { if (tab == "delivery") vm.closeBox() }
+    }
+    val m = vm.market
+    Column(Modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 4.dp, top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            MARKET_TABS.forEach { (k, lbl) ->
+                val sel = tab == k
+                Surface(color = if (sel) Selection else Panel, shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.clickable { tab = k }) {
+                    Text(lbl, color = if (sel) TextPrimary else TextMuted, fontSize = 13.sp,
+                        fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp))
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            if (vm.marketBusy) CircularProgressIndicator(color = AccentGreen, strokeWidth = 2.dp, modifier = Modifier.size(18.dp))
+            IconButton(onClick = {
+                when (tab) {
+                    "sell" -> vm.refreshMarket()
+                    "delivery" -> vm.refreshBox()
+                    else -> m?.search?.takeIf { it.isNotBlank() }?.let { vm.searchAh(it) } ?: vm.loadMarket()
+                }
+            }, enabled = !vm.marketBusy) { Icon(Icons.Filled.Refresh, "Refresh", tint = AccentGreen) }
+            IconButton(onClick = { vm.clearMarketLog() }, enabled = !vm.marketBusy && !m?.log.isNullOrEmpty()) {
+                Icon(Icons.Filled.Delete, "Clear the log", tint = TextMuted)
+            }
+        }
+        vm.marketMsg?.let { Text(it, color = TextSoft, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 12.dp)) }
+        Box(Modifier.weight(1f)) {
+            when (tab) {
+                "buy" -> MarketBuy(vm, m)
+                "delivery" -> MarketDelivery(vm, m)
+                else -> MarketSell(vm, m)
+            }
+        }
+    }
+}
+
+/** OmniWatch's messages, newest last, under each tab. */
+private fun androidx.compose.foundation.lazy.LazyListScope.marketLog(m: Market?, note: String) {
+    item(key = "mk_log") {
+        Column(Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 24.dp)) {
+            Text(note, color = TextMuted, fontSize = 11.sp)
+            if (!m?.log.isNullOrEmpty()) {
+                Text("Log", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.padding(top = 10.dp))
+                m!!.log.forEach { Text(it, color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 2.dp)) }
+            }
+        }
+    }
+}
+
+/** A section title that folds what's under it. */
+@Composable
+private fun MarketFold(title: String, note: String, open: Boolean, action: String? = null, actionEnabled: Boolean = true,
+                       onAction: () -> Unit = {}, onToggle: () -> Unit) {
+    Row(Modifier.fillMaxWidth().clickable { onToggle() }.padding(top = 10.dp, bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown, null, tint = TextMuted)
+        Text(title, color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 14.sp, modifier = Modifier.weight(1f))
+        Text(note, color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(end = 4.dp))
+        if (action != null) TextButton(onClick = onAction, enabled = actionEnabled) { Text(action, fontSize = 12.sp) }
+    }
+}
+
+// ---- Sell: auction house slots and the bazaar
+
+@Composable
+private fun MarketSell(vm: MobileWatchViewModel, m: Market?) {
+    var listing by remember { mutableStateOf<ListFor?>(null) }
+    var editing by remember { mutableStateOf<MarketItem?>(null) }   // a bazaar item being re-priced
+    var armed by remember { mutableStateOf<String?>(null) }         // waiting for its second tap
+    var ahOpen by rememberSaveable { mutableStateOf(true) }
+    var bzOpen by rememberSaveable { mutableStateOf(true) }
+    LaunchedEffect(armed) { if (armed != null) { kotlinx.coroutines.delay(4000); armed = null } }
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+        item(key = "mk_ah") {
+            MarketFold("Auction House", "${m?.sales?.size ?: 0} / 7", ahOpen, "List",
+                m != null && m.sales.size < 7 && !vm.marketBusy, { listing = ListFor.AH }) { ahOpen = !ahOpen }
+            if (ahOpen && m != null && m.sales.isEmpty())
+                Text("Nothing on the auction house.", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(bottom = 6.dp))
+        }
+        if (ahOpen) items(m?.sales.orEmpty(), key = { "s_${it.slot}" }) { s ->
+            val key = "ah${s.slot}"
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                ItemIcon(s.id, 26.dp, Modifier.padding(end = 8.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(s.name + if (s.count > 1) " ×${s.count}" else "", color = TextSoft, fontSize = 14.sp,
+                        maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(buildString {
+                        append(gil(s.price)); append(" gil  ·  "); append(s.status)
+                        s.left?.let { append(" · "); append(leftText(it)); append(" left") }
+                    }, color = when (s.status) { "Sold" -> AccentGreen; "Not Sold" -> AccentRed; else -> TextMuted },
+                        fontSize = 12.sp)
+                }
+                TextButton(enabled = !vm.marketBusy, onClick = {
+                    if (s.status == "Sold" || armed == key) { armed = null; vm.takeBackAh(s.slot) } else armed = key
+                }) {
+                    Text(when { s.status == "Sold" -> "Collect"; armed == key -> "Sure?"; else -> "Take back" },
+                        fontSize = 12.sp, color = if (armed == key) AccentRed else Color.Unspecified)
+                }
+            }
+            HorizontalDivider(color = CharcoalDark)
+        }
+        item(key = "mk_bz") {
+            MarketFold("Bazaar", "${m?.bazaar?.size ?: 0}", bzOpen, "Add", m != null && !vm.marketBusy,
+                { listing = ListFor.BAZAAR }) { bzOpen = !bzOpen }
+            if (bzOpen && m != null && m.bazaar.isEmpty())
+                Text("Nothing in your bazaar.", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(bottom = 6.dp))
+        }
+        if (bzOpen) items(m?.bazaar.orEmpty(), key = { "b_${it.id}" }) { b ->
+            val key = "bz${b.id}"
+            Row(Modifier.fillMaxWidth().clickable(enabled = !vm.marketBusy) { editing = b }.padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                ItemIcon(b.id, 26.dp, Modifier.padding(end = 8.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(b.name + if (b.count > 1) " ×${b.count}" else "", color = TextSoft, fontSize = 14.sp,
+                        maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text("${gil(b.price)} gil each", color = TextMuted, fontSize = 12.sp)
+                }
+                TextButton(enabled = !vm.marketBusy, onClick = {
+                    if (armed == key) { armed = null; vm.setBazaar(b.id, 0) } else armed = key
+                }) {
+                    Text(if (armed == key) "Sure?" else "Remove", fontSize = 12.sp,
+                        color = if (armed == key) AccentRed else Color.Unspecified)
+                }
+            }
+            HorizontalDivider(color = CharcoalDark)
+        }
+        marketLog(m, "Auction house listings need a town with an auction house. A bazaar price can be set anywhere.")
+    }
+    listing?.let { mode ->
+        val src = if (mode == ListFor.AH) m?.ahInv.orEmpty() else m?.bazaarInv.orEmpty()
+        MarketListDialog(mode, src, onDismiss = { listing = null }) { item, single, price ->
+            listing = null
+            if (mode == ListFor.AH) vm.sellOnAh(item.id, single, price) else vm.setBazaar(item.id, price)
+        }
+    }
+    editing?.let { b ->
+        MarketPriceDialog("${b.name} in your bazaar", b.price) { price ->
+            editing = null
+            if (price != null && price > 0 && price != b.price) vm.setBazaar(b.id, price)
+        }
+    }
+}
+
+// ---- Buy: search, then a queue of bids that raise toward a ceiling
+
+@Composable
+private fun MarketBuy(vm: MobileWatchViewModel, m: Market?) {
+    var query by rememberSaveable { mutableStateOf(m?.search ?: "") }
+    var adding by remember { mutableStateOf<BuyRow?>(null) }
+    var queueOpen by rememberSaveable { mutableStateOf(true) }
+    var resultsOpen by rememberSaveable { mutableStateOf(true) }
+    val running = m?.running == true
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+        item(key = "by_search") {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
+                CompactSearchField(value = query, onValueChange = { query = it }, placeholder = "Search the auction house",
+                    modifier = Modifier.weight(1f))
+                TextButton(onClick = { if (query.isNotBlank()) vm.searchAh(query) },
+                    enabled = query.isNotBlank() && !vm.marketBusy) { Text("Search", fontSize = 12.sp) }
+            }
+        }
+        item(key = "by_queue") {
+            MarketFold("Queue", if (running) "buying" else "${m?.queue?.size ?: 0}", queueOpen,
+                if (running) "Stop" else "Start", !vm.marketBusy && (running || !m?.queue.isNullOrEmpty()),
+                { if (running) vm.stopBuying() else vm.startBuying() }) { queueOpen = !queueOpen }
+            if (queueOpen && m != null && m.queue.isEmpty())
+                Text("Search, then tap an item to add it.", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(bottom = 6.dp))
+        }
+        if (queueOpen) itemsIndexed(m?.queue.orEmpty(), key = { i, q -> "q_${i}_${q.id}_${q.stack}" }) { i, q ->
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                ItemIcon(q.id, 24.dp, Modifier.padding(end = 8.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("${q.name} ×${q.qty}", color = TextSoft, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text("${gil(q.start)} → ${gil(q.max)} by ${gil(q.inc)}" + if (q.status.isNotBlank()) "  ·  ${q.status}" else "",
+                        color = TextMuted, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                if (!running) IconButton(onClick = { vm.unqueueBuy(i) }, enabled = !vm.marketBusy) {
+                    Icon(Icons.Filled.Close, "Remove from the queue", tint = TextMuted)
+                }
+            }
+            HorizontalDivider(color = CharcoalDark)
+        }
+        item(key = "by_res") {
+            MarketFold("Results", "${m?.buy?.size ?: 0}", resultsOpen) { resultsOpen = !resultsOpen }
+        }
+        if (resultsOpen) items(m?.buy.orEmpty(), key = { "r_${it.id}_${it.stack}" }) { r ->
+            Row(Modifier.fillMaxWidth().clickable(enabled = !running) { adding = r }.padding(vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                ItemIcon(r.id, 24.dp, Modifier.padding(end = 8.dp))
+                Text(r.name, color = if ((r.avail ?: 0) > 0) AccentGreen else TextSoft, fontSize = 14.sp,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                r.avail?.let { Text("$it up", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 6.dp)) }
+                if (r.level > 0) Text("Lv${r.level}", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 8.dp))
+            }
+            HorizontalDivider(color = CharcoalDark)
+        }
+        marketLog(m, "Buying needs a town with an auction house. Each bid starts at its first price and rises by " +
+            "the step until it wins or reaches the most you'll pay.")
+    }
+    adding?.let { r ->
+        BuyDialog(r, onDismiss = { adding = null }) { qty, start, max, inc ->
+            adding = null
+            vm.queueBuy(r.id, r.stack, qty, start, max, inc)
+        }
+    }
+}
+
+@Composable
+private fun BuyDialog(r: BuyRow, onDismiss: () -> Unit, onAdd: (Int, Long, Long, Long) -> Unit) {
+    var qty by remember { mutableStateOf("1") }
+    var start by remember { mutableStateOf("1000") }
+    var max by remember { mutableStateOf("5000") }
+    var inc by remember { mutableStateOf("500") }
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ItemIcon(r.id, 26.dp, Modifier.padding(end = 8.dp))
+                    Text(r.name, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                    RemoveX(onDismiss)
+                }
+                Row(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    GilField("How many", qty, { qty = it }, Modifier.weight(1f))
+                    GilField("Step", inc, { inc = it }, Modifier.weight(1f))
+                }
+                Row(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    GilField("First bid", start, { start = it }, Modifier.weight(1f))
+                    GilField("Most", max, { max = it }, Modifier.weight(1f))
+                }
+                val q = qty.toIntOrNull() ?: 0; val s = start.toLongOrNull() ?: 0; val mx = max.toLongOrNull() ?: 0
+                val st = inc.toLongOrNull() ?: 0
+                Button(onClick = { onAdd(q, s, mx, st) }, enabled = q > 0 && mx > 0 && s <= mx,
+                    modifier = Modifier.padding(top = 12.dp).fillMaxWidth()) { Text("Add to queue") }
+            }
+        }
+    }
+}
+
+/** A number box for the buy dialog. */
+@Composable
+private fun GilField(label: String, v: String, set: (String) -> Unit, mod: Modifier) {
+    OutlinedTextField(value = v, onValueChange = { set(it.filter { c -> c.isDigit() }.take(9)) }, label = { Text(label) },
+        singleLine = true, modifier = mod,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next))
+}
+
+// ---- Delivery box
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MarketDelivery(vm: MobileWatchViewModel, m: Market?) {
+    val b = m?.box
+    val which = b?.box ?: "in"
+    val rows = if (which == "out") b?.outbox.orEmpty() else b?.inbox.orEmpty()
+    var to by rememberSaveable { mutableStateOf("") }
+    var gilMode by rememberSaveable { mutableStateOf(false) }
+    var amount by rememberSaveable { mutableStateOf("") }
+    var pick by remember { mutableStateOf<MarketItem?>(null) }
+    var picking by remember { mutableStateOf(false) }
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+        item(key = "db_head") {
+            Row(Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(selected = which == "in", onClick = { vm.openBox("in") }, label = { Text("Inbox") })
+                FilterChip(selected = which == "out", onClick = { vm.openBox("out") }, label = { Text("Outbox") })
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = { vm.boxAll() }, enabled = rows.isNotEmpty() && !vm.marketBusy) {
+                    Text(if (which == "in") "Take all" else "Return all", fontSize = 12.sp)
+                }
+            }
+            b?.note?.takeIf { it.isNotBlank() }?.let { Text(it, color = TextMuted, fontSize = 12.sp) }
+            if (rows.isEmpty()) Text(if (b?.open.isNullOrEmpty()) "Opening the delivery box…" else "Empty.",
+                color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(vertical = 6.dp))
+        }
+        items(rows, key = { "d_${which}_${it.slot}" }) { r ->
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (!r.gil) ItemIcon(r.id, 24.dp, Modifier.padding(end = 8.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(if (r.gil) "${gil(r.count)} gil" else r.name + if (r.count > 1) " ×${r.count}" else "",
+                        color = TextSoft, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    if (r.who.isNotBlank()) Text((if (which == "in") "from " else "to ") + r.who, color = TextMuted, fontSize = 12.sp)
+                }
+                TextButton(enabled = !vm.marketBusy, onClick = {
+                    if (which == "in") vm.takeFromBox(r.slot) else vm.returnFromBox(r.slot)
+                }) { Text(if (which == "in") "Take" else "Return", fontSize = 12.sp) }
+            }
+            HorizontalDivider(color = CharcoalDark)
+        }
+        item(key = "db_send") {
+            Text("Send", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 14.sp, modifier = Modifier.padding(top = 14.dp))
+            OutlinedTextField(value = to, onValueChange = { to = it.filter { c -> c.isLetter() }.take(15) },
+                label = { Text("To") }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next))
+            Row(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(selected = !gilMode, onClick = { gilMode = false }, label = { Text("Item") })
+                FilterChip(selected = gilMode, onClick = { gilMode = true }, label = { Text("Gil") })
+            }
+            if (!gilMode) {
+                OutlinedButton(onClick = { picking = true }, modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+                    Text(pick?.let { it.name + if (it.count > 1) " (you have ${it.count})" else "" } ?: "Pick from your inventory",
+                        maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+            OutlinedTextField(value = amount, onValueChange = { amount = it.filter { c -> c.isDigit() }.take(9) },
+                label = { Text(if (gilMode) "Gil" else "How many") }, singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done))
+            val n = amount.toLongOrNull() ?: 0
+            val ok = to.length >= 3 && n > 0 && (gilMode || pick != null)
+            Button(onClick = {
+                if (gilMode) vm.sendGil(to, n) else pick?.let { vm.sendItem(to, it.slot, it.id, n.toInt()) }
+                amount = ""; pick = null
+            }, enabled = ok && !vm.marketBusy, modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) {
+                Text(if (gilMode && n > 0) "Send ${gil(n)} gil" else "Send")
+            }
+        }
+        marketLog(m, "The delivery box needs a town with an auction house. Items are sent from your inventory.")
+    }
+    if (picking) {
+        MarketPickDialog("Send from your inventory", b?.inv.orEmpty(), onDismiss = { picking = false }) {
+            pick = it; picking = false
+            if (amount.isBlank()) amount = "1"
+        }
+    }
+}
+
+/** A searchable list of your inventory; tap one to pick it. */
+@Composable
+private fun MarketPickDialog(title: String, items: List<MarketItem>, onDismiss: () -> Unit, onPick: (MarketItem) -> Unit) {
+    var query by remember { mutableStateOf("") }
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f)) {
+            Column {
+                Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(title, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                    RemoveX(onDismiss)
+                }
+                CompactSearchField(value = query, onValueChange = { query = it }, placeholder = "Search your inventory",
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp))
+                val shown = remember(items, query) {
+                    val q = query.trim().lowercase()
+                    items.filter { q.isEmpty() || it.name.lowercase().contains(q) }.sortedBy { it.name.lowercase() }
+                }
+                if (items.isEmpty()) Text("Nothing here yet. Refresh, then try again.", color = TextMuted, fontSize = 12.sp,
+                    modifier = Modifier.padding(14.dp))
+                LazyColumn(Modifier.fillMaxWidth()) {
+                    items(shown, key = { "p_${it.slot}_${it.id}" }) { it2 ->
+                        Row(Modifier.fillMaxWidth().clickable { onPick(it2) }
+                            .padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            ItemIcon(it2.id, 22.dp, Modifier.padding(end = 8.dp))
+                            Text(it2.name, color = TextSoft, fontSize = 14.sp, modifier = Modifier.weight(1f),
+                                maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            if (it2.count > 1) Text("×${it2.count}", color = TextMuted, fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Pick something to list, then single or stack (AH only) and a price. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MarketListDialog(mode: ListFor, items: List<MarketItem>, onDismiss: () -> Unit,
+                             onList: (MarketItem, Boolean, Long) -> Unit) {
+    var pick by remember { mutableStateOf<MarketItem?>(null) }
+    var single by remember { mutableStateOf(true) }
+    var price by remember { mutableStateOf("") }
+    val p = pick
+    if (p == null) {
+        MarketPickDialog(if (mode == ListFor.AH) "List on the auction house" else "Add to your bazaar", items,
+            onDismiss = onDismiss) { pick = it; single = true }
+        return
+    }
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ItemIcon(p.id, 26.dp, Modifier.padding(end = 8.dp))
+                    Text(p.name + if (p.count > 1) " (you have ${p.count})" else "", color = TextPrimary,
+                        fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.weight(1f))
+                    TextButton(onClick = { pick = null; price = "" }) { Text("Change", fontSize = 12.sp) }
+                }
+                // A stack can go up only when the item stacks and you have a full one.
+                if (mode == ListFor.AH && p.stack > 1) {
+                    Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilterChip(selected = single, onClick = { single = true }, label = { Text("Single") })
+                        FilterChip(selected = !single, onClick = { single = false }, enabled = p.count >= p.stack,
+                            label = { Text("Stack of ${p.stack}") })
+                    }
+                }
+                OutlinedTextField(value = price, onValueChange = { v -> price = v.filter { it.isDigit() }.take(9) },
+                    label = { Text(if (mode == ListFor.BAZAAR) "Price each (gil)" else "Price (gil)") },
+                    singleLine = true, modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done))
+                val pr = price.toLongOrNull() ?: 0L
+                if (pr > 0) Text("${gil(pr)} gil", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+                Button(onClick = { onList(p, single, pr) }, enabled = pr > 0,
+                    modifier = Modifier.padding(top = 12.dp).fillMaxWidth()) {
+                    Text(if (mode == ListFor.AH) "List" else "Put in bazaar")
+                }
+            }
+        }
+    }
+}
+
+/** A new price for something already in the bazaar; null on cancel. */
+@Composable
+private fun MarketPriceDialog(title: String, current: Long, onDone: (Long?) -> Unit) {
+    var price by remember { mutableStateOf(current.toString()) }
+    androidx.compose.ui.window.Dialog(onDismissRequest = { onDone(null) }) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(14.dp)) {
+                Text(title, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                OutlinedTextField(value = price, onValueChange = { v -> price = v.filter { it.isDigit() }.take(9) },
+                    label = { Text("Price each (gil)") }, singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done))
+                Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { onDone(null) }) { Text("Cancel") }
+                    Button(onClick = { onDone(price.toLongOrNull()) }, enabled = (price.toLongOrNull() ?: 0) > 0) { Text("Set") }
+                }
+            }
+        }
+    }
+}
+
+/** The Marketplace's bottom strip: your gil, and the world's population with its refresh. */
+@Composable
+private fun MarketStrip(vm: MobileWatchViewModel) {
+    val ui = vm.ui
+    val g = vm.market?.gil ?: vm.char.snap?.gil
+    Box(Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(CharcoalDark, PopStripTint)))) {
+        Row(Modifier.fillMaxWidth().padding(start = 2.dp, end = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = { vm.refreshPopulation() }) {
+                Icon(Icons.Filled.Refresh, "Refresh population", tint = AccentGreen)
+            }
+            Text(g?.let { "${gil(it)} gil" } ?: "— gil", color = AccentGold, fontWeight = FontWeight.SemiBold,
+                fontSize = 15.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Text(ui.population, color = AccentGreen, fontWeight = FontWeight.Medium, fontSize = 14.sp, maxLines = 1)
+        }
+    }
+}
+
+// ============================  CHAT TAB  ===================================
+// Tell, shout, yell and both linkshells from OmniWatch, since it started. Polls every two
+// seconds while the tab is open; the box at the bottom says it in game on the open channel.
+
+private val CHAT_TABS = listOf("tell" to "Tell", "shout" to "Shout", "yell" to "Yell", "ls1" to "LS1", "ls2" to "LS2")
+
+private fun chatColor(ch: String): Color = when (ch) {
+    "tell" -> Color(0xFFE59AD9)
+    "shout" -> Color(0xFFE8B27A)
+    "yell" -> Color(0xFFE6D29A)
+    "ls1" -> Color(0xFF8FD39A)
+    "ls2" -> Color(0xFF6FBF7A)
+    else -> TextSoft
+}
+
+/** The sender part of a chat line, as FFXI writes it: "Name>> ", ">>Name : ", "Name[Zone]: ",
+ *  "<Name> ", "[2]<Name> ". The rest is the message. */
+private val CHAT_SENDER = Regex(
+    "^((?:\\[\\d\\])?<[^>]{1,24}>\\s?|[A-Za-z]{3,15}>>\\s?|>>[A-Za-z]{3,15}\\s?:\\s?|[A-Za-z]{3,15}(?:\\[[^\\]]{1,30}\\])?\\s?:\\s?)",
+)
+
+internal fun splitChatSender(text: String): Pair<String, String> {
+    val m = CHAT_SENDER.find(text) ?: return "" to text
+    return m.value to text.substring(m.value.length)
+}
+
+private val CHAT_TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+@Composable
+private fun ChatContent(vm: MobileWatchViewModel) {
+    val c = vm.chat
+    if (!vm.char.linked) {
+        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+            Spacer(Modifier.height(10.dp))
+            Text("Chat from OmniWatch", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            Text("Tells, shouts, yells and your linkshells come from OmniWatch on your PC while the game " +
+                "is running. Pair the two in Settings to see them here and reply from the phone.",
+                color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+            Button(onClick = { vm.openSettings() }) { Text("Open Settings") }
+        }
+        return
+    }
+    // No alert for a tell you're already looking at.
+    DisposableEffect(c.tab) {
+        TellAlerts.tellTabOpen = c.tab == "tell"
+        onDispose { TellAlerts.tellTabOpen = false }
+    }
+    LaunchedEffect(Unit) {
+        while (true) {
+            vm.pollChat()
+            kotlinx.coroutines.delay(2000)
+        }
+    }
+    // Newest first, drawn from the bottom up: the tab opens on the latest line, right above the
+    // send box, the way the game's chat log reads.
+    val lines = remember(c.lines, c.tab, c.blocked) { c.lines.filter { it.ch == c.tab && !vm.isBlocked(it) }.asReversed() }
+    val listState = remember(c.tab) { LazyListState() }
+    // Follow new lines, unless you've scrolled up to read back.
+    LaunchedEffect(lines.size, c.tab) {
+        if (lines.isNotEmpty() && listState.firstVisibleItemIndex <= 2) listState.scrollToItem(0)
+    }
+    Column(Modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            CHAT_TABS.forEach { (k, lbl) ->
+                val sel = c.tab == k
+                val unread = if (sel) 0 else vm.chatUnread(k)
+                Surface(color = if (sel) Selection else Panel, shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.weight(1f).clickable { vm.selectChatTab(k) }) {
+                    Row(Modifier.padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(lbl, color = if (sel) chatColor(k) else TextMuted, fontSize = 13.sp,
+                            fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal, maxLines = 1)
+                        if (unread > 0) {
+                            Spacer(Modifier.width(4.dp))
+                            Box(Modifier.background(AccentRed, RoundedCornerShape(8.dp)).padding(horizontal = 5.dp)) {
+                                Text(if (unread > 99) "99+" else unread.toString(), color = Charcoal,
+                                    fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        c.error?.let {
+            Text(it, color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp))
+        }
+        LazyColumn(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 12.dp), state = listState,
+            reverseLayout = true) {
+            if (lines.isEmpty()) item(key = "chat_none") {
+                Text(if (c.reachable) "Nothing here since OmniWatch started." else "",
+                    color = TextMuted, fontSize = 13.sp, modifier = Modifier.padding(vertical = 16.dp))
+            }
+            items(lines, key = { "${c.boot}:${it.seq}" }) { l -> ChatLineRow(vm, l) }
+        }
+        ChatComposer(vm)
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun ChatLineRow(vm: MobileWatchViewModel, l: ChatLine) {
+    val who = l.from ?: l.to
+    val sender = remember(l.seq, l.text) { vm.chatSender(l) }
+    var menu by remember { mutableStateOf(false) }
+    Box {
+        Row(Modifier.fillMaxWidth()
+            // Tap a tell to answer that person; hold any line to block whoever said it.
+            .combinedClickable(
+                onClick = { if (l.ch == "tell" && who != null) vm.setTellTo(who) },
+                onLongClick = { if (sender != null) menu = true })
+            .padding(vertical = 3.dp)) {
+            Text(remember(l.t) { runCatching { Instant.ofEpochSecond(l.t).atZone(ZoneId.systemDefault()).format(CHAT_TIME) }.getOrDefault("") },
+                color = TextMuted, fontSize = 11.sp, fontFamily = FontFamily.Monospace,
+                modifier = Modifier.padding(end = 8.dp, top = 2.dp))
+            // Who's talking in the channel's colour, what they said in white.
+            val (who2, said) = remember(l.text) { splitChatSender(l.text) }
+            Text(buildAnnotatedString {
+                if (who2.isNotEmpty()) withStyle(SpanStyle(color = chatColor(l.ch), fontWeight = FontWeight.Medium)) { append(who2) }
+                withStyle(SpanStyle(color = Color.White)) { append(said) }
+            }, fontSize = 13.sp, lineHeight = 17.sp)
+        }
+        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+            DropdownMenuItem(text = { Text("Block $sender") }, onClick = {
+                menu = false; sender?.let { vm.setBlocked(it, true) }
+            })
+        }
+    }
+}
+
+@Composable
+private fun ChatComposer(vm: MobileWatchViewModel) {
+    val c = vm.chat
+    var text by rememberSaveable { mutableStateOf("") }
+    val label = CHAT_TABS.firstOrNull { it.first == c.tab }?.second ?: ""
+    fun send() = vm.sendChat(text) { text = "" }
+    Column(Modifier.fillMaxWidth().background(CharcoalDark).padding(horizontal = 8.dp, vertical = 6.dp)) {
+        c.sendError?.let { Text(it, color = AccentRed, fontSize = 12.sp, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)) }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (c.tab == "tell") {
+                OutlinedTextField(value = c.tellTo, onValueChange = { vm.setTellTo(it) },
+                    placeholder = { Text("To", fontSize = 13.sp) }, singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(fontSize = 13.sp),
+                    shape = RoundedCornerShape(12.dp), modifier = Modifier.width(110.dp),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next))
+            }
+            OutlinedTextField(value = text, onValueChange = { text = it.take(150) },
+                placeholder = { Text("Message $label", fontSize = 13.sp) },
+                textStyle = LocalTextStyle.current.copy(fontSize = 13.sp), maxLines = 3,
+                shape = RoundedCornerShape(12.dp), modifier = Modifier.weight(1f),
+                supportingText = if (text.length > 120) ({ Text("${text.length}/150", fontSize = 10.sp) }) else null,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions(onSend = { send() }))
+            IconButton(onClick = { send() }, enabled = text.isNotBlank() && !c.sending) {
+                if (c.sending) CircularProgressIndicator(color = AccentGreen, strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
+                else Icon(Icons.Filled.Send, "Send", tint = if (text.isNotBlank()) chatColor(c.tab) else TextMuted)
+            }
+        }
+    }
+}
+
+
+// ---- Character tab: stats panel ---------------------------------------------------------
+
+/** "+12 Acc  +5 Store TP  −3% DT": what a piece changes against what's in the square, the
+ *  biggest wins and losses first, as much as fits on one line. */
+@Composable
+private fun StatDiffLine(now: GearStats.Parsed?, next: GearStats.Parsed) {
+    val diff = remember(now, next) {
+        // The stats that decide a swap first (accuracy, haste, DT...), then the bulk ones (DEF,
+        // evasion), then attributes and skills; the list keeps the panel's order within each.
+        GearStats.diff(now, next).filter { GearStats.def(it.first).group != "Other" }
+            .sortedBy { (k, _) ->
+                when {
+                    k in setOf("def", "eva", "meva", "mdb") -> 1
+                    GearStats.def(k).group == "Attributes" -> 2
+                    GearStats.def(k).group == "Skills" -> 3
+                    else -> 0
+                }
+            }
+    }
+    if (diff.isEmpty()) return
+    Text(buildAnnotatedString {
+        diff.take(8).forEachIndexed { i, (k, d) ->
+            if (i > 0) append("  ")
+            withStyle(SpanStyle(color = if (GearStats.better(k, d)) AccentGreen else AccentRed)) {
+                append(GearStats.fmt(k, d)); append(' '); append(GearStats.def(k).label)
+            }
+        }
+    }, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+}
+
+private val EL_COLORS: Map<String, Color> = mapOf(
+    "fire" to Color(0xFFFF8A65), "ice" to Color(0xFF81D4FA), "wind" to Color(0xFF8BD48B),
+    "earth" to Color(0xFFD4B483), "thunder" to Color(0xFFB39DDB), "water" to Color(0xFF64B5F6),
+    "light" to Color(0xFFF5F5F5), "dark" to Color(0xFF9575CD),
+)
+
+private fun toneColor(t: StatsModel.Tone): Color = when (t) {
+    StatsModel.Tone.NONE -> TextMuted.copy(alpha = 0.6f)
+    StatsModel.Tone.GOOD -> Color(0xFF8CDC8C)
+    StatsModel.Tone.BAD -> Color(0xFFE68C8C)
+    StatsModel.Tone.WARN -> Color(0xFFDCC88C)
+    StatsModel.Tone.PLAIN -> TextPrimary
+}
+
+@Composable
+private fun CharStatsPanel(vm: MobileWatchViewModel, job: String) {
+    val c = vm.char
+    val keys = arrayOf<Any?>(c.setsVersion, c.snap, c.chosen, c.chosenWeapons, job, vm.charSub(job), c.buffs, c.food, c.simReady)
+    val cur = remember(*keys, c.picks) { vm.gridStats(job) }
+    val base = remember(*keys) { vm.setStats(job) }
+    val grid = remember(*keys, c.picks) { vm.gridValues(job, true) }
+    // Measured against: the pinned stats while Compare is on, else the chosen sets before swaps.
+    val pin = c.pinned[job]
+    val setGrid = remember(*keys) { vm.gridValues(job, false) }
+    val gridBase = pin?.grid ?: setGrid
+    val petBase = pin?.pet ?: base.pet
+    val compare = pin != null || vm.hasPicks(job)
+    var open by rememberSaveable { mutableStateOf(false) }
+    var tab by rememberSaveable { mutableStateOf("you") }
+    val hasPet = cur.pet.isNotEmpty() || base.pet.isNotEmpty()
+    val pet = hasPet && tab == "pet"
+    if (cur.stats.isEmpty() && cur.pet.isEmpty() && !grid.anchored) return
+    Surface(color = CharcoalDark, shape = RoundedCornerShape(6.dp),
+        modifier = Modifier.fillMaxWidth().border(1.dp, Panel, RoundedCornerShape(6.dp))) {
+        Column(Modifier.padding(6.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { open = !open }) {
+                Text("STATISTICS", color = TextSoft, fontWeight = FontWeight.Bold, fontSize = 12.sp,
+                    letterSpacing = 1.sp, modifier = Modifier.padding(start = 2.dp, end = 10.dp))
+                if (hasPet && open) listOf("you" to "You", "pet" to "Pet").forEach { (k, lbl) ->
+                    val sel = (if (pet) "pet" else "you") == k
+                    Surface(color = if (sel) Selection else Panel, shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier.padding(end = 6.dp).clickable { tab = k }) {
+                        Text(lbl, color = if (sel) TextPrimary else TextMuted, fontSize = 11.sp,
+                            fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal,
+                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.dp))
+                    }
+                }
+                Spacer(Modifier.weight(1f))
+                if (open) Surface(color = if (pin != null) Selection else Panel, shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier.padding(end = 4.dp).clickable { if (pin != null) vm.unpinStats(job) else vm.pinStats(job) }) {
+                    Text(if (pin != null) "Clear" else "Compare", color = if (pin != null) TextPrimary else TextSoft,
+                        fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.dp))
+                }
+                Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                    if (open) "Hide stats" else "Show stats", tint = TextMuted)
+            }
+            if (!open) return@Column
+            Spacer(Modifier.height(4.dp))
+            // Compare: what it's measured against, and every stat that moved, before the full lists.
+            if (pin != null) CompareSummary(pin)
+            else if (compare) Text("( ) change from the set", color = TextMuted, fontSize = 10.sp,
+                modifier = Modifier.padding(start = 2.dp, bottom = 2.dp))
+            if (!pet) {
+                // The attributes across the top, then Attack / Magic / Defense / Misc as label and
+                // value, two to a row. Anything at nothing ("--") is left out of the lists.
+                Row(Modifier.fillMaxWidth()) {
+                    StatsModel.ATTRIBUTES.forEach { (k, lbl) ->
+                        OwStatCell(StatsModel.Cell(k, lbl), grid, gridBase, compare, Modifier.weight(1f))
+                    }
+                }
+                StatsModel.SECTIONS.forEach { (title, cells) ->
+                    val shown = cells.filter { (k, _) -> grid.v[k]?.let { it != 0.0 } == true || gridBase.v[k]?.let { it != 0.0 } == true }
+                    if (shown.isEmpty()) return@forEach
+                    Text(title, color = TextSoft, fontSize = 12.sp, fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 10.dp, bottom = 2.dp, start = 2.dp))
+                    shown.chunked(2).forEach { pair ->
+                        Row(Modifier.fillMaxWidth().padding(horizontal = 2.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                            pair.forEach { (k, lbl) -> OwStatRow(k, lbl, grid, gridBase, compare, Modifier.weight(1f)) }
+                            if (pair.size == 1) Spacer(Modifier.weight(1f))
+                        }
+                    }
+                }
+                // Only when it matters: the numbers aren't OmniWatch's, or were read with another sub.
+                val sub = vm.statsSub(job)
+                val note = when {
+                    !grid.anchored -> "Gear only until OmniWatch has seen you on $job."
+                    !sub.isNullOrEmpty() && sub != vm.charSub(job) -> "Read by OmniWatch with /$sub."
+                    grid.approx.isNotEmpty() -> "~ other weapons than OmniWatch saw: estimates."
+                    else -> null
+                }
+                note?.let {
+                    Text(it, color = TextMuted, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(top = 4.dp, start = 2.dp))
+                }
+            } else {
+                // The pet's own stats, in the panel's order, seven to a row.
+                val pk = GearStats.sorted((cur.pet.keys + petBase.keys).toSet())
+                    .filter { (cur.pet[it] ?: 0) != 0 || (petBase[it] ?: 0) != 0 }
+                pk.chunked(7).forEach { chunk ->
+                    Row(Modifier.fillMaxWidth()) {
+                        chunk.forEach { k -> PetStatCell(k, cur.pet[k] ?: 0, petBase[k] ?: 0, compare, Modifier.weight(1f)) }
+                        repeat(7 - chunk.size) { Spacer(Modifier.weight(1f)) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Compare is on: one line saying what the brackets measure against. */
+@Composable
+private fun CompareSummary(pin: PinnedStats) {
+    Text(buildAnnotatedString {
+        withStyle(SpanStyle(color = TextMuted)) { append("( ) compared with ") }
+        withStyle(SpanStyle(color = TextSoft, fontWeight = FontWeight.Medium)) { append(pin.label) }
+    }, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.padding(start = 2.dp, bottom = 2.dp))
+}
+
+@Composable
+private fun StatCellBox(label: String, labelColor: Color, text: String, color: Color, delta: String?, deltaGood: Boolean,
+                        compare: Boolean, modifier: Modifier) {
+    Column(modifier.padding(1.dp).background(Panel, RoundedCornerShape(3.dp)).padding(vertical = 3.dp),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(label, color = labelColor, fontSize = 9.sp, maxLines = 1, softWrap = false, overflow = TextOverflow.Clip)
+        Text(text, color = color, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
+        if (compare) Text(delta ?: " ", color = if (deltaGood) AccentGreen else AccentRed,
+            fontSize = 9.sp, maxLines = 1, softWrap = false)
+    }
+}
+
+@Composable
+private fun OwStatCell(cell: StatsModel.Cell, grid: StatsModel.Values, base: StatsModel.Values, compare: Boolean, modifier: Modifier) {
+    val labelColor = EL_COLORS[cell.key] ?: TextMuted
+    if (cell.key.startsWith("_")) {
+        StatCellBox(cell.label, labelColor, "", TextMuted, null, true, compare, modifier); return
+    }
+    val v = grid.v[cell.key]
+    val (txt, tone) = StatsModel.format(cell.key, v, grid.anchored)
+    val shown = if (v != null && cell.key in grid.approx) "~$txt" else txt
+    val b = base.v[cell.key]
+    val d = if (v != null && b != null) v - b else if (v != null) v else null
+    val deltaTxt = d?.takeIf { kotlin.math.abs(it) >= 0.05 }?.let {
+        val n = if (it == Math.floor(it)) String.format("%+d", it.toInt()) else String.format("%+.1f", it)
+        "($n)"
+    }
+    StatCellBox(cell.label, labelColor, shown, toneColor(tone), deltaTxt,
+        d != null && StatsModel.better(cell.key, d), compare, modifier)
+}
+
+@Composable
+private fun OwStatRow(key: String, label: String, grid: StatsModel.Values, base: StatsModel.Values, compare: Boolean,
+                      modifier: Modifier) {
+    val v = grid.v[key]
+    val (txt, tone) = StatsModel.format(key, v, grid.anchored)
+    val shown = if (v != null && key in grid.approx) "~$txt" else txt
+    val b = base.v[key]
+    val d = if (v != null && b != null) v - b else v
+    Row(modifier.padding(vertical = 1.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, color = EL_COLORS[key] ?: TextMuted, fontSize = 12.sp, maxLines = 1,
+            overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        Text(buildAnnotatedString {
+            withStyle(SpanStyle(color = toneColor(tone), fontWeight = FontWeight.Medium)) { append(shown) }
+            if (compare && d != null && kotlin.math.abs(d) >= 0.05) {
+                val n = if (d == Math.floor(d)) String.format("%+d", d.toInt()) else String.format("%+.1f", d)
+                withStyle(SpanStyle(color = if (StatsModel.better(key, d)) AccentGreen else AccentRed, fontSize = 11.sp)) {
+                    append(" ("); append(n); append(")")
+                }
+            }
+        }, fontSize = 12.sp, maxLines = 1)
+    }
+}
+
+@Composable
+private fun PetStatCell(key: String, v: Int, b: Int, compare: Boolean, modifier: Modifier) {
+    val d = GearStats.def(key)
+    val good = if (d.lowerBetter) v < 0 else v > 0
+    StatCellBox(d.label, TextMuted, if (v == 0) "--" else GearStats.fmt(key, v),
+        if (v == 0) TextMuted.copy(alpha = 0.6f) else if (good) Color(0xFF8CDC8C) else Color(0xFFE68C8C),
+        if (v != b) "(" + GearStats.fmt(key, v - b) + ")" else null, GearStats.better(key, v - b), compare, modifier)
+}
+
+
+
+/** A group label in Settings: what the cards under it belong to. */
+@Composable
+private fun SettingsGroup(title: String) {
+    Spacer(Modifier.height(22.dp))
+    Text(title.uppercase(), color = TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp)
+    HorizontalDivider(color = Panel, modifier = Modifier.padding(top = 4.dp))
+}
+
+@Composable
+private fun AlertSwitchRow(title: String, desc: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(title, color = TextPrimary, fontSize = 14.sp)
+            Text(desc, color = TextMuted, fontSize = 12.sp)
+        }
+        Spacer(Modifier.width(10.dp))
+        Switch(checked = checked, onCheckedChange = onChange,
+            colors = SwitchDefaults.colors(checkedThumbColor = Charcoal, checkedTrackColor = AccentGold))
+    }
+}
+
+/** Settings > Chat: tell and disconnect alerts, and the blocked names (one list with OmniWatch's
+ *  chat blacklist). */
+@Composable
+private fun ChatSettings(vm: MobileWatchViewModel) {
+    val ctx = LocalContext.current
+    val names = vm.blockedNames()
+    var add by remember { mutableStateOf("") }
+    var alerts by remember { mutableStateOf(TellAlerts.isOn(ctx)) }
+    var dcAlerts by remember { mutableStateOf(TellAlerts.isDcOn(ctx)) }
+    LaunchedEffect(Unit) { vm.pollChat() }        // pick up OmniWatch's current list
+    val askNotify = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    // Turning an alert on: ask for notifications, and to be left running while the phone sleeps
+    // (without that Android may hold the connection back and alerts arrive late). One yes each.
+    fun allow() {
+        if (android.os.Build.VERSION.SDK_INT >= 33 &&
+            ctx.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+                android.content.pm.PackageManager.PERMISSION_GRANTED)
+            askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        val pm = ctx.getSystemService(android.os.PowerManager::class.java)
+        if (pm != null && !pm.isIgnoringBatteryOptimizations(ctx.packageName)) runCatching {
+            @android.annotation.SuppressLint("BatteryLife")
+            val i = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                Uri.parse("package:" + ctx.packageName))
+            ctx.startActivity(i)
+        }
+    }
+    SectionCard(color = Panel) {
+        AlertSwitchRow("Tell alerts", "A notification when someone sends you a tell, with the app closed too. " +
+            "Needs OmniWatch paired and running.", alerts) { on ->
+            alerts = on
+            if (on) allow()
+            TellAlerts.setOn(ctx, on)
+        }
+        Spacer(Modifier.height(10.dp))
+        AlertSwitchRow("Disconnect alerts", "A notification when a character drops out of the game without " +
+            "logging out: lost connection, or the game closed or crashed.", dcAlerts) { on ->
+            dcAlerts = on
+            if (on) allow()
+            TellAlerts.setDcOn(ctx, on)
+        }
+        HorizontalDivider(color = CharcoalDark, modifier = Modifier.padding(vertical = 10.dp))
+        // The blocked list folds too, so a long one doesn't bury the switches above it.
+        var blockedOpen by remember { mutableStateOf(false) }
+        Row(Modifier.fillMaxWidth().clickable { blockedOpen = !blockedOpen }, verticalAlignment = Alignment.CenterVertically) {
+            Text("Blocked", color = TextPrimary, fontSize = 14.sp, modifier = Modifier.weight(1f))
+            Text(if (names.isEmpty()) "nobody" else "${names.size}", color = TextMuted, fontSize = 12.sp)
+            Icon(if (blockedOpen) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                if (blockedOpen) "Hide blocked" else "Show blocked", tint = TextMuted)
+        }
+        if (!blockedOpen) return@SectionCard
+        Text("Shared with OmniWatch's chat blacklist: block someone on either and they're hidden on both. " +
+            "Hold a line in chat to block whoever said it.", color = TextMuted, fontSize = 12.sp)
+        Spacer(Modifier.height(6.dp))
+        if (names.isEmpty()) Text("Nobody blocked.", color = TextMuted, fontSize = 13.sp)
+        names.forEach { n ->
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(n, color = TextSoft, fontSize = 14.sp, modifier = Modifier.weight(1f))
+                TextButton(onClick = { vm.setBlocked(n, false) }) { Text("Unblock", fontSize = 12.sp) }
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
+            OutlinedTextField(value = add, onValueChange = { add = it.filter { c -> c.isLetter() }.take(15) },
+                placeholder = { Text("Name", fontSize = 13.sp) }, singleLine = true,
+                textStyle = LocalTextStyle.current.copy(fontSize = 13.sp), modifier = Modifier.weight(1f))
+            Spacer(Modifier.width(8.dp))
+            OutlinedButton(onClick = {
+                if (add.length >= 3) { vm.setBlocked(add, true); add = "" }
+            }, enabled = add.length >= 3) { Text("Block", fontSize = 12.sp) }
+        }
+    }
+}
+
+
+// ---- Character tab: buffs and food -------------------------------------------------------
+
+/**
+ * BUFFS, between the gear and the stats: songs, rolls and spells from OmniWatch's sim, plus food.
+ * Each buff gets the knobs it has in OmniWatch's sim window: Song+ / Roll+ / Geomancy+, a roll's
+ * number and its job bonus, and the boosts that apply (Soul Voice, Marcato, Crooked Cards,
+ * Bolster). The stats under it take all of it into account.
+ */
+@Composable
+private fun CharBuffPanel(vm: MobileWatchViewModel) {
+    val c = vm.char
+    if (!c.simReady) return
+    var open by rememberSaveable { mutableStateOf(false) }
+    var picking by remember { mutableStateOf(false) }
+    Surface(color = CharcoalDark, shape = RoundedCornerShape(6.dp),
+        modifier = Modifier.fillMaxWidth().border(1.dp, Panel, RoundedCornerShape(6.dp))) {
+        Column(Modifier.padding(6.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { open = !open }) {
+                Text("BUFFS", color = TextSoft, fontWeight = FontWeight.Bold, fontSize = 12.sp,
+                    letterSpacing = 1.sp, modifier = Modifier.padding(start = 2.dp, end = 10.dp))
+                val n = c.buffs.size + if (c.food != null) 1 else 0
+                if (!open && n > 0) Text("$n on", color = TextMuted, fontSize = 11.sp)
+                Spacer(Modifier.weight(1f))
+                if (open && n > 0) SmallPill("Clear") { vm.clearSim() }
+                if (open) SmallPill("Add") { picking = true }
+                Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                    if (open) "Hide buffs" else "Show buffs", tint = TextMuted)
+            }
+            if (!open) return@Column
+            if (c.buffs.isEmpty() && c.food == null)
+                Text("None. Add songs, rolls, spells or food to see them in the stats.", color = TextMuted,
+                    fontSize = 11.sp, modifier = Modifier.padding(start = 2.dp, top = 4.dp))
+            c.buffs.forEachIndexed { i, a ->
+                val d = vm.simDef(a.id) ?: return@forEachIndexed
+                BuffRow(d, a, onChange = { vm.updateBuff(i, it) }, onRemove = { vm.removeBuff(i) })
+            }
+            c.food?.let { f ->
+                Row(Modifier.fillMaxWidth().padding(top = 6.dp).background(Panel, RoundedCornerShape(4.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Food", color = TextMuted, fontSize = 11.sp, modifier = Modifier.padding(end = 8.dp))
+                    Text(vm.foodName(f), color = TextSoft, fontSize = 13.sp, modifier = Modifier.weight(1f),
+                        maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    RemoveX { vm.setFood(null) }
+                }
+            }
+        }
+    }
+    if (picking) BuffPicker(vm, onDismiss = { picking = false })
+}
+
+@Composable
+private fun SmallPill(text: String, onClick: () -> Unit) {
+    Surface(color = Panel, shape = RoundedCornerShape(6.dp), modifier = Modifier.padding(end = 6.dp).clickable { onClick() }) {
+        Text(text, color = TextSoft, fontSize = 11.sp, fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 9.dp, vertical = 2.dp))
+    }
+}
+
+@Composable
+private fun RemoveX(onClick: () -> Unit) {
+    Text("✕", color = TextMuted, fontSize = 13.sp, modifier = Modifier.clickable { onClick() }.padding(horizontal = 6.dp))
+}
+
+/** A − value + control. */
+@Composable
+private fun Stepper(label: String, value: Int, min: Int, max: Int, onChange: (Int) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 10.dp)) {
+        Text(label, color = TextMuted, fontSize = 11.sp, modifier = Modifier.padding(end = 2.dp))
+        Text("−", color = if (value > min) TextSoft else TextMuted.copy(alpha = 0.4f), fontSize = 15.sp,
+            modifier = Modifier.clickable(enabled = value > min) { onChange(value - 1) }.padding(horizontal = 6.dp))
+        Text("$value", color = TextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        Text("+", color = if (value < max) TextSoft else TextMuted.copy(alpha = 0.4f), fontSize = 15.sp,
+            modifier = Modifier.clickable(enabled = value < max) { onChange(value + 1) }.padding(horizontal = 6.dp))
+    }
+}
+
+/** An on/off chip (Soul Voice, Crooked Cards, the roll's job bonus...). */
+@Composable
+private fun ToggleChip(text: String, on: Boolean, onClick: () -> Unit) {
+    Surface(color = if (on) Selection else Panel, shape = RoundedCornerShape(6.dp),
+        modifier = Modifier.padding(end = 6.dp).clickable { onClick() }) {
+        Text(text, color = if (on) TextPrimary else TextMuted, fontSize = 11.sp,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
+    }
+}
+
+@Composable
+private fun BuffRow(d: SimBuffs.Def, a: SimBuffs.Active, onChange: (SimBuffs.Active) -> Unit, onRemove: () -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(top = 6.dp).background(Panel, RoundedCornerShape(4.dp))
+        .padding(horizontal = 8.dp, vertical = 4.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(d.job, color = TextMuted, fontSize = 11.sp, modifier = Modifier.padding(end = 8.dp))
+            Text(d.name, color = TextSoft, fontSize = 13.sp, modifier = Modifier.weight(1f),
+                maxLines = 1, overflow = TextOverflow.Ellipsis)
+            RemoveX(onRemove)
+        }
+        val boosts = SimBuffs.boosts(d)
+        if (d.kind == "spell" && boosts.isEmpty()) return@Column
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(top = 2.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            if (d.kind == "roll") Stepper("Roll", a.level, 1, 11) { onChange(a.copy(level = it)) }
+            if (d.plusMax > 0) Stepper("+", a.plus, 0, d.plusMax) { onChange(a.copy(plus = it)) }
+            if (d.kind == "roll") ToggleChip(if (d.optimalJob.isNotEmpty()) "${d.optimalJob} bonus" else "Bonus", a.optimal) {
+                onChange(a.copy(optimal = !a.optimal))
+            }
+            boosts.forEach { b ->
+                val on = when (b) { "sv" -> a.sv; "marcato" -> a.marcato; "cc" -> a.cc; else -> a.bolster }
+                ToggleChip(SimBuffs.boostLabel(b), on) {
+                    onChange(when (b) {
+                        "sv" -> a.copy(sv = !on); "marcato" -> a.copy(marcato = !on)
+                        "cc" -> a.copy(cc = !on); else -> a.copy(bolster = !on)
+                    })
+                }
+            }
+        }
+    }
+}
+
+/** The list to add from: every buff in OmniWatch's sim by job, then the foods. Tap to add. */
+@Composable
+private fun BuffPicker(vm: MobileWatchViewModel, onDismiss: () -> Unit) {
+    val groups = remember { vm.simDefs().groupBy { it.job }.toSortedMap() }
+    val foods = remember { vm.simFoods().sortedBy { it.second.lowercase() } }
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f)) {
+            Column {
+                Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Add a buff", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp,
+                        modifier = Modifier.weight(1f))
+                    RemoveX(onDismiss)
+                }
+                LazyColumn(Modifier.fillMaxWidth()) {
+                    groups.forEach { (job, list) ->
+                        item(key = "j_$job") {
+                            Text(job, color = TextSoft, fontWeight = FontWeight.Bold, fontSize = 12.sp,
+                                modifier = Modifier.fillMaxWidth().background(CharcoalDark).padding(horizontal = 14.dp, vertical = 6.dp))
+                        }
+                        items(list, key = { "b_${it.id}" }) { d ->
+                            Column(Modifier.fillMaxWidth().clickable { vm.addBuff(d.id); onDismiss() }
+                                .padding(horizontal = 14.dp, vertical = 8.dp)) {
+                                Text(d.name, color = TextSoft, fontSize = 14.sp)
+                                if (d.notes.isNotBlank()) Text(d.notes, color = TextMuted, fontSize = 11.sp,
+                                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            }
+                        }
+                    }
+                    if (foods.isNotEmpty()) {
+                        item(key = "j_food") {
+                            Text("Food", color = TextSoft, fontWeight = FontWeight.Bold, fontSize = 12.sp,
+                                modifier = Modifier.fillMaxWidth().background(CharcoalDark).padding(horizontal = 14.dp, vertical = 6.dp))
+                        }
+                        items(foods, key = { "f_${it.first}" }) { (id, name) ->
+                            Row(Modifier.fillMaxWidth().clickable { vm.setFood(id); onDismiss() }
+                                .padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                ItemIcon(id, 22.dp, Modifier.padding(end = 8.dp))
+                                Text(name, color = TextSoft, fontSize = 14.sp)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+// ---- Character tab: inventory ------------------------------------------------------------
+
+/**
+ * INVENTORY, under the stats: every bag OmniWatch sent, folded, with used / max slots; open one
+ * (only one at a time) for its items A-Z and counts, tap an item for its card (with augments on gear). Gil in the header.
+ */
+@Composable
+private fun CharInventoryPanel(vm: MobileWatchViewModel) {
+    val snap = vm.char.snap ?: return
+    var open by rememberSaveable { mutableStateOf(false) }
+    // One bag open at a time; opening another folds the last.
+    var openBag by rememberSaveable { mutableStateOf<Int?>(null) }
+    // Each bag's items A-Z by name as shown.
+    val byBag = remember(snap) {
+        snap.inventory.groupBy { it.bag }.mapValues { (_, l) ->
+            l.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { i -> vm.itemById(i.id)?.let { vm.label(it) } ?: "\uFFFF${i.id}" })
+        }.toSortedMap()
+    }
+    val augsAt = remember(snap) { snap.items.associate { (it.bag to it.idx) to it.augs } }
+    val bags = remember(snap) { (snap.bags.keys + byBag.keys + snap.bagCaps.keys).toSortedSet() }
+    Surface(color = CharcoalDark, shape = RoundedCornerShape(6.dp),
+        modifier = Modifier.fillMaxWidth().border(1.dp, Panel, RoundedCornerShape(6.dp))) {
+        Column(Modifier.padding(6.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().clickable { open = !open }) {
+                Text("INVENTORY", color = TextSoft, fontWeight = FontWeight.Bold, fontSize = 12.sp,
+                    letterSpacing = 1.sp, modifier = Modifier.padding(start = 2.dp, end = 10.dp))
+                Spacer(Modifier.weight(1f))
+                snap.gil?.let { Text("%,d gil".format(it), color = TextSoft, fontSize = 12.sp, fontWeight = FontWeight.Medium) }
+                Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                    if (open) "Hide inventory" else "Show inventory", tint = TextMuted)
+            }
+            if (!open) return@Column
+            if (snap.inventory.isEmpty()) {
+                Text("Update OmniWatch to see your bags here.", color = TextMuted, fontSize = 11.sp,
+                    modifier = Modifier.padding(start = 2.dp, top = 4.dp))
+                return@Column
+            }
+            bags.forEach { bag ->
+                val list = byBag[bag].orEmpty()
+                val cap = snap.bagCaps[bag]
+                if (list.isEmpty() && cap == null) return@forEach
+                val isOpen = openBag == bag
+                Row(Modifier.fillMaxWidth().padding(top = 4.dp).background(Panel, RoundedCornerShape(4.dp))
+                    .clickable { openBag = if (isOpen) null else bag }.padding(horizontal = 8.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text(vm.bagName(bag), color = TextSoft, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                    val used = cap?.first ?: list.size
+                    Text(if (cap != null) "$used / ${cap.second}" else "$used", fontSize = 12.sp,
+                        color = if (cap != null && used >= cap.second) AccentRed else TextMuted)
+                    Icon(if (isOpen) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown, null, tint = TextMuted)
+                }
+                if (isOpen) list.forEach { it -> InventoryRow(vm, it, augsAt[it.bag to it.idx].orEmpty()) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InventoryRow(vm: MobileWatchViewModel, it: InvItem, augs: List<String>) {
+    val item = remember(it.id) { vm.itemById(it.id) }
+    var open by remember(it.bag, it.idx) { mutableStateOf(false) }
+    Column(Modifier.fillMaxWidth().padding(start = 8.dp)) {
+        Row(Modifier.fillMaxWidth().clickable { open = !open }.padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            ItemIcon(it.id, 22.dp, Modifier.padding(end = 8.dp))
+            Text(item?.let { i -> vm.label(i) } ?: "Item ${it.id}", color = TextSoft, fontSize = 13.sp,
+                maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            if (it.count > 1) Text("×${it.count}", color = TextMuted, fontSize = 12.sp)
+        }
+        if (open && item != null) { ItemHelpBox(item, augments = augs); Spacer(Modifier.height(4.dp)) }
+    }
+}
+
+
+// ---- Missions and Mounts: ticks shared with OmniWatch's checklist ------------------------
+
+/** The Sync row at the top of Missions / Mounts, when OmniWatch is paired. */
+@Composable
+private fun ClSyncRow(vm: MobileWatchViewModel, tab: String) {
+    if (!vm.questLinked()) return
+    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(vm.clSyncMsg[tab] ?: if (tab == "trusts") "Tick the trusts you have, from OmniWatch."
+            else "Share ticks with OmniWatch's checklist.", color = TextMuted,
+            fontSize = 12.sp, modifier = Modifier.weight(1f))
+        OutlinedButton(onClick = { vm.syncChecklist(tab) }, enabled = vm.clSyncing == null,
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)) {
+            Text(if (vm.clSyncing == tab) "Syncing…" else "Sync", fontSize = 12.sp)
+        }
+    }
+}
+
+/** A tick row: the box is the tick, the text opens BG-wiki (two targets, so ticking never opens
+ *  a browser you didn't ask for). */
+@Composable
+private fun ClTickRow(ticked: Boolean, title: String, sub: String?, wiki: String, onTick: () -> Unit) {
+    val ctx = LocalContext.current
+    Row(Modifier.fillMaxWidth().padding(start = 4.dp, end = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Checkbox(checked = ticked, onCheckedChange = { onTick() },
+            colors = CheckboxDefaults.colors(checkedColor = AccentGreen, uncheckedColor = TextMuted, checkmarkColor = Charcoal))
+        Column(Modifier.weight(1f).clickable {
+            runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://www.bg-wiki.com/ffxi/" + wiki.replace(" ", "_")))) }
+        }.padding(vertical = 10.dp)) {
+            Text(title, color = if (ticked) TextMuted else JobsBlue, fontWeight = FontWeight.Medium, fontSize = 14.sp,
+                textDecoration = if (ticked) TextDecoration.LineThrough else null)
+            sub?.let { Text(it, color = TextMuted, fontSize = 11.sp) }
+        }
+    }
+    HorizontalDivider(color = CharcoalDark)
+}
+
+@Composable
+private fun MissionsContent(vm: MobileWatchViewModel) {
+    val cats = vm.missionCats()
+    LazyColumn(Modifier.fillMaxSize()) {
+        item(key = "m_sync") { ClSyncRow(vm, "missions") }
+        items(cats, key = { it.key }) { c ->
+            TopLevelRow(c.label, trailing = "${vm.clDoneCount(c.key, c.items)} / ${c.items.size}") { vm.selectMissionCat(c.key) }
+        }
+    }
+}
+
+@Composable
+private fun MissionCatScreen(vm: MobileWatchViewModel) {
+    val key = vm.ui.selectedMissionCat ?: return
+    val cat = vm.missionCat(key) ?: return
+    Scaffold(containerColor = Charcoal, topBar = {
+        GradientTopBar(cat.label, onBack = { vm.clearMissionCat() },
+            trailing = "${vm.clDoneCount(key, cat.items)} / ${cat.items.size}")
+    }) { pad ->
+        LazyColumn(Modifier.fillMaxSize().padding(pad)) {
+            items(cat.items, key = { it.id }) { m ->
+                ClTickRow(vm.clDone(key, m.id), "${m.code}  ${m.name}", null, m.name) { vm.toggleCl(key, m.id) }
+            }
+            item(key = "__reset") {
+                Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
+                    OutlinedButton(onClick = { vm.clearCl(key) }) {
+                        Text("Clear ticks for ${cat.label}", color = TextMuted, fontSize = 13.sp)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MountsContent(vm: MobileWatchViewModel) {
+    val list = vm.mounts()
+    val key = ChecklistDb.MOUNTS
+    LazyColumn(Modifier.fillMaxSize()) {
+        item(key = "mt_sync") { ClSyncRow(vm, "mounts") }
+        item(key = "mt_count") {
+            Text("${vm.clDoneCount(key, list)} / ${list.size} mounts", color = TextSoft, fontSize = 13.sp,
+                fontWeight = FontWeight.Medium, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+        }
+        items(list, key = { it.id }) { m ->
+            ClTickRow(vm.clDone(key, m.id), m.name, m.desc.ifBlank { null }, m.name) { vm.toggleCl(key, m.id) }
+        }
+    }
+}
