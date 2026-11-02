@@ -157,7 +157,7 @@ object CharLink {
         Result(null, Fail.Unreachable)
     }
 
-    /** Say [text] in game on [ch] ("tell", "shout", "yell", "ls1", "ls2"). Returns null when OmniWatch
+    /** Say [text] in game on [ch] ("tell", "shout", "say", "yell", "ls1", "ls2"). Returns null when OmniWatch
      *  took it, else what went wrong in words. Call off the main thread. */
     fun sendChat(link: Link, ch: String, to: String, text: String): String? = try {
         val body = JSONObject().apply { put("ch", ch); put("to", to); put("text", text) }.toString().toByteArray()

@@ -429,7 +429,16 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
     fun clearMarketLog() = marketDo(act("action" to "log_clear"), null, 300)
 
     // Delivery box
-    fun openBox(which: String) = marketDo(act("action" to "dbox_open", "box" to which), null)
+    /** Open (or switch) the delivery box in game. Not held back by another action in flight:
+     *  the tab showing and the box being open have to agree. */
+    fun openBox(which: String) {
+        val link = CharLink.load(prefs) ?: return
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { CharLink.marketAct(link, act("action" to "dbox_open", "box" to which)) }
+            kotlinx.coroutines.delay(2000)
+            loadMarket()
+        }
+    }
     fun closeBox() {
         val link = CharLink.load(prefs) ?: return
         viewModelScope.launch(Dispatchers.IO) { CharLink.marketAct(link, act("action" to "dbox_close")) }

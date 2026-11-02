@@ -38,7 +38,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
@@ -7043,7 +7042,7 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                     Spacer(Modifier.height(8.dp))
                     AboutLine("Character", "Your GearSwap sets, gear and stats like OmniWatch's, matched to your "
                         + "bags when paired.")
-                    AboutLine("Chat", "Tells, shouts, yells and linkshells: reply from the phone, alerts for tells "
+                    AboutLine("Chat", "Tells, shouts, say, yells and linkshells: reply from the phone, alerts for tells "
                         + "and disconnects.")
                     AboutLine("Marketplace", "Your auction house listings and bazaar: list, take back, reprice.")
                     AboutLine("Items", "Auction house prices by world, with sale history.")
@@ -7911,9 +7910,12 @@ private fun MarketContent(vm: MobileWatchViewModel) {
         while (true) { vm.loadMarket(); kotlinx.coroutines.delay(3000) }
     }
     // The delivery box is opened in game while its tab is showing, and shut when it isn't.
+    // `tab` is read through its state, so by the time onDispose runs it already says where you
+    // went; keep the tab this effect was made for, and close on leaving that one.
     DisposableEffect(tab) {
-        if (tab == "delivery") vm.openBox(vm.market?.box?.box ?: "in")
-        onDispose { if (tab == "delivery") vm.closeBox() }
+        val shown = tab
+        if (shown == "delivery") vm.openBox(vm.market?.box?.box ?: "in")
+        onDispose { if (shown == "delivery") vm.closeBox() }
     }
     val m = vm.market
     Column(Modifier.fillMaxSize()) {
@@ -7937,9 +7939,6 @@ private fun MarketContent(vm: MobileWatchViewModel) {
                     else -> m?.search?.takeIf { it.isNotBlank() }?.let { vm.searchAh(it) } ?: vm.loadMarket()
                 }
             }, enabled = !vm.marketBusy) { Icon(Icons.Filled.Refresh, "Refresh", tint = AccentGreen) }
-            IconButton(onClick = { vm.clearMarketLog() }, enabled = !vm.marketBusy && !m?.log.isNullOrEmpty()) {
-                Icon(Icons.Filled.Delete, "Clear the log", tint = TextMuted)
-            }
         }
         vm.marketMsg?.let { Text(it, color = TextSoft, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 12.dp)) }
         Box(Modifier.weight(1f)) {
@@ -7952,13 +7951,16 @@ private fun MarketContent(vm: MobileWatchViewModel) {
     }
 }
 
-/** OmniWatch's messages, newest last, under each tab. */
-private fun androidx.compose.foundation.lazy.LazyListScope.marketLog(m: Market?, note: String) {
+/** OmniWatch's messages, newest last, under each tab, with Clear while there's something to clear. */
+private fun androidx.compose.foundation.lazy.LazyListScope.marketLog(vm: MobileWatchViewModel, m: Market?, note: String) {
     item(key = "mk_log") {
         Column(Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 24.dp)) {
             Text(note, color = TextMuted, fontSize = 11.sp)
             if (!m?.log.isNullOrEmpty()) {
-                Text("Log", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.padding(top = 10.dp))
+                Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Log", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.weight(1f))
+                    TextButton(onClick = { vm.clearMarketLog() }, enabled = !vm.marketBusy) { Text("Clear", fontSize = 12.sp) }
+                }
                 m!!.log.forEach { Text(it, color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 2.dp)) }
             }
         }
@@ -8002,10 +8004,10 @@ private fun MarketSell(vm: MobileWatchViewModel, m: Market?) {
                 Column(Modifier.weight(1f)) {
                     Text(s.name + if (s.count > 1) " ×${s.count}" else "", color = TextSoft, fontSize = 14.sp,
                         maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(buildString {
-                        append(gil(s.price)); append(" gil  ·  "); append(s.status)
-                        s.left?.let { append(" · "); append(leftText(it)); append(" left") }
-                    }, color = when (s.status) { "Sold" -> AccentGreen; "Not Sold" -> AccentRed; else -> TextMuted },
+                    // Time left on a line of its own, then the price and how it's going.
+                    s.left?.let { Text("${leftText(it)} left", color = TextMuted, fontSize = 12.sp) }
+                    Text("${gil(s.price)} gil  ·  ${s.status}",
+                        color = when (s.status) { "Sold" -> AccentGreen; "Not Sold" -> AccentRed; else -> TextMuted },
                         fontSize = 12.sp)
                 }
                 TextButton(enabled = !vm.marketBusy, onClick = {
@@ -8042,7 +8044,7 @@ private fun MarketSell(vm: MobileWatchViewModel, m: Market?) {
             }
             HorizontalDivider(color = CharcoalDark)
         }
-        marketLog(m, "Auction house listings need a town with an auction house. A bazaar price can be set anywhere.")
+        marketLog(vm, m, "Auction house listings need a town with an auction house. A bazaar price can be set anywhere.")
     }
     listing?.let { mode ->
         val src = if (mode == ListFor.AH) m?.ahInv.orEmpty() else m?.bazaarInv.orEmpty()
@@ -8112,7 +8114,7 @@ private fun MarketBuy(vm: MobileWatchViewModel, m: Market?) {
             }
             HorizontalDivider(color = CharcoalDark)
         }
-        marketLog(m, "Buying needs a town with an auction house. Each bid starts at its first price and rises by " +
+        marketLog(vm, m, "Buying needs a town with an auction house. Each bid starts at its first price and rises by " +
             "the step until it wins or reaches the most you'll pay.")
     }
     adding?.let { r ->
@@ -8262,7 +8264,7 @@ private fun MarketDelivery(vm: MobileWatchViewModel, m: Market?) {
                 Text(if (gilMode && n > 0) "Send ${gil(n)} gil" else "Send")
             }
         }
-        marketLog(m, "The delivery box needs a town with an auction house. Items are sent from your inventory.")
+        marketLog(vm, m, "The delivery box needs a town with an auction house. Items are sent from your inventory.")
     }
     if (picking) {
         MarketPickDialog("Send from your inventory", b?.inv.orEmpty(), onDismiss = { picking = false }) {
@@ -8395,14 +8397,15 @@ private fun MarketStrip(vm: MobileWatchViewModel) {
 }
 
 // ============================  CHAT TAB  ===================================
-// Tell, shout, yell and both linkshells from OmniWatch, since it started. Polls every two
+// Tell, shout, say, yell and both linkshells from OmniWatch, since it started. Polls every two
 // seconds while the tab is open; the box at the bottom says it in game on the open channel.
 
-private val CHAT_TABS = listOf("tell" to "Tell", "shout" to "Shout", "yell" to "Yell", "ls1" to "LS1", "ls2" to "LS2")
+private val CHAT_TABS = listOf("tell" to "Tell", "shout" to "Shout", "say" to "Say", "yell" to "Yell", "ls1" to "LS1", "ls2" to "LS2")
 
 private fun chatColor(ch: String): Color = when (ch) {
     "tell" -> Color(0xFFE59AD9)
     "shout" -> Color(0xFFE8B27A)
+    "say" -> Color(0xFFEFEFEF)
     "yell" -> Color(0xFFE6D29A)
     "ls1" -> Color(0xFF8FD39A)
     "ls2" -> Color(0xFF6FBF7A)
@@ -8429,7 +8432,7 @@ private fun ChatContent(vm: MobileWatchViewModel) {
         Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
             Spacer(Modifier.height(10.dp))
             Text("Chat from OmniWatch", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-            Text("Tells, shouts, yells and your linkshells come from OmniWatch on your PC while the game " +
+            Text("Tells, shouts, say, yells and your linkshells come from OmniWatch on your PC while the game " +
                 "is running. Pair the two in Settings to see them here and reply from the phone.",
                 color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
             Button(onClick = { vm.openSettings() }) { Text("Open Settings") }
@@ -8456,25 +8459,17 @@ private fun ChatContent(vm: MobileWatchViewModel) {
         if (lines.isNotEmpty() && listState.firstVisibleItemIndex <= 2) listState.scrollToItem(0)
     }
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+        // Swipe sideways for the rest. A channel with lines you haven't read turns red.
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             CHAT_TABS.forEach { (k, lbl) ->
                 val sel = c.tab == k
-                val unread = if (sel) 0 else vm.chatUnread(k)
-                Surface(color = if (sel) Selection else Panel, shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f).clickable { vm.selectChatTab(k) }) {
-                    Row(Modifier.padding(vertical = 7.dp), horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(lbl, color = if (sel) chatColor(k) else TextMuted, fontSize = 13.sp,
-                            fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal, maxLines = 1)
-                        if (unread > 0) {
-                            Spacer(Modifier.width(4.dp))
-                            Box(Modifier.background(AccentRed, RoundedCornerShape(8.dp)).padding(horizontal = 5.dp)) {
-                                Text(if (unread > 99) "99+" else unread.toString(), color = Charcoal,
-                                    fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
+                val unread = !sel && vm.chatUnread(k) > 0
+                Surface(color = when { sel -> Selection; unread -> AccentRed.copy(alpha = 0.55f); else -> Panel },
+                    shape = RoundedCornerShape(8.dp), modifier = Modifier.clickable { vm.selectChatTab(k) }) {
+                    Text(lbl, color = when { sel -> chatColor(k); unread -> Color.White; else -> TextMuted }, fontSize = 13.sp,
+                        fontWeight = if (sel || unread) FontWeight.Bold else FontWeight.Normal, maxLines = 1,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 7.dp))
                 }
             }
         }
