@@ -37,7 +37,9 @@ data class UiState(
     val showMap: Boolean = false,
     val scChain: List<WeaponSkill> = emptyList(),
     val showSettings: Boolean = false,
-    val showMusic: Boolean = false,            // the music player screen (header note button)
+    val showMusic: Boolean = false,            // the music player screen (side menu)
+    val showAbout: Boolean = false,            // About (side menu)
+    val showSupport: Boolean = false,          // Support (side menu)
     val selectedJob: Job? = null,
     val selectedHobby: String? = null,
     val selectedContent: String? = null,       // Content tab: which content type (e.g. "dynamis")
@@ -126,6 +128,8 @@ data class ChatState(
     val sending: Boolean = false,
     val sendError: String? = null,
     val blocked: Set<String> = emptySet(),    // lowercase names whose lines are hidden
+    val cleared: Map<String, Int> = emptyMap(),  // channel -> last line Clear took off the phone
+    val afk: Boolean? = null,                 // Auto-Reply: AFK is on (null: OmniWatch doesn't have it)
 )
 
 /** What a set puts in one slot, matched to your bags. owned is null when you don't have it
@@ -155,7 +159,7 @@ data class CatalogRow(
  *  any gear, not only your own. */
 const val NOT_OWNED_BAG = -1
 
-private val CHAT_NAME = Regex("^(?:\\[\\d\\])?<([A-Za-z]{2,15})>|^([A-Za-z]{3,15})(?:\\[[^\\]]{1,30}\\])?\\s?:|^([A-Za-z]{3,15})>>")
+private val CHAT_NAME = Regex("^\\(([A-Za-z]{3,15})\\)|^(?:\\[\\d\\])?<([A-Za-z]{2,15})>|^([A-Za-z]{3,15})(?:\\[[^\\]]{1,30}\\])?\\s?:|^([A-Za-z]{3,15})>>")
 
 class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -322,10 +326,14 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
 
     fun openSettings() { ui = ui.copy(showSettings = true) }
     fun openMusic() { ui = ui.copy(showMusic = true) }
+    fun openAbout() { ui = ui.copy(showAbout = true) }
+    fun closeAbout() { ui = ui.copy(showAbout = false) }
+    fun openSupport() { ui = ui.copy(showSupport = true) }
+    fun closeSupport() { ui = ui.copy(showSupport = false) }
 
     /** From a tell alert: the Chat tab, on Tell. */
     fun openTells() {
-        ui = ui.copy(showSettings = false, showMusic = false)
+        ui = ui.copy(showSettings = false, showMusic = false, showAbout = false, showSupport = false)
         setMode("chat")
         selectChatTab("tell")
     }
@@ -373,6 +381,38 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
         char = char.copy(linked = link != null, address = link?.address ?: "",
             characters = names, selected = snap?.character, snap = snap,
             luaNames = luaFiles.map { it.first })
+    }
+
+    // ---- Inventory actions ------------------------------------------------
+    // Hold an item on the Character tab: drop it, put it on Treasury's auto-drop list, or move it
+    // to another bag, through OmniWatch. Your bags come back changed a few seconds later.
+    var invMsg by mutableStateOf<String?>(null)
+        private set
+    /** Porter slips and key items, read alongside the bags. */
+    var invExtras by mutableStateOf<InvExtras?>(null)
+        private set
+
+    /** Bags an item can go to from [from]: the ones this character has, by name. */
+    fun moveTargets(from: Int): List<Pair<Int, String>> {
+        val have = char.snap?.let { it.bags.keys + it.bagCaps.keys }.orEmpty()
+        return listOf(0, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 1, 9, 2, 4)
+            .filter { it != from && (have.isEmpty() || it in have) }
+            .map { it to bagName(it) }
+    }
+
+    fun invAction(kind: String, item: InvItem, to: Int = 0) {
+        val link = CharLink.load(prefs) ?: return
+        val body = org.json.JSONObject().put("action", kind).put("id", item.id).put("bag", item.bag)
+        if (kind == "move") body.put("to", to)
+        viewModelScope.launch {
+            val err = withContext(Dispatchers.IO) { CharLink.inventoryAct(link, body) }
+            invMsg = err ?: when (kind) {
+                "drop" -> "Dropped."
+                "autodrop" -> "Added to Treasury's auto-drop list."
+                else -> "Moved to ${bagName(to)}."
+            }
+            if (err == null) { kotlinx.coroutines.delay(4000); refreshCharacter() }
+        }
     }
 
     // ---- Marketplace -------------------------------------------------------
@@ -560,6 +600,10 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
             }
             val res = withContext(Dispatchers.IO) { CharLink.fetchGear(app, link, sel) }
             if (token != charToken) return@launch
+            if (invExtras?.character?.equals(sel, ignoreCase = true) == false) invExtras = null
+            withContext(Dispatchers.IO) { CharLink.inventoryExtras(link) }
+                ?.takeIf { it.character.isBlank() || it.character.equals(sel, ignoreCase = true) }
+                ?.let { invExtras = it }
             val snap = res.value ?: char.snap.takeIf { it?.character == sel }
             char = char.copy(loading = false, offline = res.fail == CharLink.Fail.Unreachable,
                 characters = names, selected = sel, snap = snap,
@@ -659,6 +703,8 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
             }
             val lastFrom = b.lines.lastOrNull { it.ch == "tell" && it.from != null && !isBlocked(it) }?.from
             chat = chat.copy(boot = b.boot, seq = b.seq, lines = lines, seen = markRead(seen, lines, chat.tab),
+                cleared = if (fresh) emptyMap() else chat.cleared,
+                afk = if (afkBusy) chat.afk else b.afk,
                 reachable = true, error = null,
                 tellTo = if (chat.tellTo.isBlank() && lastFrom != null) lastFrom else chat.tellTo)
         }
@@ -667,6 +713,27 @@ class MobileWatchViewModel(app: Application) : AndroidViewModel(app) {
     private fun markRead(seen: Map<String, Int>, lines: List<ChatLine>, tab: String): Map<String, Int> {
         val top = lines.lastOrNull { it.ch == tab }?.seq ?: return seen
         return seen + (tab to top)
+    }
+
+    /** Clear the open channel on the phone. OmniWatch keeps its lines; they just stop showing here. */
+    fun clearChat(ch: String) {
+        val top = chat.lines.lastOrNull { it.ch == ch }?.seq ?: return
+        chat = chat.copy(cleared = chat.cleared + (ch to top), seen = chat.seen + (ch to maxOf(top, chat.seen[ch] ?: 0)))
+    }
+
+    private var afkBusy = false
+
+    /** Auto-Reply: AFK on or off. One switch with OmniWatch's hotbar slot. */
+    fun setAfk(on: Boolean) {
+        val link = CharLink.load(prefs) ?: return
+        val was = chat.afk
+        afkBusy = true
+        chat = chat.copy(afk = on)
+        viewModelScope.launch {
+            val r = withContext(Dispatchers.IO) { CharLink.setAfk(link, on) }
+            afkBusy = false
+            chat = chat.copy(afk = r ?: was, sendError = if (r == null) "Can't reach OmniWatch." else chat.sendError)
+        }
     }
 
     fun selectChatTab(tab: String) {

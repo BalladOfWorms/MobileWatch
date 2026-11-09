@@ -147,7 +147,8 @@ object CharLink {
                             from = l.optString("from").ifBlank { null }, to = l.optString("to").ifBlank { null }))
                     }
                     val bl = o.optJSONArray("blocked")?.let { a -> (0 until a.length()).map { a.optString(it).lowercase() }.filter { it.isNotBlank() }.toSet() }
-                    Result(ChatBatch(o.optLong("boot"), o.optInt("seq"), lines, bl), null)
+                    val afk = if (o.has("afk")) o.optBoolean("afk") else null
+                    Result(ChatBatch(o.optLong("boot"), o.optInt("seq"), lines, bl, afk), null)
                 }
                 401 -> Result(null, Fail.BadCode)
                 else -> Result(null, Fail.Unreachable)
@@ -157,7 +158,7 @@ object CharLink {
         Result(null, Fail.Unreachable)
     }
 
-    /** Say [text] in game on [ch] ("tell", "shout", "say", "yell", "ls1", "ls2"). Returns null when OmniWatch
+    /** Say [text] in game on [ch] ("tell", "shout", "say", "party", "yell", "ls1", "ls2"). Returns null when OmniWatch
      *  took it, else what went wrong in words. Call off the main thread. */
     fun sendChat(link: Link, ch: String, to: String, text: String): String? = try {
         val body = JSONObject().apply { put("ch", ch); put("to", to); put("text", text) }.toString().toByteArray()
@@ -180,6 +181,24 @@ object CharLink {
         } finally { c.disconnect() }
     } catch (e: Exception) {
         "Can't reach OmniWatch."
+    }
+
+    /** Switch Auto-Reply: AFK on or off. Returns whether it's on now, or null when OmniWatch
+     *  couldn't be reached. Call off the main thread. */
+    fun setAfk(link: Link, on: Boolean): Boolean? = try {
+        val body = JSONObject().apply { put("on", on) }.toString().toByteArray()
+        val c = open(link, "/mw/v1/chat/afk").apply {
+            requestMethod = "POST"; doOutput = true
+            setRequestProperty("Content-Type", "application/json")
+            setFixedLengthStreamingMode(body.size)
+        }
+        try {
+            c.outputStream.use { it.write(body) }
+            if (c.responseCode != 200) null
+            else JSONObject(c.inputStream.bufferedReader().use { it.readText() }).optBoolean("afk")
+        } finally { c.disconnect() }
+    } catch (e: Exception) {
+        null
     }
 
     /** Change OmniWatch's chat blacklist (shared with its chat panel). Returns the whole list as
@@ -245,6 +264,50 @@ object CharLink {
         } finally { c.disconnect() }
     } catch (e: Exception) {
         null
+    }
+
+    /** Porter slips and key items. null when OmniWatch couldn't be reached or is too old. */
+    fun inventoryExtras(link: Link): InvExtras? = try {
+        val c = open(link, "/mw/v1/inventory")
+        try {
+            if (c.responseCode != 200) null else {
+                val o = JSONObject(c.inputStream.bufferedReader().use { it.readText() })
+                fun strs(k: String) = o.optJSONArray(k)?.let { a -> (0 until a.length()).map { a.optString(it) } }.orEmpty()
+                val slips = o.optJSONArray("slips")?.let { a ->
+                    (0 until a.length()).mapNotNull { a.optJSONObject(it) }.map { j ->
+                        val its = j.optJSONArray("items")?.let { b ->
+                            (0 until b.length()).mapNotNull { b.optJSONObject(it) }.map { x -> x.optInt("id") to x.optString("name") }
+                        }.orEmpty()
+                        PorterSlip(j.optInt("id"), j.optString("name"), its)
+                    }
+                }.orEmpty()
+                InvExtras(o.optString("character"), slips, strs("key_items"), strs("key_items_temp"))
+            }
+        } finally { c.disconnect() }
+    } catch (e: Exception) {
+        null
+    }
+
+    /** An inventory action through OmniWatch: drop, auto-drop or move ([body] has "action").
+     *  null when it took it, else what went wrong in words. Call off the main thread. */
+    fun inventoryAct(link: Link, body: JSONObject): String? = try {
+        val bytes = body.toString().toByteArray()
+        val c = open(link, "/mw/v1/inventory").apply {
+            requestMethod = "POST"; doOutput = true
+            setRequestProperty("Content-Type", "application/json")
+            setFixedLengthStreamingMode(bytes.size)
+        }
+        try {
+            c.outputStream.use { it.write(bytes) }
+            when (c.responseCode) {
+                200 -> null
+                401 -> "OmniWatch didn't accept the code."
+                404 -> "Update OmniWatch to do this from the phone."
+                else -> "OmniWatch couldn't do that."
+            }
+        } finally { c.disconnect() }
+    } catch (e: Exception) {
+        "Can't reach OmniWatch."
     }
 
     /** Ask OmniWatch to refresh, list, cancel or price ([body] has "action"). null when it took it,
@@ -430,6 +493,13 @@ object CharLink {
 }
 
 /** One line of chat from OmniWatch. from/to are set on tells: who sent it, or who it went to. */
+/** A porter slip and what's stored on it. */
+data class PorterSlip(val id: Int, val name: String, val items: List<Pair<Int, String>>)
+
+/** Porter slips and key items, from OmniWatch's inventory panel. */
+data class InvExtras(val character: String, val slips: List<PorterSlip>, val keyItems: List<String>,
+                     val tempKeyItems: List<String>)
+
 /** One of your seven auction house sale slots. left: seconds until an unsold listing comes back. */
 data class MarketSale(val slot: Int, val status: String, val name: String, val id: Int, val count: Int,
                       val price: Long, val left: Long?)
@@ -468,7 +538,8 @@ data class ChatLine(val seq: Int, val ch: String, val t: Long, val text: String,
                     val from: String?, val to: String?)
 
 class ChatBatch(val boot: Long, val seq: Int, val lines: List<ChatLine>,
-                val blocked: Set<String>? = null)   // OmniWatch's chat blacklist, lowercase (null: older OmniWatch)
+                val blocked: Set<String>? = null,   // OmniWatch's chat blacklist, lowercase (null: older OmniWatch)
+                val afk: Boolean? = null)           // Auto-Reply: AFK is on (null: older OmniWatch)
 
 /** One owned copy of an item, located by bag and slot so augmented copies stay apart. */
 data class OwnedItem(val id: Int, val bag: Int, val idx: Int, val augs: List<String>)

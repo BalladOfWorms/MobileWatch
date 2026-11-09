@@ -96,6 +96,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 
 private val DATE_FMT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  HH:mm")
 private fun fmtDate(epoch: Long): String = try {
@@ -133,6 +134,8 @@ fun MobileWatchApp(vm: MobileWatchViewModel = viewModel()) {
     when {
         ui.showSettings -> holder.Page("settings") { BackHandler { vm.closeSettings() }; SettingsScreen(vm) }
         ui.showMusic -> holder.Page("music") { BackHandler { vm.closeMusic() }; MusicScreen(onBack = { vm.closeMusic() }) }
+        ui.showAbout -> holder.Page("about") { BackHandler { vm.closeAbout() }; AboutScreen(vm) }
+        ui.showSupport -> holder.Page("support") { BackHandler { vm.closeSupport() }; SupportScreen(vm) }
         ui.selectedSubtype != null && ui.selectedMob != null -> holder.Page("subtype:${ui.selectedSubtype?.name}") { BackHandler { vm.clearSubtype() }; SubtypeDetailScreen(vm) }
         ui.selectedMob != null -> holder.Page("mob:${ui.selectedMob?.key}") { BackHandler { vm.clearMob() }; MobDetailScreen(vm) }
         ui.mode == "maps" && ui.selectedZone != null && ui.showMap -> holder.Page("map:${ui.selectedZone?.id}") { BackHandler { vm.closeMap() }; MapViewerScreen(vm) }
@@ -451,7 +454,7 @@ private fun ZoneRow(vm: MobileWatchViewModel, zone: Zone) {
 private val MODES = listOf(
     "character" to "Character", "chat" to "Chat", "market" to "Marketplace", "items" to "Items", "events" to "Events", "jobs" to "Jobs", "mobs" to "Bestiary",
     "maps" to "Zones", "content" to "Content", "missions" to "Missions", "quests" to "Quests", "hobbies" to "Hobbies",
-    "trusts" to "Trusts", "mounts" to "Mounts", "chains" to "Chains"
+    "trusts" to "Trusts", "mounts" to "Mounts", "chains" to "Chains", "resources" to "Resources"
 )
 
 @Composable
@@ -468,25 +471,35 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
         // leaving the tab and coming back opens the list fully collapsed again.
         key = "browse_groups_${LocalPageVisit.current}"
     ) { mutableStateMapOf<String, Boolean>() }
+    // The MobileWatch logo slides out the side menu: the server, Music, every tab, Settings, About
+    // and Support. The menu only answers a swipe while it's open, so the body's sideways swipe
+    // (next / previous tab) keeps working.
+    val drawer = rememberDrawerState(DrawerValue.Closed)
+    val drawerScope = rememberCoroutineScope()
+    BackHandler(enabled = drawer.isOpen) { drawerScope.launch { drawer.close() } }
+    ModalNavigationDrawer(
+        drawerState = drawer,
+        gesturesEnabled = drawer.isOpen,
+        drawerContent = { SideMenu(vm) { drawerScope.launch { drawer.close() } } },
+    ) {
     Scaffold(
         containerColor = Charcoal,
-        topBar = { GradientTopBar("MobileWatch", logoRes = R.drawable.mobilewatch_logo, onLogoClick = { vm.openSettings() }, middle = { Row(verticalAlignment = Alignment.CenterVertically) { MusicHeaderButton(onClick = { vm.openMusic() }); VanaClockButton() } }, actions = { WorldDropdown(ui.world, vm::setWorld) }) },
+        topBar = { GradientTopBar("MobileWatch", logoRes = R.drawable.mobilewatch_logo,
+            onLogoClick = { drawerScope.launch { drawer.open() } },
+            middle = {
+                Text(MODES.firstOrNull { it.first == ui.mode }?.second ?: "", color = AccentGold,
+                    fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            },
+            // The music note only shows while a song is playing, beside the clock.
+            actions = { if (com.balladofworms.mobilewatch.music.MusicPlayer.playing) MusicHeaderButton(onClick = { vm.openMusic() }); VanaClockButton() }) },
         // The world's population sits under the Marketplace, with your gil.
         bottomBar = { if (ui.mode == "market") MarketStrip(vm) }
     ) { pad ->
-        val tabScroll = rememberScrollState()
         val modeIndex = MODES.indexOfFirst { it.first == ui.mode }
-        // Eight pills do not fit on a phone, so pull the selected one into view whenever the mode
-        // changes — otherwise a swipe can land you on a tab whose pill is off-screen.
-        LaunchedEffect(ui.mode, tabScroll.maxValue) {
-            if (modeIndex >= 0 && tabScroll.maxValue > 0)
-                tabScroll.animateScrollTo(tabScroll.maxValue * modeIndex / (MODES.size - 1))
-        }
         Column(
             Modifier.padding(pad).fillMaxSize()
-                // Swipe left/right anywhere on the body to walk the top menu. The pill row above has
-                // its own horizontal scroll and claims the gesture first, so dragging the pills still
-                // just scrolls the pills. Clamped at both ends rather than wrapping.
+                // Swipe left/right anywhere on the body to walk the tabs, in side-menu order.
+                // Clamped at both ends rather than wrapping.
                 .pointerInput(ui.mode) {
                     var dx = 0f
                     val threshold = 72.dp.toPx()
@@ -500,26 +513,7 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                     ) { _, amount -> dx += amount }
                 }
         ) {
-            Row(
-                Modifier.fillMaxWidth().horizontalScroll(tabScroll)
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                MODES.forEach { (k, lbl) ->
-                    val sel = ui.mode == k
-                    Surface(
-                        color = if (sel) Selection else Panel,
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.clickable { vm.setMode(k) }
-                    ) {
-                        Text(lbl, color = if (sel) TextPrimary else TextMuted, fontSize = 13.sp,
-                            fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal,
-                            textAlign = TextAlign.Center, maxLines = 1,
-                            modifier = Modifier.padding(horizontal = 18.dp, vertical = 9.dp))
-                    }
-                }
-            }
-            if (ui.mode != "chains" && ui.mode != "events" && ui.mode != "jobs" && ui.mode != "hobbies" && ui.mode != "content" && ui.mode != "quests" && ui.mode != "trusts" && ui.mode != "character" && ui.mode != "chat" && ui.mode != "market" && ui.mode != "missions" && ui.mode != "mounts") {
+            if (ui.mode != "chains" && ui.mode != "events" && ui.mode != "jobs" && ui.mode != "hobbies" && ui.mode != "content" && ui.mode != "quests" && ui.mode != "trusts" && ui.mode != "character" && ui.mode != "chat" && ui.mode != "market" && ui.mode != "missions" && ui.mode != "mounts" && ui.mode != "resources") {
                 Row(
                     Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -798,6 +792,8 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                 MissionsContent(vm)
             } else if (ui.mode == "mounts") {
                 MountsContent(vm)
+            } else if (ui.mode == "resources") {
+                ResourcesContent()
             } else if (ui.mode == "maps") {
                 val zoneList = if (ui.zoneFilter == "all") ui.zoneResults
                 else ui.zoneResults.filter { vm.zoneType(it).equals(ui.zoneFilter, true) }
@@ -834,6 +830,66 @@ private fun SearchScreen(vm: MobileWatchViewModel) {
                     }
                 }
             }
+        }
+    }
+    }
+}
+
+@Composable
+private fun appVersion(): String {
+    val ctx = LocalContext.current
+    return remember {
+        runCatching {
+            val info = ctx.packageManager.getPackageInfo(ctx.packageName, 0)
+            @Suppress("DEPRECATION")
+            "${info.versionName} (build ${info.versionCode})"
+        }.getOrNull() ?: "\u2014"
+    }
+}
+
+/** The slide-out menu: logo, version and server at the top, then every tab, then the rest. */
+@Composable
+private fun SideMenu(vm: MobileWatchViewModel, close: () -> Unit) {
+    val ui = vm.ui
+    val itemColors = NavigationDrawerItemDefaults.colors(
+        selectedContainerColor = Selection, unselectedContainerColor = Color.Transparent,
+        selectedTextColor = TextPrimary, unselectedTextColor = TextSoft,
+        selectedIconColor = TextPrimary, unselectedIconColor = TextMuted)
+    ModalDrawerSheet(drawerContainerColor = Charcoal, modifier = Modifier.width(280.dp)) {
+        Column(Modifier.fillMaxHeight().verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.statusBars).padding(vertical = 12.dp)) {
+            Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Image(painterResource(R.drawable.mobilewatch_logo), "MobileWatch", modifier = Modifier.size(44.dp))
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text("MobileWatch", color = AccentGold, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text("Version ${appVersion()}", color = TextMuted, fontSize = 12.sp)
+                }
+            }
+            Box(Modifier.padding(start = 16.dp, top = 10.dp, bottom = 8.dp)) { WorldDropdown(ui.world, vm::setWorld) }
+            HorizontalDivider(color = CharcoalDark, modifier = Modifier.padding(vertical = 4.dp))
+            NavigationDrawerItem(label = { Text("\u266a  Music", fontSize = 14.sp) }, selected = false,
+                onClick = { close(); vm.openMusic() }, colors = itemColors,
+                modifier = Modifier.padding(horizontal = 8.dp).height(44.dp))
+            HorizontalDivider(color = CharcoalDark, modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp))
+            MODES.forEach { (k, lbl) ->
+                NavigationDrawerItem(
+                    label = { Text(lbl, fontSize = 14.sp, fontWeight = if (ui.mode == k) FontWeight.Bold else FontWeight.Normal) },
+                    selected = ui.mode == k,
+                    onClick = { vm.setMode(k); close() },
+                    colors = itemColors,
+                    modifier = Modifier.padding(horizontal = 8.dp).height(44.dp))
+            }
+            HorizontalDivider(color = CharcoalDark, modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp))
+            NavigationDrawerItem(label = { Text("Settings", fontSize = 14.sp) }, selected = false,
+                onClick = { close(); vm.openSettings() }, colors = itemColors,
+                modifier = Modifier.padding(horizontal = 8.dp).height(44.dp))
+            NavigationDrawerItem(label = { Text("About", fontSize = 14.sp) }, selected = false,
+                onClick = { close(); vm.openAbout() }, colors = itemColors,
+                modifier = Modifier.padding(horizontal = 8.dp).height(44.dp))
+            NavigationDrawerItem(label = { Text("Support", fontSize = 14.sp) }, selected = false,
+                onClick = { close(); vm.openSupport() }, colors = itemColors,
+                modifier = Modifier.padding(horizontal = 8.dp).height(44.dp))
         }
     }
 }
@@ -1482,8 +1538,8 @@ private fun PhysRow(phys: Map<String, Double>) {
 /** A Settings section: its title, folded until tapped. Every section starts folded each time
  *  Settings opens; [note] is a short summary shown beside the title. */
 @Composable
-private fun FoldSection(title: String, note: String? = null, content: @Composable () -> Unit) {
-    var open by remember { mutableStateOf(false) }
+private fun FoldSection(title: String, note: String? = null, startOpen: Boolean = false, content: @Composable () -> Unit) {
+    var open by remember { mutableStateOf(startOpen) }
     Spacer(Modifier.height(14.dp))
     Row(Modifier.fillMaxWidth().clickable { open = !open }.padding(vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically) {
@@ -6952,24 +7008,8 @@ private const val DONATE_URL = "https://ko-fi.com/BalladOfWorms"
 
 @Composable
 private fun SettingsScreen(vm: MobileWatchViewModel) {
-    val ctx = LocalContext.current
-    val version = remember {
-        runCatching {
-            val info = ctx.packageManager.getPackageInfo(ctx.packageName, 0)
-            @Suppress("DEPRECATION")
-            "${info.versionName} (build ${info.versionCode})"
-        }.getOrNull() ?: "\u2014"
-    }
     Scaffold(containerColor = Charcoal, topBar = { GradientTopBar("Settings", onBack = { vm.closeSettings() }) }) { pad ->
         Column(Modifier.padding(pad).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(painterResource(R.drawable.mobilewatch_logo), "MobileWatch", modifier = Modifier.size(48.dp))
-                Spacer(Modifier.width(12.dp))
-                Column {
-                    Text("MobileWatch", color = AccentGold, fontWeight = FontWeight.Bold, fontSize = 22.sp)
-                    Text("Version $version", color = TextMuted, fontSize = 13.sp)
-                }
-            }
             SettingsGroup("OmniWatch")
             FoldSection("Connection") {
                 CharLinkSettings(vm)
@@ -7023,18 +7063,24 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                     }
                 }
             }
-            FoldSection("Support") {
-                SectionCard(color = Panel) {
-                    Text("If MobileWatch is useful to you, you can support development.",
-                        color = TextSoft, fontSize = 13.sp)
-                    Spacer(Modifier.height(10.dp))
-                    Button(
-                        onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DONATE_URL))) } },
-                        colors = ButtonDefaults.buttonColors(containerColor = AccentGold, contentColor = Charcoal)
-                    ) { Text("\u2615  Support on Ko-fi", fontWeight = FontWeight.SemiBold) }
+            Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun AboutScreen(vm: MobileWatchViewModel) {
+    Scaffold(containerColor = Charcoal, topBar = { GradientTopBar("About", onBack = { vm.closeAbout() }) }) { pad ->
+        Column(Modifier.padding(pad).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(painterResource(R.drawable.mobilewatch_logo), "MobileWatch", modifier = Modifier.size(48.dp))
+                Spacer(Modifier.width(12.dp))
+                Column {
+                    Text("MobileWatch", color = AccentGold, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                    Text("Version ${appVersion()}", color = TextMuted, fontSize = 13.sp)
                 }
             }
-            FoldSection("About") {
+            FoldSection("About", startOpen = true) {
                 SectionCard(color = Panel) {
                     Text("A Final Fantasy XI companion, built offline-first \u2014 everything but auction "
                         + "house prices, the live event feed and the OmniWatch link works with no connection.",
@@ -7042,7 +7088,7 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                     Spacer(Modifier.height(8.dp))
                     AboutLine("Character", "Your GearSwap sets, gear and stats like OmniWatch's, matched to your "
                         + "bags when paired.")
-                    AboutLine("Chat", "Tells, shouts, say, yells and linkshells: reply from the phone, alerts for tells "
+                    AboutLine("Chat", "Tells, shouts, say, party, yells and linkshells: reply from the phone, alerts for tells "
                         + "and disconnects.")
                     AboutLine("Marketplace", "Your auction house listings and bazaar: list, take back, reprice.")
                     AboutLine("Items", "Auction house prices by world, with sale history.")
@@ -7058,7 +7104,8 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                     AboutLine("Trusts", "All 122 alter egos by role, ticked when you have them.")
                     AboutLine("Mounts", "Every mount, to tick off.")
                     AboutLine("Chains", "Skillchains and the weapon skill reference.")
-                    AboutLine("Music", "The \u266a button: FFXI's soundtrack from your own game files.")
+                    AboutLine("Resources", "Handy links and an FFXI command reference.")
+                    AboutLine("Music", "FFXI's soundtrack from your own game files, in the side menu.")
                     Text("Missions, quests, mounts and trusts sync with OmniWatch's checklist.",
                         color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
                     Spacer(Modifier.height(10.dp))
@@ -7069,6 +7116,25 @@ private fun SettingsScreen(vm: MobileWatchViewModel) {
                 }
             }
             Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun SupportScreen(vm: MobileWatchViewModel) {
+    val ctx = LocalContext.current
+    Scaffold(containerColor = Charcoal, topBar = { GradientTopBar("Support", onBack = { vm.closeSupport() }) }) { pad ->
+        Column(Modifier.padding(pad).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
+            Spacer(Modifier.height(6.dp))
+            SectionCard(color = Panel) {
+                    Text("If MobileWatch is useful to you, you can support development.",
+                        color = TextSoft, fontSize = 13.sp)
+                    Spacer(Modifier.height(10.dp))
+                    Button(
+                        onClick = { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(DONATE_URL))) } },
+                        colors = ButtonDefaults.buttonColors(containerColor = AccentGold, contentColor = Charcoal)
+                    ) { Text("\u2615  Support on Ko-fi", fontWeight = FontWeight.SemiBold) }
+                }
         }
     }
 }
@@ -8397,15 +8463,16 @@ private fun MarketStrip(vm: MobileWatchViewModel) {
 }
 
 // ============================  CHAT TAB  ===================================
-// Tell, shout, say, yell and both linkshells from OmniWatch, since it started. Polls every two
+// Tell, shout, say (with emotes), party, yell and both linkshells from OmniWatch, since it started. Polls every two
 // seconds while the tab is open; the box at the bottom says it in game on the open channel.
 
-private val CHAT_TABS = listOf("tell" to "Tell", "shout" to "Shout", "say" to "Say", "yell" to "Yell", "ls1" to "LS1", "ls2" to "LS2")
+private val CHAT_TABS = listOf("tell" to "Tell", "say" to "Say", "party" to "Party", "shout" to "Shout", "yell" to "Yell", "ls1" to "LS1", "ls2" to "LS2")
 
 private fun chatColor(ch: String): Color = when (ch) {
     "tell" -> Color(0xFFE59AD9)
     "shout" -> Color(0xFFE8B27A)
     "say" -> Color(0xFFEFEFEF)
+    "party" -> Color(0xFF8FD3E6)
     "yell" -> Color(0xFFE6D29A)
     "ls1" -> Color(0xFF8FD39A)
     "ls2" -> Color(0xFF6FBF7A)
@@ -8413,9 +8480,9 @@ private fun chatColor(ch: String): Color = when (ch) {
 }
 
 /** The sender part of a chat line, as FFXI writes it: "Name>> ", ">>Name : ", "Name[Zone]: ",
- *  "<Name> ", "[2]<Name> ". The rest is the message. */
+ *  "<Name> ", "[2]<Name> ", "(Name) " (party). The rest is the message. */
 private val CHAT_SENDER = Regex(
-    "^((?:\\[\\d\\])?<[^>]{1,24}>\\s?|[A-Za-z]{3,15}>>\\s?|>>[A-Za-z]{3,15}\\s?:\\s?|[A-Za-z]{3,15}(?:\\[[^\\]]{1,30}\\])?\\s?:\\s?)",
+    "^(\\([A-Za-z]{3,15}\\)\\s?|(?:\\[\\d\\])?<[^>]{1,24}>\\s?|[A-Za-z]{3,15}>>\\s?|>>[A-Za-z]{3,15}\\s?:\\s?|[A-Za-z]{3,15}(?:\\[[^\\]]{1,30}\\])?\\s?:\\s?)",
 )
 
 internal fun splitChatSender(text: String): Pair<String, String> {
@@ -8426,13 +8493,14 @@ internal fun splitChatSender(text: String): Pair<String, String> {
 private val CHAT_TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun ChatContent(vm: MobileWatchViewModel) {
     val c = vm.chat
     if (!vm.char.linked) {
         Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
             Spacer(Modifier.height(10.dp))
             Text("Chat from OmniWatch", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-            Text("Tells, shouts, say, yells and your linkshells come from OmniWatch on your PC while the game " +
+            Text("Tells, shouts, say, party, yells and your linkshells come from OmniWatch on your PC while the game " +
                 "is running. Pair the two in Settings to see them here and reply from the phone.",
                 color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
             Button(onClick = { vm.openSettings() }) { Text("Open Settings") }
@@ -8452,24 +8520,41 @@ private fun ChatContent(vm: MobileWatchViewModel) {
     }
     // Newest first, drawn from the bottom up: the tab opens on the latest line, right above the
     // send box, the way the game's chat log reads.
-    val lines = remember(c.lines, c.tab, c.blocked) { c.lines.filter { it.ch == c.tab && !vm.isBlocked(it) }.asReversed() }
+    val lines = remember(c.lines, c.tab, c.blocked, c.cleared) {
+        val from = c.cleared[c.tab] ?: 0
+        c.lines.filter { it.ch == c.tab && it.seq > from && !vm.isBlocked(it) }.asReversed()
+    }
     val listState = remember(c.tab) { LazyListState() }
     // Follow new lines, unless you've scrolled up to read back.
     LaunchedEffect(lines.size, c.tab) {
         if (lines.isNotEmpty() && listState.firstVisibleItemIndex <= 2) listState.scrollToItem(0)
     }
     Column(Modifier.fillMaxSize()) {
-        // Swipe sideways for the rest. A channel with lines you haven't read turns red.
+        // Swipe sideways for the rest. A channel with lines you haven't read turns red. Hold a
+        // tab to clear that channel on the phone; holding Tell also switches Auto-Reply: AFK.
+        var clearMenu by remember { mutableStateOf<String?>(null) }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             CHAT_TABS.forEach { (k, lbl) ->
                 val sel = c.tab == k
                 val unread = !sel && vm.chatUnread(k) > 0
-                Surface(color = when { sel -> Selection; unread -> AccentRed.copy(alpha = 0.55f); else -> Panel },
-                    shape = RoundedCornerShape(8.dp), modifier = Modifier.clickable { vm.selectChatTab(k) }) {
-                    Text(lbl, color = when { sel -> chatColor(k); unread -> Color.White; else -> TextMuted }, fontSize = 13.sp,
-                        fontWeight = if (sel || unread) FontWeight.Bold else FontWeight.Normal, maxLines = 1,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 7.dp))
+                Box {
+                    Surface(color = when { sel -> Selection; unread -> AccentRed.copy(alpha = 0.55f); else -> Panel },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.combinedClickable(onClick = { vm.selectChatTab(k) }, onLongClick = { clearMenu = k })) {
+                        Text(if (k == "tell" && c.afk == true) "$lbl (AFK)" else lbl,
+                            color = when { sel -> chatColor(k); unread -> Color.White; else -> TextMuted }, fontSize = 13.sp,
+                            fontWeight = if (sel || unread) FontWeight.Bold else FontWeight.Normal, maxLines = 1,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 7.dp))
+                    }
+                    DropdownMenu(expanded = clearMenu == k, onDismissRequest = { clearMenu = null }) {
+                        DropdownMenuItem(text = { Text("Clear $lbl") }, onClick = { clearMenu = null; vm.clearChat(k) })
+                        if (k == "tell") c.afk?.let { on ->
+                            DropdownMenuItem(text = { Text("Auto-Reply: AFK") },
+                                trailingIcon = { Switch(checked = on, onCheckedChange = null) },
+                                onClick = { clearMenu = null; vm.setAfk(!on) })
+                        }
+                    }
                 }
             }
         }
@@ -8554,7 +8639,7 @@ private fun ChatComposer(vm: MobileWatchViewModel) {
 // ---- Character tab: stats panel ---------------------------------------------------------
 
 /** "+12 Acc  +5 Store TP  −3% DT": what a piece changes against what's in the square, the
- *  biggest wins and losses first, as much as fits on one line. */
+ *  biggest wins and losses first, on one line you can swipe sideways to read the rest. */
 @Composable
 private fun StatDiffLine(now: GearStats.Parsed?, next: GearStats.Parsed) {
     val diff = remember(now, next) {
@@ -8572,13 +8657,14 @@ private fun StatDiffLine(now: GearStats.Parsed?, next: GearStats.Parsed) {
     }
     if (diff.isEmpty()) return
     Text(buildAnnotatedString {
-        diff.take(8).forEachIndexed { i, (k, d) ->
+        diff.forEachIndexed { i, (k, d) ->
             if (i > 0) append("  ")
             withStyle(SpanStyle(color = if (GearStats.better(k, d)) AccentGreen else AccentRed)) {
                 append(GearStats.fmt(k, d)); append(' '); append(GearStats.def(k).label)
             }
         }
-    }, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }, fontSize = 11.sp, maxLines = 1, softWrap = false,
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()))
 }
 
 private val EL_COLORS: Map<String, Color> = mapOf(
@@ -9057,6 +9143,7 @@ private fun CharInventoryPanel(vm: MobileWatchViewModel) {
                     if (open) "Hide inventory" else "Show inventory", tint = TextMuted)
             }
             if (!open) return@Column
+            vm.invMsg?.let { Text(it, color = TextSoft, fontSize = 11.sp, modifier = Modifier.padding(start = 2.dp, top = 2.dp)) }
             if (snap.inventory.isEmpty()) {
                 Text("Update OmniWatch to see your bags here.", color = TextMuted, fontSize = 11.sp,
                     modifier = Modifier.padding(start = 2.dp, top = 4.dp))
@@ -9078,23 +9165,104 @@ private fun CharInventoryPanel(vm: MobileWatchViewModel) {
                 }
                 if (isOpen) list.forEach { it -> InventoryRow(vm, it, augsAt[it.bag to it.idx].orEmpty()) }
             }
+            // Porter slips, then key items, under a line each. Like the bags, one open at a time.
+            val ex = vm.invExtras
+            if (ex != null && ex.slips.isNotEmpty()) {
+                HorizontalDivider(color = Panel, modifier = Modifier.padding(top = 8.dp, bottom = 2.dp))
+                ex.slips.forEach { sl ->
+                    val k = -1000 - sl.id
+                    InvGroupHeader(sl.name, "${sl.items.size}", openBag == k) { openBag = if (openBag == k) null else k }
+                    if (openBag == k) {
+                        if (sl.items.isEmpty()) Text("Nothing stored.", color = TextMuted, fontSize = 12.sp,
+                            modifier = Modifier.padding(start = 8.dp, top = 4.dp))
+                        sl.items.sortedBy { it.second.lowercase() }.forEach { (id, nm) ->
+                            Row(Modifier.fillMaxWidth().padding(start = 8.dp, top = 4.dp, bottom = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically) {
+                                ItemIcon(id, 22.dp, Modifier.padding(end = 8.dp))
+                                Text(vm.itemById(id)?.let { i -> vm.label(i) } ?: nm, color = TextSoft, fontSize = 13.sp,
+                                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            }
+                        }
+                    }
+                }
+            }
+            if (ex != null && (ex.keyItems.isNotEmpty() || ex.tempKeyItems.isNotEmpty())) {
+                HorizontalDivider(color = Panel, modifier = Modifier.padding(top = 8.dp, bottom = 2.dp))
+                listOf(-1 to ("Key items" to ex.keyItems), -2 to ("Temporary key items" to ex.tempKeyItems))
+                    .forEach { (k, p) ->
+                        val (title, names) = p
+                        InvGroupHeader(title, "${names.size}", openBag == k) { openBag = if (openBag == k) null else k }
+                        if (openBag == k) names.forEach { n ->
+                            Text(n, color = TextSoft, fontSize = 13.sp, modifier = Modifier.padding(start = 8.dp, top = 3.dp, bottom = 3.dp))
+                        }
+                    }
+            }
         }
     }
 }
 
+/** A folding row under the bags: a porter slip, or a key item list. */
 @Composable
+private fun InvGroupHeader(title: String, note: String, open: Boolean, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().padding(top = 4.dp).background(Panel, RoundedCornerShape(4.dp))
+        .clickable { onClick() }.padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(title, color = TextSoft, fontSize = 13.sp, modifier = Modifier.weight(1f))
+        Text(note, fontSize = 12.sp, color = TextMuted)
+        Icon(if (open) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown, null, tint = TextMuted)
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun InventoryRow(vm: MobileWatchViewModel, it: InvItem, augs: List<String>) {
     val item = remember(it.id) { vm.itemById(it.id) }
     var open by remember(it.bag, it.idx) { mutableStateOf(false) }
+    // Hold an item for OmniWatch's inventory actions: drop, auto-drop, move to another bag.
+    var menu by remember { mutableStateOf<String?>(null) }   // "main" | "move"
+    var confirmDrop by remember { mutableStateOf(false) }
+    val name = item?.let { i -> vm.label(i) } ?: "Item ${it.id}"
     Column(Modifier.fillMaxWidth().padding(start = 8.dp)) {
-        Row(Modifier.fillMaxWidth().clickable { open = !open }.padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            ItemIcon(it.id, 22.dp, Modifier.padding(end = 8.dp))
-            Text(item?.let { i -> vm.label(i) } ?: "Item ${it.id}", color = TextSoft, fontSize = 13.sp,
-                maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-            if (it.count > 1) Text("×${it.count}", color = TextMuted, fontSize = 12.sp)
+        Box {
+            Row(Modifier.fillMaxWidth()
+                .combinedClickable(onClick = { open = !open }, onLongClick = { menu = "main" })
+                .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                ItemIcon(it.id, 22.dp, Modifier.padding(end = 8.dp))
+                Text(name, color = TextSoft, fontSize = 13.sp,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                if (it.count > 1) Text("×${it.count}", color = TextMuted, fontSize = 12.sp)
+            }
+            DropdownMenu(expanded = menu != null, onDismissRequest = { menu = null }) {
+                if (menu == "main") {
+                    // The game drops from your main inventory only.
+                    if (it.bag == 0) DropdownMenuItem(text = { Text("Drop") }, onClick = { menu = null; confirmDrop = true })
+                    DropdownMenuItem(text = { Text("Auto-drop") }, onClick = { menu = null; vm.invAction("autodrop", it) })
+                    DropdownMenuItem(text = { Text("Move to…") }, onClick = { menu = "move" })
+                } else {
+                    vm.moveTargets(it.bag).forEach { (bag, label) ->
+                        DropdownMenuItem(text = { Text(label) }, onClick = { menu = null; vm.invAction("move", it, bag) })
+                    }
+                }
+            }
         }
         if (open && item != null) { ItemHelpBox(item, augments = augs); Spacer(Modifier.height(4.dp)) }
+    }
+    if (confirmDrop) {
+        androidx.compose.ui.window.Dialog(onDismissRequest = { confirmDrop = false }) {
+            Surface(color = Charcoal, shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(14.dp)) {
+                    Text("Drop $name${if (it.count > 1) " ×${it.count}" else ""}?", color = TextPrimary,
+                        fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("It's gone for good.", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+                    Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
+                        TextButton(onClick = { confirmDrop = false }) { Text("Cancel") }
+                        Button(onClick = { confirmDrop = false; vm.invAction("drop", it) },
+                            colors = ButtonDefaults.buttonColors(containerColor = AccentRed)) { Text("Drop") }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -9168,6 +9336,180 @@ private fun MissionCatScreen(vm: MobileWatchViewModel) {
                 }
             }
         }
+    }
+}
+
+// ---- Resources tab -------------------------------------------------------------------
+// Links to the community sites, then a command reference. Tap a command to copy it.
+
+private val RESOURCE_LINKS = listOf(
+    Triple("BG Wiki", "Items, gear, jobs and strategy", "https://www.bg-wiki.com/ffxi/Main_Page"),
+    Triple("FFXIclopedia", "The long-running FFXI wiki", "https://ffxiclopedia.fandom.com/wiki/FFXIclopedia"),
+    Triple("FFXIAH", "Auction house prices and sales history", "https://www.ffxiah.com/"),
+    Triple("PlayOnline", "Official news, updates and maintenance", "https://www.playonline.com/ff11us/index.shtml"),
+    Triple("r/ffxi", "The FFXI community on Reddit", "https://www.reddit.com/r/ffxi/"),
+)
+
+/** One command: what you type, what it does. */
+private class Cmd(val cmd: String, val desc: String)
+
+private val COMMAND_GROUPS: List<Pair<String, List<Cmd>>> = listOf(
+    "Chat" to listOf(
+        Cmd("/say  ·  /s", "Speak to everyone nearby."),
+        Cmd("/shout  ·  /sh", "Shout to everyone in the zone."),
+        Cmd("/yell", "Yell to the zones around you. Works from towns and a few other areas."),
+        Cmd("/party  ·  /p", "Speak to your party."),
+        Cmd("/linkshell  ·  /l", "Speak on your first linkshell."),
+        Cmd("/linkshell2  ·  /l2", "Speak on your second linkshell."),
+        Cmd("/tell <name>  ·  /t", "Send a private message."),
+        Cmd("/t <r>", "Reply to the last person who sent you a tell."),
+        Cmd("/unity  ·  /u", "Speak on Unity chat."),
+        Cmd("/assiste  ·  /assistj", "Speak on the English or Japanese Assist channel."),
+        Cmd("/emote <text>  ·  /em", "Act out your own text (\"Name waves hello\")."),
+        Cmd("/echo <text>", "Print text in your own log only. Handy in macros."),
+    ),
+    "Targeting" to listOf(
+        Cmd("/target <name>  ·  /ta", "Target by name."),
+        Cmd("/targetnpc", "Target the nearest NPC or monster."),
+        Cmd("/targetbnpc", "Target the nearest monster."),
+        Cmd("/targetpc", "Target the nearest player."),
+        Cmd("/assist <name>  ·  /as", "Target whatever that player is targeting."),
+        Cmd("/lockon", "Lock your camera onto your target."),
+        Cmd("/follow <t>", "Follow your target."),
+        Cmd("/check <t>  ·  /c", "Check a monster's strength, or a player's gear."),
+        Cmd("/checkparam <me>", "Show accuracy, attack, evasion and defense (yours or your pet's)."),
+    ),
+    "Target tokens" to listOf(
+        Cmd("<t>", "Your current target."),
+        Cmd("<me>", "Yourself."),
+        Cmd("<st>", "Pick a target with the cursor first."),
+        Cmd("<stpc>  ·  <stpt>  ·  <stal>", "Pick a player, a party member, or an alliance member."),
+        Cmd("<stnpc>", "Pick an NPC or monster."),
+        Cmd("<bt>", "The monster your party is fighting."),
+        Cmd("<lastst>", "Whoever you picked with <st> last."),
+        Cmd("<p0> … <p5>", "Party members by position (<p0> is you)."),
+        Cmd("<a10> … <a25>", "Alliance members by party and position."),
+        Cmd("<pet>", "Your pet."),
+        Cmd("<r>", "The last player who sent you a tell."),
+    ),
+    "Text tokens" to listOf(
+        Cmd("<hp>  ·  <hpp>", "Your HP, or HP percent, typed into the line."),
+        Cmd("<mp>  ·  <mpp>", "Your MP, or MP percent."),
+        Cmd("<tp>", "Your TP."),
+        Cmd("<pos>", "Your map grid position (\"(F-8)\")."),
+        Cmd("<job>", "Your main and support job."),
+        Cmd("<call1> … <call21>", "Play a call sound with the line."),
+    ),
+    "Actions" to listOf(
+        Cmd("/ma \"Spell\" <t>", "Cast a spell (/magic)."),
+        Cmd("/ja \"Ability\" <t>", "Use a job ability (/jobability)."),
+        Cmd("/ws \"Weapon Skill\" <t>", "Use a weapon skill (/weaponskill)."),
+        Cmd("/pet \"Ability\" <t>", "Use a pet command."),
+        Cmd("/ra <t>  ·  /shoot", "Ranged attack."),
+        Cmd("/item \"Item\" <t>", "Use an item."),
+        Cmd("/attack <t>  ·  /a", "Engage your target."),
+        Cmd("/attackoff", "Disengage."),
+        Cmd("/heal", "Rest to recover HP and MP."),
+        Cmd("/recast \"Spell\"", "Show how long until a spell or ability is ready."),
+        Cmd("/wait <seconds>", "Pause between lines of a macro."),
+    ),
+    "Gear" to listOf(
+        Cmd("/equip <slot> \"Item\"", "Equip one piece (main, sub, range, ammo, head, neck, ear1, ear2, body, hands, ring1, ring2, back, waist, legs, feet)."),
+        Cmd("/equipset <n>", "Equip a saved equipment set."),
+        Cmd("/lockstyle on  ·  off", "Keep your current look whatever you change into."),
+        Cmd("/lockstyleset <n>", "Lock your look to a saved equipment set."),
+        Cmd("/displayhead on  ·  off", "Show or hide your headgear."),
+    ),
+    "Party and alliance" to listOf(
+        Cmd("/pcmd add <name>", "Invite to your party."),
+        Cmd("/pcmd kick <name>", "Remove from your party."),
+        Cmd("/pcmd leader <name>", "Hand over party leadership."),
+        Cmd("/pcmd leave", "Leave your party."),
+        Cmd("/pcmd breakup", "Disband your party (leader only)."),
+        Cmd("/join  ·  /decline", "Accept or turn down an invitation."),
+        Cmd("/acmd add <name>", "Invite a party leader into your alliance."),
+        Cmd("/acmd leave  ·  /acmd breakup", "Leave, or disband, the alliance."),
+    ),
+    "Social" to listOf(
+        Cmd("/search  ·  /sea", "Search for players (/sea all, or by zone, job and level)."),
+        Cmd("/seacom", "Set the comment others see when they search for you."),
+        Cmd("/anon", "Hide your job and location from searches."),
+        Cmd("/blacklist add <name>", "Hide a player's chat. /blacklist delete <name> undoes it."),
+        Cmd("/jobemote <job>", "Play a job's emote."),
+        Cmd("/sitchair <n>", "Sit on a chair you own."),
+        Cmd("/wave  ·  /bow  ·  /cheer  ·  /clap", "Emotes. Others: /laugh /cry /sigh /yes /no /point /think /salute /kneel /sit /poke /joy /hurray /fume /sulk /doze /welcome /farewell /smile /blush /amazed /panic /grin /nod /toss /comfort /praise."),
+        Cmd("/wave motion", "Add \"motion\" to any emote to play it without the text."),
+    ),
+    "Travel" to listOf(
+        Cmd("/mount \"Chocobo\"", "Call a mount you own."),
+        Cmd("/dismount", "Get off your mount."),
+    ),
+    "System" to listOf(
+        Cmd("/clock", "Show Vana'diel and Earth time."),
+        Cmd("/screenshot", "Save a screenshot. /screenshot hide leaves out the windows."),
+        Cmd("/logout", "Log out to the character screen (30 s wait)."),
+        Cmd("/shutdown", "Close the game (30 s wait)."),
+    ),
+    "Windower" to listOf(
+        Cmd("//lua load <addon>  ·  //lua l", "Load an addon. In the Windower console, leave off the //."),
+        Cmd("//lua unload <addon>  ·  //lua u", "Unload an addon."),
+        Cmd("//lua reload <addon>  ·  //lua r", "Reload an addon."),
+        Cmd("//gs reload", "Reload your GearSwap lua."),
+        Cmd("//gs equip sets.<name>", "Equip a GearSwap set."),
+        Cmd("//gs c <command>", "Send a command to your GearSwap lua (\"//gs c cycle OffenseMode\")."),
+        Cmd("//bind <key> <command>", "Bind a key. //unbind <key> removes it."),
+        Cmd("//exec <file>", "Run the commands in a script file."),
+    ),
+)
+
+@Composable
+private fun ResourcesContent() {
+    val ctx = LocalContext.current
+    val clip = androidx.compose.ui.platform.LocalClipboardManager.current
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+        item(key = "res_links_h") {
+            Spacer(Modifier.height(10.dp))
+            Text("Links", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Spacer(Modifier.height(4.dp))
+        }
+        items(RESOURCE_LINKS, key = { "res_${it.first}" }) { (name, desc, url) ->
+            Column(Modifier.fillMaxWidth()
+                .clickable { runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } }
+                .padding(vertical = 8.dp)) {
+                Text(name, color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text(desc, color = TextMuted, fontSize = 12.sp)
+            }
+            HorizontalDivider(color = CharcoalDark)
+        }
+        item(key = "res_cmd_h") {
+            Spacer(Modifier.height(14.dp))
+            Text("Commands", color = HeaderL1, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text("Tap a command to copy it.", color = TextMuted, fontSize = 11.sp)
+        }
+        COMMAND_GROUPS.forEach { (group, cmds) ->
+            item(key = "res_g_$group") {
+                CollapsibleSection(group, stateKey = "res_$group", titleColor = HeaderL2) {
+                    Column {
+                        cmds.forEach { c ->
+                            Column(Modifier.fillMaxWidth()
+                                .clickable {
+                                    // Copy the first form, without the "· alias" part.
+                                    clip.setText(AnnotatedString(c.cmd.substringBefore("  ·").trim()))
+                                    android.widget.Toast.makeText(ctx, "Copied", android.widget.Toast.LENGTH_SHORT).show()
+                                }
+                                .padding(vertical = 6.dp)) {
+                                Text(c.cmd, color = TextPrimary, fontSize = 13.sp,
+                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                                Text(c.desc, color = TextMuted, fontSize = 12.sp,
+                                    modifier = Modifier.padding(start = 10.dp, top = 1.dp))
+                            }
+                            HorizontalDivider(color = CharcoalDark)
+                        }
+                    }
+                }
+            }
+        }
+        item(key = "res_end") { Spacer(Modifier.height(24.dp)) }
     }
 }
 
